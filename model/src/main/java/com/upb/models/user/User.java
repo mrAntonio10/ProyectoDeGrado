@@ -13,7 +13,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "USER")
+@Table(name = "USER_MNG")
 public class User implements Serializable, UserDetails {
     @Id
     @Column(name = "ID")
