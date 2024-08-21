@@ -15,9 +15,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -63,5 +65,16 @@ public class AuthController {
                     .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     "Error en el servidor. Favor contactarse con el administrador."));
        }
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<GenericResponse<String>> getLogoutPage(HttpServletRequest request, HttpServletResponse response){
+        log.info("Datos dentro del security {}", SecurityContextHolder.getContext().getAuthentication());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null)
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+
+        return ok(GenericResponse.success(HttpStatus.OK.value(), "/"));
     }
 }
