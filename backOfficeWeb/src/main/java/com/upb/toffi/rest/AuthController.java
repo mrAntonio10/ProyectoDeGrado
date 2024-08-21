@@ -52,13 +52,13 @@ public class AuthController {
                 .token(jwt)
                 .build()));
        }   catch (BadCredentialsException e){
-           log.info("Error {}", e);
-           return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                   .body(GenericResponse.error(HttpStatus.NO_CONTENT.value(),
+           log.info("Error {}", e.getMessage());
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                   .body(GenericResponse.error(HttpStatus.UNAUTHORIZED.value(),
                    "Credenciales no válidas."));
        }
         catch (Exception e){
-           log.info("Error inesperado {}", e);
+           log.info("Error inesperado {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     "Error en el servidor. Favor contactarse con el administrador."));
