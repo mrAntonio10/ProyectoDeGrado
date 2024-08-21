@@ -19,12 +19,12 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.encoder = new BCryptPasswordEncoder(10);;
+        this.encoder = new BCryptPasswordEncoder(10);
     }
 
     @Override
-    public HashMap<String, Object> findByUsernameAndPassword(String username, String password) {
-        Optional<User> usuarioOpt = userRepository.findByEmailAndStateActive(username);
+    public HashMap<String, Object> findByUsernameAndPassword(String email, String password) {
+        Optional<User> usuarioOpt = userRepository.findByEmailAndStateActive(email);
 
         log.info("[{}]", usuarioOpt);
         if(!usuarioOpt.isPresent()){

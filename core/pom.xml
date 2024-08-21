@@ -7,7 +7,6 @@
         <groupId>com.project</groupId>
         <artifactId>toffi</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.upb.cores</groupId>
@@ -15,6 +14,12 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <dependencies>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0</version> <!-- O la versión compatible con tu proyecto -->
+            <scope>provided</scope>
+        </dependency>
         <!-- Dependencias de otros módulos -->
         <dependency>
             <groupId>com.upb.repositories</groupId>

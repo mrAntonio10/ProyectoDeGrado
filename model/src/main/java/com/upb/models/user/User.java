@@ -2,6 +2,8 @@ package com.upb.models.user;
 
 import com.upb.models.rol.Rol;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
@@ -12,6 +14,8 @@ import java.io.Serializable;
 import java.util.Collection;
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "USER_MNG")
 public class User implements Serializable, UserDetails {
@@ -26,7 +30,7 @@ public class User implements Serializable, UserDetails {
     @Column(name = "LASTNAME", length = 60,nullable = false)
     private String lastname;
 
-    @Column(name = "PASSWORD", length = 20, nullable = false)
+    @Column(name = "PASSWORD", length = 60, nullable = false)
     private String password;
 
     @Column(name = "EMAIL", nullable = false,length = 255)
@@ -42,6 +46,7 @@ public class User implements Serializable, UserDetails {
     @Column(name = "STATE")
     private String state;
 
+    //TODO resolver authorities para rol
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
