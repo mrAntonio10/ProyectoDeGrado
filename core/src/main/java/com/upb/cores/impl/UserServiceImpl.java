@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    @Transactional()
+    @Transactional(readOnly = true)
     public String logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             new SecurityContextLogoutHandler().logout(request, response, authentication);

@@ -53,7 +53,7 @@ public class User implements Serializable, UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
             List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
-            list.add(new SimpleGrantedAuthority(rol.getName()));
+            list.add(new SimpleGrantedAuthority(rol.getId()));
 
             return list;
     }
