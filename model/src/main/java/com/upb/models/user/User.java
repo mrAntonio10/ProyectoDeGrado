@@ -8,10 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,22 +43,24 @@ public class User implements Serializable, UserDetails {
     @Column(name = "PHONE_NUMBER", length = 20)
     private String phoneNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ROL", referencedColumnName = "ID")
     private Rol rol;
 
     @Column(name = "STATE")
     private String state;
 
-    //TODO resolver authorities para rol
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+            List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
+            list.add(new SimpleGrantedAuthority(rol.getName()));
+
+            return list;
     }
 
     @Override
     public String getUsername() {
-        return name;
+        return email;
     }
 
     @Override
@@ -76,4 +82,6 @@ public class User implements Serializable, UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 }

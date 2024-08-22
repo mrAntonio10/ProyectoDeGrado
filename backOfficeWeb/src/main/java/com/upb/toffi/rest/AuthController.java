@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,6 +47,8 @@ public class AuthController {
            Authentication auth = authenticationManager
                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
+           SecurityContextHolder.getContext().setAuthentication(auth);
+
            UserDetails userDetails = (UserDetails) auth.getPrincipal();
            var jwt = jwtService.generateToken(userDetails);
 
@@ -57,7 +60,7 @@ public class AuthController {
            log.info("Error {}", e.getMessage());
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                    .body(GenericResponse.error(HttpStatus.UNAUTHORIZED.value(),
-                   "Credenciales no válidas."));
+                   "Credenciales no válidas. Por favor, verifica tu correo electrónico y contraseña."));
        }
         catch (Exception e){
            log.info("Error inesperado {}", e.getMessage());
@@ -67,14 +70,4 @@ public class AuthController {
        }
     }
 
-    @GetMapping("/logout")
-    public ResponseEntity<GenericResponse<String>> getLogoutPage(HttpServletRequest request, HttpServletResponse response){
-        log.info("Datos dentro del security {}", SecurityContextHolder.getContext().getAuthentication());
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null)
-            new SecurityContextLogoutHandler().logout(request, response, authentication);
-
-        return ok(GenericResponse.success(HttpStatus.OK.value(), "/"));
-    }
 }
