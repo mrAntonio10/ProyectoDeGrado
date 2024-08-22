@@ -60,7 +60,7 @@ public class AuthController {
            log.info("Error {}", e.getMessage());
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                    .body(GenericResponse.error(HttpStatus.UNAUTHORIZED.value(),
-                   "Credenciales no válidas. Por favor, verifica tu correo electrónico y contraseña."));
+                   "Credenciales no válidas. Por favor, ingrese nuevamente."));
        }
         catch (Exception e){
            log.info("Error inesperado {}", e.getMessage());
