@@ -43,6 +43,6 @@ public class BranchOffice implements Serializable {
     private Boolean invoice;
 
     @Column(name = "IN_CODE", length = 255)
-    private String iNCode;
+    private String inCode;
 
 }

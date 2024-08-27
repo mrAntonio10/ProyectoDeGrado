@@ -36,6 +36,7 @@ public class BranchOfficeController {
 
     @GetMapping("")
     public ResponseEntity<GenericResponse<PagedModel<BranchOfficeDto>>> getBranchOfficePageable(@RequestParam(value = "name", defaultValue = "") String name,
+                                                                                                @RequestParam(value = "idEnterprise", defaultValue = "") String idEnterpsie,
                                                                                                 @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                                 @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
                                                                                                 @RequestParam(value = "sortDir", defaultValue = "DESC")  String sortDir,
@@ -45,8 +46,13 @@ public class BranchOfficeController {
             PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
-                    (this.branchOfficeService.getBranchOfficePageable(name, pageable))))
+                    (this.branchOfficeService.getBranchOfficePageable(name, idEnterpsie,pageable))))
             );
+        } catch (NullPointerException e) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
+                            e.getMessage()));
         } catch (Exception e) {
             log.error("Error genérico al obtener", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

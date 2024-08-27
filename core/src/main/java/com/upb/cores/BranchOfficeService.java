@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface BranchOfficeService {
-   Page<BranchOfficeDto> getBranchOfficePageable(String name, Pageable pageable);
+   Page<BranchOfficeDto> getBranchOfficePageable(String name, String idEnterprise, Pageable pageable);
 
    BranchOfficeDto createBranchOffice(String name, String location, String phoneNumber, String idEnterprise, Boolean invoice, String iNCode);
    BranchOfficeDto updateBranchOffice(String id, String name, String location, String phoneNumber, String state, Boolean invoice, String iNCode);

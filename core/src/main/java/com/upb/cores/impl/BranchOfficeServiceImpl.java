@@ -28,10 +28,11 @@ public class BranchOfficeServiceImpl implements BranchOfficeService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<BranchOfficeDto> getBranchOfficePageable(String name, Pageable pageable) {
+    public Page<BranchOfficeDto> getBranchOfficePageable(String name, String idEnterprise,Pageable pageable) {
         name = (!StringUtil.isNullOrEmpty(name) ? "%" +name.toUpperCase()+ "%" : null);
+        StringUtilMod.throwStringIsNullOrEmpty(idEnterprise, "id empresa");
 
-        return branchOfficeRepository.getBranchOfficePageable(name, pageable);
+        return branchOfficeRepository.getBranchOfficePageable(idEnterprise, name, pageable);
     }
 
     @Override
@@ -41,6 +42,8 @@ public class BranchOfficeServiceImpl implements BranchOfficeService {
 
         if(invoice) {
             StringUtilMod.throwStringIsNullOrEmpty(iNCode, "Código - Impuestos Nacional");
+        } else {
+            iNCode = null;
         }
 
         Enterprise enterprise = enterpriseService.getEnterpriseById(idEnterprise);
@@ -51,7 +54,7 @@ public class BranchOfficeServiceImpl implements BranchOfficeService {
                 .phoneNumber(phoneNumber)
                 .enterprise(enterprise)
                 .invoice(invoice)
-                .iNCode(iNCode)
+                .inCode(iNCode)
                 .state("ACTIVE")
                 .build();
 
@@ -78,7 +81,7 @@ public class BranchOfficeServiceImpl implements BranchOfficeService {
         b.setPhoneNumber(phoneNumber);
         b.setState(state);
         b.setInvoice(invoice);
-        b.setINCode(iNCode);
+        b.setInCode(iNCode);
 
         branchOfficeRepository.save(b);
 

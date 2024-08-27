@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -16,10 +17,14 @@ import java.util.Optional;
 @Repository
 public interface BranchOfficeRepository extends JpaRepository<BranchOffice, String> {
     @Query("SELECT b FROM BranchOffice b " +
+                "INNER JOIN FETCH b.enterprise e "+
             "WHERE b.state <> 'DELETED' " +
+                "AND e.id =:idE " +
                 "AND (:name IS NULL OR UPPER(b.name) LIKE :name)"
     )
-    Page<BranchOfficeDto> getBranchOfficePageable(@Param("name") String branchOfficeName,
+    Page<BranchOfficeDto> getBranchOfficePageable(
+                                                @Param("idE") String idEnterprise,
+                                                @Param("name") String branchOfficeName,
                                                 Pageable pageable);
     @Query("SELECT b FROM BranchOffice b " +
                 "INNER JOIN FETCH b.enterprise e " +

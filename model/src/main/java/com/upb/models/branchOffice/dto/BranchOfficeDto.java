@@ -15,6 +15,7 @@ public class BranchOfficeDto {
     private String location;
     private Boolean invoice;
     private String state;
+    private String phoneNumber;
 
     public BranchOfficeDto(BranchOffice b) {
         this.id = b.getId();
@@ -22,6 +23,6 @@ public class BranchOfficeDto {
         this.location = b.getLocation();
         this.invoice = b.getInvoice();
         this.state = b.getState();
-
+        this.phoneNumber = b.getPhoneNumber();
     }
 }
