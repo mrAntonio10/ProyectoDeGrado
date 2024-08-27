@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface RolResourceRepository extends JpaRepository<RolResource, String> {
-    @Query("SELECT rr from RolResource rr " +
+    @Query("SELECT rr FROM RolResource rr " +
                 "INNER JOIN FETCH rr.resource res " +
                 "INNER JOIN FETCH rr.rol rol " +
             "WHERE res.name =:name " +
@@ -20,7 +20,7 @@ public interface RolResourceRepository extends JpaRepository<RolResource, String
     )
     List<RolResourceDto> findByResourceNameAndResourceStateTrue(@Param("name") String resourceName);
 
-    @Query("SELECT rr from RolResource rr " +
+    @Query("SELECT rr FROM RolResource rr " +
                 "INNER JOIN FETCH rr.resource res " +
                 "INNER JOIN FETCH rr.rol rol " +
             "WHERE rr.rol.id =:id " +

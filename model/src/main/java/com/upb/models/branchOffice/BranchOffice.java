@@ -16,7 +16,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "BRANCHOFFICE")
+@Table(name = "BRANCH_OFFICE")
 public class BranchOffice implements Serializable {
     @Id
     @Column(name = "ID")
@@ -30,7 +30,7 @@ public class BranchOffice implements Serializable {
     private String location;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ID", nullable=false)
+    @JoinColumn(name = "ID_ENTERPRISE", referencedColumnName = "ID", nullable=false)
     public Enterprise enterprise;
 
     @Column(name = "PHONE_NUMBER", length = 20)

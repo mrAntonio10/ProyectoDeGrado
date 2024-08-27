@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, String> {
-    @Query("SELECT res from Resource res " +
+    @Query("SELECT res FROM Resource res " +
             "WHERE res.name =:name " +
                 "AND res.state <> false"
     )

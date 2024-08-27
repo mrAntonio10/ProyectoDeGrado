@@ -14,13 +14,13 @@ import java.util.Optional;
 
 @Repository
 public interface EnterpriseRepository extends JpaRepository<Enterprise, String> {
-    @Query("SELECT e from Enterprise e " +
+    @Query("SELECT e FROM Enterprise e " +
             "WHERE e.state <> 'DELETED' " +
                 "AND (:name IS NULL OR UPPER(e.name) LIKE :name)"
     )
     Page<EnterpriseDto> getEnterprisePageable(@Param("name") String enterpriseName,
                                               Pageable pageable);
-    @Query("SELECT e from Enterprise e " +
+    @Query("SELECT e FROM Enterprise e " +
             "WHERE e.id =:id"
     )
     Optional<Enterprise> findById(@Param("id") String id);

@@ -44,7 +44,7 @@ public class User implements Serializable, UserDetails {
     private String phoneNumber;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ROL", referencedColumnName = "ID")
+    @JoinColumn(name = "ID_ROL", referencedColumnName = "ID")
     private Rol rol;
 
     @Column(name = "STATE")
