@@ -35,7 +35,7 @@ public class UserController {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     this.userService.logout(request, response, authentication)));
         } catch (Exception e) {
-            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            log.error("Error genérico al obtener", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             "Error en el servidor. Favor contactarse con el administrador."));

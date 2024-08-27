@@ -63,7 +63,7 @@ public class AuthController {
                    "Credenciales no válidas. Por favor, ingrese nuevamente."));
        }
         catch (Exception e){
-           log.info("Error inesperado {}", e.getMessage());
+            log.error("Error genérico al obtener", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     "Error en el servidor. Favor contactarse con el administrador."));

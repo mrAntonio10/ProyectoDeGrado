@@ -133,11 +133,11 @@ public class DataInitializer implements CommandLineRunner {
                 () -> new NoSuchElementException("No se encontró el rol de usuario student"));
 
         //Recurso Padre - Gestión
-        String idManagementResource = this.createUpdateResource("Gestión", "/management", "pi pi-fw pi-database","Recurso padre para la gestión de empresas, sucursales y usuarios",null, 1, root, admin);
+        String idManagementResource = this.createUpdateResource("Gestión", "/dashboard/management", "pi pi-fw pi-database","Recurso padre para la gestión de empresas, sucursales y usuarios",null, 1, root, admin);
         this.createUpdateResource("Empresas", "/enterprise", "pi pi-fw pi-briefcase","Recurso encargado de gestionar las empresas dentro del sistema",idManagementResource, 9, root);
-        this.createUpdateResource("Sucursales", "/branchOficce", "pi pi-fw pi-building","Recurso encargado de gestionar las sucursales dentro del sistema",idManagementResource, 2, root, admin);
+        this.createUpdateResource("Sucursales", "/branchOffice", "pi pi-fw pi-building","Recurso encargado de gestionar las sucursales dentro del sistema",idManagementResource, 2, root, admin);
         //Recurso Padre - Ajustes
-        String idConfigurationResource = this.createUpdateResource("Ajustes", "/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, root, admin);
+        String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, root, admin);
         this.createUpdateResource("Parámetros", "/parameter", "pi pi-fw pi-code","Recurso encargado de gestionar parámetros del sistema",idConfigurationResource, 20, root, admin);
         this.createUpdateResource("Dominios", "/domain", "pi pi-fw pi-box","Recurso encargado de gestionar los dominios del sistema",idConfigurationResource, 9, root);
 

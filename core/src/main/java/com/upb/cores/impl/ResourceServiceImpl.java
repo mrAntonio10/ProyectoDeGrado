@@ -37,6 +37,7 @@ public class ResourceServiceImpl implements ResourceService {
                     List<RolResourceDto> children = resources.stream()
                             .filter(r -> r.getIdParent() != null && r.getIdParent().equals(parent.getIdResource()))
                             .sorted((r1, r2) -> r1.getResourcePriority().compareTo(r2.getResourcePriority()))
+                            .peek(child -> child.setUrl(parent.getUrl() + child.getUrl()))
                             .toList();
                     parent.setChildrenResources(children);
                 })
