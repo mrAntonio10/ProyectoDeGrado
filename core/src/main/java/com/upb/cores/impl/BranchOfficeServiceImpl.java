@@ -70,6 +70,8 @@ public class BranchOfficeServiceImpl implements BranchOfficeService {
 
         if(invoice) {
             StringUtilMod.throwStringIsNullOrEmpty(iNCode, "Código - Impuestos Nacional");
+        } else {
+            iNCode = null;
         }
 
         BranchOffice b =  branchOfficeRepository.findById(id).orElseThrow(

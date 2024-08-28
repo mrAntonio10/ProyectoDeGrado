@@ -107,7 +107,7 @@ public class BranchOfficeController {
         }
     }
 
-    @PutMapping("")
+    @PutMapping()
     public ResponseEntity<GenericResponse<BranchOfficeDto>> updateBranchOffice(@RequestBody UpdateBranchOfficeRequest bo) {
         try {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
