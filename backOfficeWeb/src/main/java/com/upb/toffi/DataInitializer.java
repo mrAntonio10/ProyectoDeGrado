@@ -1,20 +1,19 @@
 package com.upb.toffi;
 
+import com.upb.models.operation.Operation;
+import com.upb.models.permission.Permission;
 import com.upb.models.resource.Resource;
 import com.upb.models.rol.Rol;
 import com.upb.models.rol_resource.RolResource;
 import com.upb.models.rol_resource.dto.RolResourceDto;
 import com.upb.models.user.User;
-import com.upb.repositories.ResourceRepository;
-import com.upb.repositories.RolRepository;
-import com.upb.repositories.RolResourceRepository;
-import com.upb.repositories.UserRepository;
+import com.upb.repositories.*;
+import com.upb.toffi.config.util.PermissionsEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -28,11 +27,14 @@ public class DataInitializer implements CommandLineRunner {
     private final RolRepository rolRepository;
     private final ResourceRepository resourceRepository;
     private final RolResourceRepository rolResourceRepository;
+    private final OperationRepository operationRepository;
+    private final PermissionRepository permissionRepository;
 
 
     @Override
     public void run(String... args) throws Exception {
       this.createRolesAndUsers();
+//      this.createOperations();
       this.createResources();
     }
 
@@ -133,18 +135,49 @@ public class DataInitializer implements CommandLineRunner {
                 () -> new NoSuchElementException("No se encontró el rol de usuario student"));
 
         //Recurso Padre - Gestión
-        String idManagementResource = this.createUpdateResource("Gestión", "/dashboard/management", "pi pi-fw pi-database","Recurso padre para la gestión de empresas, sucursales y usuarios",null, 1, root, admin);
-        this.createUpdateResource("Empresas", "/enterprise", "pi pi-fw pi-briefcase","Recurso encargado de gestionar las empresas dentro del sistema",idManagementResource, 9, root);
-        this.createUpdateResource("Sucursales", "/branchOffice", "pi pi-fw pi-building","Recurso encargado de gestionar las sucursales dentro del sistema",idManagementResource, 2, root, admin);
+        String idManagementResource = this.createUpdateResource("Gestión", "/dashboard/management", "pi pi-fw pi-database","Recurso padre para la gestión de empresas, sucursales y usuarios",null, 1, null, root, admin);
+        this.createUpdateResource("Empresas", "/enterprise", "pi pi-fw pi-briefcase","Recurso encargado de gestionar las empresas dentro del sistema",idManagementResource, 9, PermissionsEnum.EnterprisePermissions.class, root);
+        this.createUpdateResource("Sucursales", "/branchOffice", "pi pi-fw pi-building","Recurso encargado de gestionar las sucursales dentro del sistema",idManagementResource, 2, PermissionsEnum.BranchOfficePermissions.class, root, admin);
         //Recurso Padre - Ajustes
-        String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, root, admin);
-        this.createUpdateResource("Parámetros", "/parameter", "pi pi-fw pi-code","Recurso encargado de gestionar parámetros del sistema",idConfigurationResource, 20, root, admin);
-        this.createUpdateResource("Dominios", "/domain", "pi pi-fw pi-box","Recurso encargado de gestionar los dominios del sistema",idConfigurationResource, 9, root);
+        String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, null, root, admin);
+        this.createUpdateResource("Parámetros", "/parameter", "pi pi-fw pi-code","Recurso encargado de gestionar parámetros del sistema",idConfigurationResource, 1, null, root, admin);
+        this.createUpdateResource("Dominios", "/domain", "pi pi-fw pi-box","Recurso encargado de gestionar los dominios del sistema",idConfigurationResource, 2, null, root);
+        this.createUpdateResource("Permisos", "/permission", "pi pi-exclamation-triangle","Recurso encargado de gestionar los permisos por roles de usuarios en el sistema",idConfigurationResource, 3, null, root, admin);
 
     }
 
+    private void createOperations() {
+        Operation createOperation = Operation.builder()
+                .name("CREATE")
+                .description("Operación que permite otorgar permisos de creación")
+                .state(true)
+                .build();
+        operationRepository.save(createOperation);
 
-    private String createUpdateResource(String resourceName, String url, String icon, String description, String parent, int priority, Rol... roles) {
+        Operation updateOperation = Operation.builder()
+                .name("UPDATE")
+                .description("Operación que permite otorgar permisos de actualización")
+                .state(true)
+                .build();
+        operationRepository.save(updateOperation);
+
+        Operation deleteOperation = Operation.builder()
+                .name("DELETE")
+                .description("Operación que permite otorgar permisos de eliminación")
+                .state(true)
+                .build();
+        operationRepository.save(deleteOperation);
+
+        Operation viewOperation = Operation.builder()
+                .name("VIEW")
+                .description("Operación que permite otorgar permisos de vista al recurso principal")
+                .state(true)
+                .build();
+        operationRepository.save(viewOperation);
+    }
+
+
+    private String createUpdateResource(String resourceName, String url, String icon, String description, String parent, int priority, Class<? extends Enum<?>> permissionEnum, Rol... roles) {
         Optional<Resource> resourceOpt = resourceRepository.findByNameAndStateTrue(resourceName);
         Resource resource;
         if(resourceOpt.isPresent()) {
@@ -180,6 +213,24 @@ public class DataInitializer implements CommandLineRunner {
                         .build();
 
                 rolResourceRepository.save(rolResource);
+
+                if(permissionEnum != null ){
+                    //rol-recurso-permiso
+                    for (Enum<?> enumValue : permissionEnum.getEnumConstants()) {
+                        // Aquí puedes utilizar permissionValue como desees
+                        Operation operation = operationRepository.findOperationByName(enumValue.toString())
+                                .orElseThrow(() -> new NoSuchElementException("No se encontró el permiso " +enumValue.toString()));
+
+                        Permission permission = Permission.builder()
+                                .state(true)
+                                .resource(resource)
+                                .operation(operation)
+                                .rol(rol)
+                                .build();
+
+                        permissionRepository.save(permission);
+                    }
+                }
             }
         }
 
