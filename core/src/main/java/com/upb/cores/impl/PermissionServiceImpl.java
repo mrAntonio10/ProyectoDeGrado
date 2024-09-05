@@ -6,6 +6,7 @@ import com.upb.models.operation.dto.OperationDto;
 import com.upb.models.permission.Permission;
 import com.upb.models.permission.dto.PermissionDto;
 import com.upb.models.permission.dto.PermissionResponseDto;
+import com.upb.models.permission.dto.ResourcePermissionDto;
 import com.upb.models.rol.Rol;
 import com.upb.repositories.PermissionRepository;
 import com.upb.repositories.RolRepository;
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,6 +28,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final RolRepository rolRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<PermissionDto> getPermissionsListByAuthenticationIdRol(Authentication authentication, String idRolRequest) {
         String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
 
@@ -61,6 +64,18 @@ public class PermissionServiceImpl implements PermissionService {
                 .values()
                 .stream()
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResourcePermissionDto> getPermissionsByAuthenticationAndResourceUrl(Authentication authentication, String resourceUrl) {
+        String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
+
+        Rol rol = rolRepository.findByIdAndStateTrue(idRol).orElseThrow(
+                () -> new NoSuchElementException("No se encontró el rol solicitado")
+        );
+
+        return permissionRepository.getPermissionByIdRolAndResourceUrl(rol.getId(), "/"+resourceUrl);
     }
 
     @Override

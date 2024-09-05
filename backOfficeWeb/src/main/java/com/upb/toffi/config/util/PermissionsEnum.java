@@ -22,6 +22,13 @@ public class PermissionsEnum {
         VIEW
     }
 
+    public enum UserPermissions {
+        CREATE,
+        UPDATE,
+        DELETE,
+        VIEW
+    }
+
     public enum RolResourcesPermissions {
         UPDATE,
         VIEW

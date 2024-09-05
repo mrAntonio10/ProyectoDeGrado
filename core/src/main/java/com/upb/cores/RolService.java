@@ -12,4 +12,6 @@ import java.util.List;
 public interface RolService {
    List<RolForListDto> getRolByAuth(Authentication authentication);
 
+   Rol getRolById(String idRol);
+
 }

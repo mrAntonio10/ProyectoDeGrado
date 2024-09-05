@@ -136,8 +136,10 @@ public class DataInitializer implements CommandLineRunner {
 
         //Recurso Padre - Gestión
         String idManagementResource = this.createUpdateResource("Gestión", "/dashboard/management", "pi pi-fw pi-database","Recurso padre para la gestión de empresas, sucursales y usuarios",null, 1, null, root, admin);
-        this.createUpdateResource("Empresas", "/enterprise", "pi pi-fw pi-briefcase","Recurso encargado de gestionar las empresas dentro del sistema",idManagementResource, 9, PermissionsEnum.EnterprisePermissions.class, root);
+        this.createUpdateResource("Empresas", "/enterprise", "pi pi-fw pi-briefcase","Recurso encargado de gestionar las empresas dentro del sistema",idManagementResource, 1, PermissionsEnum.EnterprisePermissions.class, root);
         this.createUpdateResource("Sucursales", "/branchOffice", "pi pi-fw pi-building","Recurso encargado de gestionar las sucursales dentro del sistema",idManagementResource, 2, PermissionsEnum.BranchOfficePermissions.class, root, admin);
+        this.createUpdateResource("Usuarios", "/user", "pi pi-fw pi-user","Recurso encargado de gestionar los usuarios dentro del sistema",idManagementResource, 3, PermissionsEnum.UserPermissions.class, root, admin);
+
         //Recurso Padre - Ajustes
         String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, null, root, admin);
         this.createUpdateResource("Parámetros", "/parameter", "pi pi-fw pi-code","Recurso encargado de gestionar parámetros del sistema",idConfigurationResource, 1, null, root, admin);

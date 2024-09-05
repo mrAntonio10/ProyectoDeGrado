@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class RolServiceImpl implements RolService {
     private final RolRepository rolRepository;
     @Override
+    @Transactional(readOnly = true)
     public List<RolForListDto> getRolByAuth(Authentication authentication) {
         String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
 
@@ -32,5 +34,12 @@ public class RolServiceImpl implements RolService {
         );
 
         return this.rolRepository.getRolListForRoot();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Rol getRolById(String idRol) {
+        return rolRepository.findByIdAndStateTrue(idRol).orElseThrow(
+                () -> new NoSuchElementException("No fue posible recuperar los valores para el rol correspondiente"));
     }
 }
