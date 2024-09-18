@@ -22,4 +22,6 @@ public interface EnterpriseService {
 
    Enterprise getEnterpriseById(String idEnterprise);
 
+   List<EnterpriseStateDto> getEnterpriseCombo(Authentication auth);
+
 }

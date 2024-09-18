@@ -17,5 +17,7 @@ public interface PermissionService {
 
    List<ResourcePermissionDto> getPermissionsByAuthenticationAndResourceUrl(Authentication authentication, String resourceUrl);
 
+   Permission getPermissionById(String idPermission);
+
    String modifyPermissionState(String idPermisison, Boolean state);
 }

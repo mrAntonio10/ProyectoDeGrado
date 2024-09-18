@@ -37,7 +37,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/logout")
-    public ResponseEntity<GenericResponse<String>> getLogoutPage(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<GenericResponse<?>> getLogoutPage(HttpServletRequest request, HttpServletResponse response) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             return ok(GenericResponse.success(HttpStatus.OK.value(),
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<GenericResponse<PagedModel<UserDto>>> getUserPageable(@RequestParam(value = "name", defaultValue = "") String name,
+    public ResponseEntity<GenericResponse<PagedModel<UserDto>>> getUserPageable(@RequestParam(value = "filter", defaultValue = "") String filterByName,
                                                                                 @RequestParam(value = "idBranchOffice", defaultValue = "") String idBranchOffice,
                                                                                 @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                 @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
@@ -59,10 +59,14 @@ public class UserController {
                                                                                 @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
     ) {
         try {
+            log.info("paginacion usuario");
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
             PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
-                    (this.userService.getUserPageableByBranchOffice(name, idBranchOffice,pageable))))
+                    (this.userService.getUserPageableByBranchOffice(filterByName, idBranchOffice, authentication, pageable))))
             );
         } catch (NullPointerException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
@@ -110,7 +114,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
                             e.getMessage()));
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),
@@ -128,14 +132,14 @@ public class UserController {
         try {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     userService.updateUser(ur.getId(), ur.getName(), ur.getLastname(), ur.getPassword(),ur.getPhoneNumber(),
-                            ur.getEmail(), ur.getIdRol(), ur.getState()))
+                            ur.getEmail(), ur.getIdRol(), ur.getState(), ur.getIdBranchOffice()))
             );
         } catch (NoSuchElementException e) {
             log.error("Error {} ID: {}, causa {}", e.getMessage(), ur.getId(),e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
                             e.getMessage()));
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),

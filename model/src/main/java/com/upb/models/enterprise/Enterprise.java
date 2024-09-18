@@ -28,7 +28,7 @@ public class Enterprise implements Serializable {
     @UuidGenerator
     private String  id;
 
-    @Column(name = "NAME", length = 120,nullable = false)
+    @Column(name = "NAME", length = 120, nullable = false)
     private String name;
 
     @Column(name = "LOGO", length = 255)

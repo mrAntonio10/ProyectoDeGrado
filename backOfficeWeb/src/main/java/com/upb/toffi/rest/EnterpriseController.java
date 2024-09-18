@@ -15,6 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +34,7 @@ public class EnterpriseController {
     private final EnterpriseService enterpriseService;
 
     @GetMapping("")
-    public ResponseEntity<GenericResponse<PagedModel<EnterpriseDto>>> getEnterprisePageable(@RequestParam(value = "name", defaultValue = "") String name,
+    public ResponseEntity<GenericResponse<PagedModel<EnterpriseDto>>> getEnterprisePageable(@RequestParam(value = "filter", defaultValue = "") String filterByName,
                                                                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                             @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
                                                                                             @RequestParam(value = "sortDir", defaultValue = "DESC")  String sortDir,
@@ -42,7 +44,7 @@ public class EnterpriseController {
             PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
-                    (this.enterpriseService.getEnterprisePageable(name, pageable))))
+                    (this.enterpriseService.getEnterprisePageable(filterByName, pageable))))
             );
         } catch (Exception e) {
             log.error("Error genérico al obtener", e);
@@ -73,6 +75,27 @@ public class EnterpriseController {
         }
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<GenericResponse<List<EnterpriseStateDto>>> getEnterpriseList() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    this.enterpriseService.getEnterpriseCombo(authentication))
+            );
+        } catch (NoSuchElementException e) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
+                            e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error genérico al obtener", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
+
     @PostMapping()
     public ResponseEntity<GenericResponse<EnterpriseDto>> createEnterprise(@RequestBody CreateEnterpriseRequest enterprise) {
         try {
@@ -80,7 +103,7 @@ public class EnterpriseController {
                     enterpriseService.createEnterprise(enterprise.getName(), enterprise.getEmail(), enterprise.getPhoneNumber(),
                     enterprise.getLogo(), enterprise.getDescription()))
             );
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),
@@ -105,7 +128,7 @@ public class EnterpriseController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
                             e.getMessage()));
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),

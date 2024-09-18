@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u " +
             "WHERE u.state <> 'DELETED' " +
-            "AND (:name IS NULL OR u.name LIKE :name)"
+                "AND (:name IS NULL OR u.name LIKE :name)"
     )
     Page<UserDto> getUserPageable(@Param("name") String name,
                                   Pageable pageable);
@@ -32,10 +32,5 @@ public interface UserRepository extends JpaRepository<User, String> {
             " WHERE u.id = :id "
     )
     Optional<User> findUserById(@Param("id") String id);
-
-    @Query(" SELECT u FROM User u " +
-            " WHERE u.id = :id "
-    )
-    Optional<AllUserDataDto> getAllUserDataById(@Param("id") String id);
 
 }

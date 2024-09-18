@@ -42,4 +42,12 @@ public interface PermissionRepository extends JpaRepository<Permission, String> 
     )
     List<ResourcePermissionDto> getPermissionByIdRolAndResourceUrl(@Param("idRol") String idRol,
                                                                    @Param("url") String resourceUrl);
+
+    @Query("SELECT p FROM Permission p " +
+                "INNER JOIN FETCH p.resource res " +
+                "INNER JOIN FETCH p.operation op " +
+            "WHERE p.id =:id"
+    )
+    Optional<Permission> finPermissionById(@Param("id") String id);
+
 }

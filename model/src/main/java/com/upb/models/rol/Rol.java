@@ -22,7 +22,7 @@ public class Rol implements Serializable {
     @Id
     @Column(name = "ID")
     @UuidGenerator
-    private String  id;
+    private String id;
 
     @Column(name = "NAME", length = 60,nullable = false)
     private String name;

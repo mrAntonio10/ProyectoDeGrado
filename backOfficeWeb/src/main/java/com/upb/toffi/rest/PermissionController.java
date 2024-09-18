@@ -63,4 +63,24 @@ public class PermissionController {
                             "Error en el servidor. Favor contactarse con el administrador."));
         }
     }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<GenericResponse<Permission>> getPermissionById(@PathVariable("id") String id) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    this.permissionService.getPermissionById(id))
+            );
+        } catch (NoSuchElementException e) {
+            log.error("Error {} url: {}, causa {}", e.getMessage(), id , e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
+                            e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error genérico al obtener", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
 }

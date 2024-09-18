@@ -19,7 +19,7 @@ import java.util.Optional;
 public interface UserService {
    String logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication);
 
-   Page<UserDto> getUserPageableByBranchOffice(String name, String idBranchOffice, Pageable pageable);
+   Page<UserDto> getUserPageableByBranchOffice(String name, String idBranchOffice, Authentication auth, Pageable pageable);
 
    User getUserById(String idUser);
 
@@ -29,7 +29,7 @@ public interface UserService {
                       String email, String idRol, String idBranchOffice);
 
    UserDto updateUser(String id, String name, String lastname, String password, String phoneNumber,
-                      String email, String idRol, String state);
+                      String email, String idRol, String state, String idBranchOffice);
 
    UserDto deleteUserById(String id);
 

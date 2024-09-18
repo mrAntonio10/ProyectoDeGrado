@@ -7,22 +7,28 @@ import com.upb.cores.utils.StringUtilMod;
 import com.upb.models.enterprise.Enterprise;
 import com.upb.models.enterprise.dto.EnterpriseDto;
 import com.upb.models.enterprise.dto.EnterpriseStateDto;
+import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.repositories.EnterpriseRepository;
+import com.upb.repositories.UserBranchOfficeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EnterpriseServiceImpl implements EnterpriseService {
     private final EnterpriseRepository enterpriseRepository;
+    private final UserBranchOfficeRepository userBranchOfficeRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -34,9 +40,10 @@ public class EnterpriseServiceImpl implements EnterpriseService {
 
     @Override
     public EnterpriseDto createEnterprise(String name, String email, String phoneNumber, String logo, String description) {
-        StringUtilMod.throwStringIsNullOrEmpty(name, "nombre");
-        StringUtilMod.throwStringIsNullOrEmpty(email, "email");
+        StringUtilMod.notNullStringMaxLength(name, 120,"nombre");
+        StringUtilMod.notNullEmailMatcher(email, "email");
         StringUtilMod.throwStringIsNullOrEmpty(description, "descripción");
+        StringUtilMod.notNullNumberMatcherMaxLength(phoneNumber, 20,"número telefónico");
 
         Enterprise enterprise = Enterprise.builder()
                 .name(name)
@@ -54,9 +61,10 @@ public class EnterpriseServiceImpl implements EnterpriseService {
 
     @Override
     public EnterpriseDto updateEnterprise(String id, String name, String email, String phoneNumber, String logo, String description, String state) {
-        StringUtilMod.throwStringIsNullOrEmpty(name, "nombre");
-        StringUtilMod.throwStringIsNullOrEmpty(email, "email");
+        StringUtilMod.notNullStringMaxLength(name, 120,"nombre");
+        StringUtilMod.notNullEmailMatcher(email, "email");
         StringUtilMod.throwStringIsNullOrEmpty(description, "descripción");
+        StringUtilMod.notNullNumberMatcherMaxLength(phoneNumber, 20,"número telefónico");
 
         Enterprise ent = enterpriseRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No fue posible recuperar los valores correspondientes a la empresa."));
@@ -75,7 +83,6 @@ public class EnterpriseServiceImpl implements EnterpriseService {
 
     @Override
     public EnterpriseStateDto deleteEnterpriseById(String id) {
-
         Enterprise ent = enterpriseRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("No fue posible recuperar los valores correspondientes a la empresa."));
 
@@ -91,5 +98,21 @@ public class EnterpriseServiceImpl implements EnterpriseService {
     public Enterprise getEnterpriseById(String idEnterprise) {
         return this.enterpriseRepository.findById(idEnterprise).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes a la empresa."));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EnterpriseStateDto> getEnterpriseCombo(Authentication auth) {
+        String idRol = auth.getAuthorities().stream().toList().get(0).toString();
+
+        Optional<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
+
+        if(ub.isPresent()) {
+            log.info("Empresa de un usuario");
+            return enterpriseRepository.getEnterprisesListByUserIdEnterprise(ub.get().getBranchOffice().getEnterprise().getId());
+        } else {
+            log.info("Empresas usuario root");
+            return enterpriseRepository.getEnterprisesListForRoot();
+        }
     }
 }

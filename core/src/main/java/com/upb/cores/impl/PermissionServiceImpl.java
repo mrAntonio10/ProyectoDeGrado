@@ -79,6 +79,14 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Permission getPermissionById(String idPermission) {
+        return permissionRepository.finPermissionById(idPermission).orElseThrow(
+                () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al permiso")
+        );
+    }
+
+    @Override
     public String modifyPermissionState(String idPermisison, Boolean state) {
         return null;
     }

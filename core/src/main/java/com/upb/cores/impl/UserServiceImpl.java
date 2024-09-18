@@ -59,17 +59,27 @@ public class UserServiceImpl implements UserService {
             return ("/");
         } else {
             log.info("Usuario anónimo o no autenticado. Info {}", SecurityContextHolder.getContext().getAuthentication());
-            return ("&nbp");
+            return ("/");
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserDto> getUserPageableByBranchOffice(String name, String idBranchOffice, Pageable pageable) {
+    public Page<UserDto> getUserPageableByBranchOffice(String name, String idBranchOffice, Authentication authentication,Pageable pageable) {
         name = (!StringUtil.isNullOrEmpty(name) ?  "%" +name.toUpperCase()+ "%" : null);
-        StringUtilMod.throwStringIsNullOrEmpty(idBranchOffice, "Sucursal");
+        idBranchOffice = (!StringUtil.isNullOrEmpty(idBranchOffice) ?  idBranchOffice : null);
 
-        return userBranchOfficeRepository.getUserPageableByIdBranchOffice(name, idBranchOffice, pageable);
+        String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
+
+        Optional<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
+
+        if(ub.isPresent()) {
+            log.info("PAGINACION DE NORMAL {}, {}", name, idBranchOffice);
+            return userBranchOfficeRepository.getUserPageableByIdBranchOffice(name, ub.get().getBranchOffice().getEnterprise().getId(), pageable);
+        } else {
+            log.info("PAGINACION DE ROOT {}, {}", name, idBranchOffice);
+            return userBranchOfficeRepository.getUserPageableByIdBranchOfficeForRoot(name, idBranchOffice, pageable);
+        }
     }
 
     @Override
@@ -79,19 +89,22 @@ public class UserServiceImpl implements UserService {
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario"));
     }
 
+
     @Override
     public AllUserDataDto getAllUserDataById(String idUser) {
-        return userRepository.getAllUserDataById(idUser).orElseThrow(
+        return userBranchOfficeRepository.getUser_BranchOfficeDataByIdUser(idUser).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario"));
     }
 
     @Override
     @Transactional
     public UserDto createUser(String name, String lastname, String password, String phoneNumber, String email, String idRol, String idBranchOffice) {
-        StringUtilMod.throwStringIsNullOrEmpty(name, "Nombre");
-        StringUtilMod.throwStringIsNullOrEmpty(lastname, "apellido");
-        StringUtilMod.throwStringIsNullOrEmpty(password, "Contraseña");
-        StringUtilMod.throwStringIsNullOrEmpty(email, "Email");
+        StringUtilMod.notNullStringMaxLength(name, 60, "Nombre");
+        StringUtilMod.notNullStringMaxLength(lastname, 60, "apellido");
+        StringUtilMod.notNullStringMaxLength(password, 60, "Contraseña");
+        StringUtilMod.notNullEmailMatcher(email, "Email");
+
+        StringUtilMod.canNullNumberMatcherMaxLength(phoneNumber, 20, "Número telefónico");
 
         BranchOffice branchOffice = branchOfficeService.getBranchOfficeById(idBranchOffice);
         Rol rol = rolService.getRolById(idRol);
@@ -120,16 +133,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto updateUser(String id, String name, String lastname, String password, String phoneNumber, String email, String idRol, String state) {
-        StringUtilMod.throwStringIsNullOrEmpty(name, "Nombre");
-        StringUtilMod.throwStringIsNullOrEmpty(lastname, "apellido");
-        StringUtilMod.throwStringIsNullOrEmpty(email, "Email");
+    public UserDto updateUser(String id, String name, String lastname, String password, String phoneNumber, String email, String idRol, String state, String idBranchOffice) {
+        StringUtilMod.notNullStringMaxLength(name, 60, "Nombre");
+        StringUtilMod.notNullStringMaxLength(lastname, 60, "apellido");
+        StringUtilMod.notNullStringMaxLength(password, 60, "Contraseña");
+        StringUtilMod.notNullEmailMatcher(email, "Email");
         StringUtilMod.throwStringIsNullOrEmpty(state, "Estado");
 
+        StringUtilMod.canNullNumberMatcherMaxLength(phoneNumber, 20, "Número telefónico");
 
         Rol rol = rolService.getRolById(idRol);
-        User user = userRepository.findUserById(id).orElseThrow(
+        User_BranchOffice userBranchOffice = userBranchOfficeRepository.findUser_BranchOfficeByIdUser(id).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario"));
+
+        User user = userBranchOffice.getUser();
 
         if(!StringUtil.isNullOrEmpty(password)) {
             user.setPassword(encoder.encode(password));
@@ -143,6 +160,12 @@ public class UserServiceImpl implements UserService {
 
        userRepository.save(user);
 
+       BranchOffice branchOffice = branchOfficeService.getBranchOfficeById(idBranchOffice);
+
+       userBranchOffice.setBranchOffice(branchOffice);
+
+       userBranchOfficeRepository.save(userBranchOffice);
+
         return new UserDto(user);
     }
 
@@ -151,7 +174,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findUserById(id).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario"));
 
-        log.info("ELIMNANDO USER");
         user.setState("DELETED");
 
         userRepository.save(user);

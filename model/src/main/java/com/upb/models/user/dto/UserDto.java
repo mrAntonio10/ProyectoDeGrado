@@ -17,6 +17,7 @@ public class UserDto {
     private String phoneNumber;
     private String rol;
     private String state;
+    private String branchOfficeName;
 
 
     public UserDto(User user) {
@@ -35,5 +36,7 @@ public class UserDto {
         this.phoneNumber = ub.getUser().getPhoneNumber();
         this.rol = ub.getUser().getRol().getName();
         this.state = ub.getUser().getState();
+        this.branchOfficeName = ub.getBranchOffice().getName();
+
     }
 }
