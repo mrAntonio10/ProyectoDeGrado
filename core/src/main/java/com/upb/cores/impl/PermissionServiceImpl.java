@@ -5,7 +5,6 @@ import com.upb.cores.PermissionService;
 import com.upb.models.operation.dto.OperationDto;
 import com.upb.models.permission.Permission;
 import com.upb.models.permission.dto.PermissionDto;
-import com.upb.models.permission.dto.PermissionResponseDto;
 import com.upb.models.permission.dto.ResourcePermissionDto;
 import com.upb.models.rol.Rol;
 import com.upb.repositories.PermissionRepository;
@@ -33,7 +32,7 @@ public class PermissionServiceImpl implements PermissionService {
         String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
 
         Rol rol = rolRepository.findByIdAndStateTrue(idRol).orElseThrow(
-                () -> new NoSuchElementException("No se encontró el rol solicitado")
+                () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al rol solicitado")
         );
 
         List<PermissionDto> permissionsList;
@@ -72,10 +71,10 @@ public class PermissionServiceImpl implements PermissionService {
         String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
 
         Rol rol = rolRepository.findByIdAndStateTrue(idRol).orElseThrow(
-                () -> new NoSuchElementException("No se encontró el rol solicitado")
+                () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al rol solicitado")
         );
 
-        return permissionRepository.getPermissionByIdRolAndResourceUrl(rol.getId(), "/"+resourceUrl);
+        return permissionRepository.getPermissionByIdRolAndResourceUrlAndStatesTrue(rol.getId(), "/"+resourceUrl);
     }
 
     @Override

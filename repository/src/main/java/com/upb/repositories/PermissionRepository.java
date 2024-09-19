@@ -40,8 +40,8 @@ public interface PermissionRepository extends JpaRepository<Permission, String> 
                 "AND p.state <> false " +
                 "AND op.state <> false "
     )
-    List<ResourcePermissionDto> getPermissionByIdRolAndResourceUrl(@Param("idRol") String idRol,
-                                                                   @Param("url") String resourceUrl);
+    List<ResourcePermissionDto> getPermissionByIdRolAndResourceUrlAndStatesTrue(@Param("idRol") String idRol,
+                                                                                @Param("url") String resourceUrl);
 
     @Query("SELECT p FROM Permission p " +
                 "INNER JOIN FETCH p.resource res " +
