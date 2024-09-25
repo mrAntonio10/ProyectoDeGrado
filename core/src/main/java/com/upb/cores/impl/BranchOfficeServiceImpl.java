@@ -40,10 +40,10 @@ public class BranchOfficeServiceImpl implements BranchOfficeService {
 
         String idRol = auth.getAuthorities().stream().toList().get(0).toString();
 
-        Optional<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
+        List<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
 
-        if(ub.isPresent()) {
-            return branchOfficeRepository.getBranchOfficeByIdEnterprisePageable(ub.get().getBranchOffice().getEnterprise().getId(), name, pageable);
+        if(!ub.isEmpty()) {
+            return branchOfficeRepository.getBranchOfficeByIdEnterprisePageable(ub.get(0).getBranchOffice().getEnterprise().getId(), name, pageable);
         } else {
             return branchOfficeRepository.getBranchOfficePageableForRoot(idEnterprise, name, pageable);
         }

@@ -28,7 +28,8 @@ public interface EnterpriseRepository extends JpaRepository<Enterprise, String> 
     )
     Optional<Enterprise> findById(@Param("id") String id);
 
-    @Query("SELECT e FROM Enterprise e " +
+    @Query("SELECT new com.upb.models.enterprise.dto.EnterpriseStateDto(e) " +
+                "FROM Enterprise e " +
             "WHERE e.state <> 'DELETED' "
     )
     List<EnterpriseStateDto> getEnterprisesListForRoot();

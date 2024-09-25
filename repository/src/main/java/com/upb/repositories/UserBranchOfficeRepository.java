@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -46,7 +47,7 @@ public interface UserBranchOfficeRepository extends JpaRepository<User_BranchOff
             "WHERE u.state <> 'DELETED' " +
                 "AND u.rol.id = :idRol"
             )
-    Optional<User_BranchOffice> findUser_BranchOfficeByIdUserRol(@Param("idRol") String idRol);
+    List<User_BranchOffice> findUser_BranchOfficeByIdUserRol(@Param("idRol") String idRol);
 
     @Query("SELECT ub FROM User_BranchOffice ub " +
                 "INNER JOIN FETCH ub.user u " +

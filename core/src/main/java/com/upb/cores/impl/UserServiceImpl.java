@@ -71,11 +71,11 @@ public class UserServiceImpl implements UserService {
 
         String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
 
-        Optional<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
+        List<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
 
-        if(ub.isPresent()) {
+        if(!ub.isEmpty()) {
             log.info("PAGINACION DE NORMAL {}, {}", name, idBranchOffice);
-            return userBranchOfficeRepository.getUserPageableByIdBranchOffice(name, ub.get().getBranchOffice().getEnterprise().getId(), pageable);
+            return userBranchOfficeRepository.getUserPageableByIdBranchOffice(name, ub.get(0).getBranchOffice().getEnterprise().getId(), pageable);
         } else {
             log.info("PAGINACION DE ROOT {}, {}", name, idBranchOffice);
             return userBranchOfficeRepository.getUserPageableByIdBranchOfficeForRoot(name, idBranchOffice, pageable);

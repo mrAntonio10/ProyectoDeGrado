@@ -6,18 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class EnterpriseStateDto {
     private String id;
     private String name;
     private String state;
-
-    public EnterpriseStateDto(String id, String name, String state) {
-        this.id = id;
-        this.name = name;
-        this.state = state;
-    }
 
     public EnterpriseStateDto(Enterprise e) {
         this.id = e.getId();

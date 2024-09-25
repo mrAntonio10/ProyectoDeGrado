@@ -105,11 +105,11 @@ public class EnterpriseServiceImpl implements EnterpriseService {
     public List<EnterpriseStateDto> getEnterpriseCombo(Authentication auth) {
         String idRol = auth.getAuthorities().stream().toList().get(0).toString();
 
-        Optional<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
+        List<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
 
-        if(ub.isPresent()) {
+        if(!ub.isEmpty()) {
             log.info("Empresa de un usuario");
-            return enterpriseRepository.getEnterprisesListByUserIdEnterprise(ub.get().getBranchOffice().getEnterprise().getId());
+            return enterpriseRepository.getEnterprisesListByUserIdEnterprise(ub.get(0).getBranchOffice().getEnterprise().getId());
         } else {
             log.info("Empresas usuario root");
             return enterpriseRepository.getEnterprisesListForRoot();

@@ -45,7 +45,7 @@ public class PermissionController {
     }
 
     @GetMapping("{url}")
-    public ResponseEntity<GenericResponse<List<ResourcePermissionDto>>> getPermissionByResourceUrl(@PathVariable("url") String url) {
+    public ResponseEntity<GenericResponse<List<ResourcePermissionDto>>> getPermissionsByResourceUrl(@PathVariable("url") String url) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             return ok(GenericResponse.success(HttpStatus.OK.value(),

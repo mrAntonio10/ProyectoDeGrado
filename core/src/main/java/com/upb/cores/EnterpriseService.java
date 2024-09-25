@@ -14,14 +14,10 @@ import java.util.List;
 @Service
 public interface EnterpriseService {
    Page<EnterpriseDto> getEnterprisePageable(String name, Pageable pageable);
-
    EnterpriseDto createEnterprise(String name, String email, String phoneNumber, String logo, String description);
    EnterpriseDto updateEnterprise(String id, String name, String email, String phoneNumber, String logo, String description, String state);
-
    EnterpriseStateDto deleteEnterpriseById(String id);
-
    Enterprise getEnterpriseById(String idEnterprise);
-
    List<EnterpriseStateDto> getEnterpriseCombo(Authentication auth);
 
 }

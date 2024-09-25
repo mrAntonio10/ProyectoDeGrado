@@ -34,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
       this.createRolesAndUsers();
-      //this.createOperations();
+//      this.createOperations();
       this.createResources();
     }
 
@@ -138,7 +138,9 @@ public class DataInitializer implements CommandLineRunner {
         String idManagementResource = this.createUpdateResource("Gestión", "/dashboard/management", "pi pi-fw pi-database","Recurso padre para la gestión de empresas, sucursales y usuarios",null, 1, null, root, admin);
         this.createUpdateResource("Empresas", "/enterprise", "pi pi-fw pi-briefcase","Recurso encargado de gestionar las empresas dentro del sistema",idManagementResource, 1, PermissionsEnum.EnterprisePermissions.class, root);
         this.createUpdateResource("Sucursales", "/branchOffice", "pi pi-fw pi-building","Recurso encargado de gestionar las sucursales dentro del sistema",idManagementResource, 2, PermissionsEnum.BranchOfficePermissions.class, root, admin);
-        this.createUpdateResource("Usuarios", "/user", "pi pi-fw pi-user","Recurso encargado de gestionar los usuarios dentro del sistema",idManagementResource, 3, PermissionsEnum.UserPermissions.class, root, admin);
+        this.createUpdateResource("Usuarios", "/user", "pi pi-fw pi-users","Recurso encargado de gestionar los usuarios dentro del sistema",idManagementResource, 3, PermissionsEnum.UserPermissions.class, root, admin);
+        this.createUpdateResource("Almacén", "/warehouse", "pi pi-fw pi-book","Recurso encargado de gestionar los productos de un almacén dentro del sistema",idManagementResource, 4, PermissionsEnum.WarehousePermission.class, root, admin);
+
 
         //Recurso Padre - Ajustes
         String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, null, root, admin);
@@ -149,33 +151,40 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createOperations() {
-        Operation createOperation = Operation.builder()
-                .name("CREATE")
-                .description("Operación que permite otorgar permisos de creación")
+        Operation reportOperation = Operation.builder()
+                .name("REPORT")
+                .description("Operación que permite otorgar permisos de generar reportes")
                 .state(true)
                 .build();
-        operationRepository.save(createOperation);
+        operationRepository.save(reportOperation);
 
-        Operation updateOperation = Operation.builder()
-                .name("UPDATE")
-                .description("Operación que permite otorgar permisos de actualización")
-                .state(true)
-                .build();
-        operationRepository.save(updateOperation);
-
-        Operation deleteOperation = Operation.builder()
-                .name("DELETE")
-                .description("Operación que permite otorgar permisos de eliminación")
-                .state(true)
-                .build();
-        operationRepository.save(deleteOperation);
-
-        Operation viewOperation = Operation.builder()
-                .name("VIEW")
-                .description("Operación que permite otorgar permisos de vista al recurso principal")
-                .state(true)
-                .build();
-        operationRepository.save(viewOperation);
+//        Operation createOperation = Operation.builder()
+//                .name("CREATE")
+//                .description("Operación que permite otorgar permisos de creación")
+//                .state(true)
+//                .build();
+//        operationRepository.save(createOperation);
+//
+//        Operation updateOperation = Operation.builder()
+//                .name("UPDATE")
+//                .description("Operación que permite otorgar permisos de actualización")
+//                .state(true)
+//                .build();
+//        operationRepository.save(updateOperation);
+//
+//        Operation deleteOperation = Operation.builder()
+//                .name("DELETE")
+//                .description("Operación que permite otorgar permisos de eliminación")
+//                .state(true)
+//                .build();
+//        operationRepository.save(deleteOperation);
+//
+//        Operation viewOperation = Operation.builder()
+//                .name("VIEW")
+//                .description("Operación que permite otorgar permisos de vista al recurso principal")
+//                .state(true)
+//                .build();
+//        operationRepository.save(viewOperation);
     }
 
 

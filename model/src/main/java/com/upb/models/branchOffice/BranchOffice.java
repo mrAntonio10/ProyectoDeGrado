@@ -1,5 +1,6 @@
 package com.upb.models.branchOffice;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.upb.models.enterprise.Enterprise;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class BranchOffice implements Serializable {
     @Column(name = "LOCATION", length = 255)
     private String location;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_ENTERPRISE", referencedColumnName = "ID", nullable=false)
     public Enterprise enterprise;
