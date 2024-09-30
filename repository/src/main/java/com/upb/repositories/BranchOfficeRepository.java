@@ -46,7 +46,8 @@ public interface BranchOfficeRepository extends JpaRepository<BranchOffice, Stri
 
     @Query("SELECT b FROM BranchOffice b " +
                 "INNER JOIN FETCH b.enterprise e " +
-            "WHERE e.id =:idEnterprise"
+            "WHERE e.id =:idEnterprise " +
+                "AND b.state <> 'DELETED'"
     )
     List<BranchOfficeStateDto> getBranchOfficeListByIdEnterprise(@Param("idEnterprise") String idEnterprise);
 }

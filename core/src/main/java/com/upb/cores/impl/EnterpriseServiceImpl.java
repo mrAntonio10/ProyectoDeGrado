@@ -7,6 +7,7 @@ import com.upb.cores.utils.StringUtilMod;
 import com.upb.models.enterprise.Enterprise;
 import com.upb.models.enterprise.dto.EnterpriseDto;
 import com.upb.models.enterprise.dto.EnterpriseStateDto;
+import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.repositories.EnterpriseRepository;
 import com.upb.repositories.UserBranchOfficeRepository;
@@ -18,10 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -104,8 +103,9 @@ public class EnterpriseServiceImpl implements EnterpriseService {
     @Transactional(readOnly = true)
     public List<EnterpriseStateDto> getEnterpriseCombo(Authentication auth) {
         String idRol = auth.getAuthorities().stream().toList().get(0).toString();
+        User user = (User) auth.getPrincipal();
 
-        List<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
+        List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
 
         if(!ub.isEmpty()) {
             log.info("Empresa de un usuario");

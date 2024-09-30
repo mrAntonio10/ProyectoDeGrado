@@ -59,7 +59,6 @@ public class UserController {
                                                                                 @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
     ) {
         try {
-            log.info("paginacion usuario");
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

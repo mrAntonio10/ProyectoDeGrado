@@ -4,13 +4,19 @@ import com.upb.cores.ProductService;
 import com.upb.models.product.Product;
 import com.upb.models.product.dto.ProductDto;
 import com.upb.models.product.dto.ProductListDto;
+import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.toffi.config.util.GenericResponse;
 import com.upb.toffi.rest.request.product.CreateProductRequest;
 import com.upb.toffi.rest.request.product.UpdateProductRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +34,27 @@ public class ProductController {
     private final ProductService productService;
 
 
+    @GetMapping("")
+    public ResponseEntity<GenericResponse<PagedModel<ProductListDto>>> getProductsPageable(@RequestParam(value = "filter", defaultValue = "") String filterByProductName,
+                                                                                                       @RequestParam(value = "category", defaultValue = "") String category,
+                                                                                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                       @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
+                                                                                                       @RequestParam(value = "sortDir", defaultValue = "DESC")  String sortDir,
+                                                                                                       @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
+    ) {
+        try {
+            PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
+
+            return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
+                    (this.productService.getProductsList(filterByProductName, category, pageable))))
+            );
+        } catch (Exception e) {
+            log.error("Error genérico al obtener", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
 
     @GetMapping("{id-product}")
     public ResponseEntity<GenericResponse<Product>> getProductById(@PathVariable("id-product") String idProduct

@@ -41,6 +41,7 @@ public class WarehouseController {
 
     @GetMapping("")
     public ResponseEntity<GenericResponse<PagedModel<WarehousePagedDto>>> getWarehouseProductsPageable(@RequestParam(value = "filter", defaultValue = "") String filterByProductName,
+                                                                                                       @RequestParam(value = "idBranchOffice", defaultValue = "") String idBranchOffice,
                                                                                                        @RequestParam(value = "category", defaultValue = "") String category,
                                                                                                        @RequestParam(value = "limit", defaultValue = "") String maxOrMinLimit,
                                                                                                        @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -49,11 +50,18 @@ public class WarehouseController {
                                                                                                        @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
                                                                          ) {
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
             PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
-                    (this.warehouseService.getWarehouseProductsList(filterByProductName, category, maxOrMinLimit, pageable))))
+                    (this.warehouseService.getWarehouseProductsList(authentication, filterByProductName, idBranchOffice, category, maxOrMinLimit, pageable))))
             );
+        } catch(NoSuchElementException e) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
+                            e.getMessage()));
         } catch (Exception e) {
             log.error("Error genérico al obtener", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -113,7 +121,7 @@ public class WarehouseController {
         try {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     warehouseService.updateWarehouse(w.getId(), w.getIdProduct(), w.getIdBranchOffice(), w.getStock(),
-                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct(), w.getState()))
+                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct()))
             );
         } catch (NoSuchElementException e) {
             log.error("Error {} ID: {}, causa {}", e.getMessage(), w.getId(),e.getCause());

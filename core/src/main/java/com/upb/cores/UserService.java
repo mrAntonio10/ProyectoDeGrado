@@ -18,19 +18,13 @@ import java.util.Optional;
 @Service
 public interface UserService {
    String logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication);
-
    Page<UserDto> getUserPageableByBranchOffice(String name, String idBranchOffice, Authentication auth, Pageable pageable);
-
    User getUserById(String idUser);
-
    AllUserDataDto getAllUserDataById(String idUser);
-
    UserDto createUser(String name, String lastname, String password, String phoneNumber,
                       String email, String idRol, String idBranchOffice);
-
    UserDto updateUser(String id, String name, String lastname, String password, String phoneNumber,
                       String email, String idRol, String state, String idBranchOffice);
-
    UserDto deleteUserById(String id);
 
 }

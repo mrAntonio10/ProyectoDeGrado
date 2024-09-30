@@ -158,33 +158,33 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         operationRepository.save(reportOperation);
 
-//        Operation createOperation = Operation.builder()
-//                .name("CREATE")
-//                .description("Operación que permite otorgar permisos de creación")
-//                .state(true)
-//                .build();
-//        operationRepository.save(createOperation);
-//
-//        Operation updateOperation = Operation.builder()
-//                .name("UPDATE")
-//                .description("Operación que permite otorgar permisos de actualización")
-//                .state(true)
-//                .build();
-//        operationRepository.save(updateOperation);
-//
-//        Operation deleteOperation = Operation.builder()
-//                .name("DELETE")
-//                .description("Operación que permite otorgar permisos de eliminación")
-//                .state(true)
-//                .build();
-//        operationRepository.save(deleteOperation);
-//
-//        Operation viewOperation = Operation.builder()
-//                .name("VIEW")
-//                .description("Operación que permite otorgar permisos de vista al recurso principal")
-//                .state(true)
-//                .build();
-//        operationRepository.save(viewOperation);
+        Operation createOperation = Operation.builder()
+                .name("CREATE")
+                .description("Operación que permite otorgar permisos de creación")
+                .state(true)
+                .build();
+        operationRepository.save(createOperation);
+
+        Operation updateOperation = Operation.builder()
+                .name("UPDATE")
+                .description("Operación que permite otorgar permisos de actualización")
+                .state(true)
+                .build();
+        operationRepository.save(updateOperation);
+
+        Operation deleteOperation = Operation.builder()
+                .name("DELETE")
+                .description("Operación que permite otorgar permisos de eliminación")
+                .state(true)
+                .build();
+        operationRepository.save(deleteOperation);
+
+        Operation viewOperation = Operation.builder()
+                .name("VIEW")
+                .description("Operación que permite otorgar permisos de vista al recurso principal")
+                .state(true)
+                .build();
+        operationRepository.save(viewOperation);
     }
 
 

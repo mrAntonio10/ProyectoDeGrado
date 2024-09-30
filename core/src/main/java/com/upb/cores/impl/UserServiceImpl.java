@@ -70,12 +70,13 @@ public class UserServiceImpl implements UserService {
         idBranchOffice = (!StringUtil.isNullOrEmpty(idBranchOffice) ?  idBranchOffice : null);
 
         String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
+        User user = (User) authentication.getPrincipal();
 
-        List<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
+        List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
 
         if(!ub.isEmpty()) {
             log.info("PAGINACION DE NORMAL {}, {}", name, idBranchOffice);
-            return userBranchOfficeRepository.getUserPageableByIdBranchOffice(name, ub.get(0).getBranchOffice().getEnterprise().getId(), pageable);
+            return userBranchOfficeRepository.getUserPageableByIdBranchOffice(name, idBranchOffice, ub.get(0).getBranchOffice().getEnterprise().getId(), pageable);
         } else {
             log.info("PAGINACION DE ROOT {}, {}", name, idBranchOffice);
             return userBranchOfficeRepository.getUserPageableByIdBranchOfficeForRoot(name, idBranchOffice, pageable);

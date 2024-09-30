@@ -12,16 +12,20 @@ import com.upb.models.branchOffice.BranchOffice;
 import com.upb.models.product.Product;
 import com.upb.models.product.dto.ProductDto;
 import com.upb.models.product.dto.ProductListDto;
+import com.upb.models.user.User;
+import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.models.warehouse.Warehouse;
 import com.upb.models.warehouse.dto.WarehouseDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.models.warehouse.dto.WarehouseStateDto;
 import com.upb.repositories.ProductRepository;
+import com.upb.repositories.UserBranchOfficeRepository;
 import com.upb.repositories.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,17 +40,29 @@ import java.util.NoSuchElementException;
 public class WarehouseServiceImpl implements WarehouseService {
     private final ProductService productService;
     private final BranchOfficeService branchOfficeService;
+    private final UserBranchOfficeRepository userBranchOfficeRepository;
 
     private final WarehouseRepository warehouseRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public Page<WarehousePagedDto> getWarehouseProductsList(String productName, String category, String maxOrMinLimit, Pageable pageable) {
+    public Page<WarehousePagedDto> getWarehouseProductsList(Authentication auth, String productName, String idBranchOffice, String category, String maxOrMinLimit, Pageable pageable) {
         productName = (!StringUtil.isNullOrEmpty(productName) ? "%" +productName.toUpperCase() +"%" : null);
+        idBranchOffice = (!StringUtil.isNullOrEmpty(idBranchOffice) ? idBranchOffice : null);
+        maxOrMinLimit = (!StringUtil.isNullOrEmpty(maxOrMinLimit) ? maxOrMinLimit.toUpperCase() : null );
         /*BEBIDA, ALMUERZO, SANDWICH, EMPANADA*/
         category = (!StringUtil.isNullOrEmpty(category) ? "%"+ category.toUpperCase() +"%" : null);
 
-        return warehouseRepository.getEnterprisePageable(productName, category, pageable);
+        String idRol = auth.getAuthorities().stream().toList().get(0).toString();
+        User user = (User) auth.getPrincipal();
+
+        List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
+
+        if(ub.isEmpty()) {
+            throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario");
+        }
+        return warehouseRepository.getEnterprisePageable(ub.get(0).getBranchOffice().getEnterprise().getId(),
+                idBranchOffice, productName, category, maxOrMinLimit, pageable);
     }
 
     @Override
@@ -85,7 +101,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
-    public WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String state) {
+    public WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct) {
         Product product = productService.getProductById(idProduct);
         BranchOffice branchO = branchOfficeService.getBranchOfficeById(idBranchOffice);
 
@@ -93,7 +109,6 @@ public class WarehouseServiceImpl implements WarehouseService {
         NumberUtilMod.throwNumberMaxDecimal(unitaryCost, 2,"precio unitario");
         NumberUtilMod.throwNumberIsNullOrEmpty(maxProduct, "máximo de producto");
         NumberUtilMod.throwNumberIsNullOrEmpty(minProduct, "mínimo de producto");
-        StringUtilMod.throwStringIsNullOrEmpty(state, "estado");
 
         Warehouse w = warehouseRepository.findWarehouseByIdAndStateNotDeleted(id).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al almacén")
@@ -101,7 +116,6 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         w.setBranchOffice(branchO);
         w.setProduct(product);
-        w.setState(state);
         w.setStock(stock);
         w.setMaxProduct(maxProduct);
         w.setUnitaryCost(unitaryCost);

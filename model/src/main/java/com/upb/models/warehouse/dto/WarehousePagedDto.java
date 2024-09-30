@@ -21,18 +21,28 @@ public class WarehousePagedDto {
     private BigDecimal unitaryCost;
     private BigInteger max;
     private BigInteger min;
+    private String branchOfficeName;
+    private Boolean stockState;
 
 
     public WarehousePagedDto(Warehouse w) {
         this.id = w.getId();
-        this.productName = w.getProduct().getName();
+        this.productName = this.productNameStructure(w.getProduct().getName(), w.getProduct().getBeverageFormat());
         this.category = w.getProduct().getCategory();
         this.stock = w.getStock();
         this.unitaryCost = w.getUnitaryCost();
         this.max = w.getMaxProduct();
         this.min = w.getMinProduct();
+        this.branchOfficeName = w.getBranchOffice().getName();
+        this.stockState = isStockStateValid(w.getStock(), w.getMinProduct());
     }
 
+    private Boolean isStockStateValid(BigInteger stock, BigInteger min) {
+        return (stock.compareTo(min) == 1) ? true : false;
+    }
 
+    private String productNameStructure(String name, String beverageFormat){
+        return (!StringUtil.isNullOrEmpty(beverageFormat) ? name + " - " + beverageFormat : name);
+    }
 
 }

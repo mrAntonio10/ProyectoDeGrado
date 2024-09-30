@@ -9,6 +9,7 @@ import com.upb.models.branchOffice.BranchOffice;
 import com.upb.models.branchOffice.dto.BranchOfficeDto;
 import com.upb.models.branchOffice.dto.BranchOfficeStateDto;
 import com.upb.models.enterprise.Enterprise;
+import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.repositories.BranchOfficeRepository;
 import com.upb.repositories.UserBranchOfficeRepository;
@@ -22,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -39,8 +39,9 @@ public class BranchOfficeServiceImpl implements BranchOfficeService {
         idEnterprise = !StringUtil.isNullOrEmpty(idEnterprise) ? idEnterprise : null;
 
         String idRol = auth.getAuthorities().stream().toList().get(0).toString();
+        User user = (User) auth.getPrincipal();
 
-        List<User_BranchOffice> ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUserRol(idRol);
+        List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
 
         if(!ub.isEmpty()) {
             return branchOfficeRepository.getBranchOfficeByIdEnterprisePageable(ub.get(0).getBranchOffice().getEnterprise().getId(), name, pageable);

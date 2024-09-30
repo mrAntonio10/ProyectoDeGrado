@@ -1,7 +1,6 @@
 package com.upb.repositories;
 
 
-import com.upb.models.user.User;
 import com.upb.models.user.dto.AllUserDataDto;
 import com.upb.models.user.dto.UserDto;
 import com.upb.models.user_branchOffice.User_BranchOffice;
@@ -20,13 +19,16 @@ public interface UserBranchOfficeRepository extends JpaRepository<User_BranchOff
     @Query("SELECT u_b FROM User_BranchOffice u_b " +
                 "INNER JOIN FETCH u_b.user u " +
                 "INNER JOIN FETCH u_b.branchOffice b " +
+                "INNER JOIN FETCH b.enterprise e " +
             "WHERE u.state <> 'DELETED' " +
                 "AND b.state <> 'DELETED' " +
                 "AND (:name IS NULL OR UPPER(u.name) LIKE :name OR UPPER(u.lastname) LIKE :name) " +
-                "AND b.id =:idBranchOffice"
+                "AND (:idBranchOffice IS NULL OR b.id =:idBranchOffice) " +
+                "AND e.id =:idEnterprise"
     )
     Page<UserDto> getUserPageableByIdBranchOffice(@Param("name") String name,
                                   @Param("idBranchOffice") String idBranchOffice,
+                                  @Param("idEnterprise") String idEnterprise,
                                   Pageable pageable);
 
     @Query("SELECT u_b FROM User_BranchOffice u_b " +
@@ -45,10 +47,13 @@ public interface UserBranchOfficeRepository extends JpaRepository<User_BranchOff
                 "INNER JOIN FETCH ub.user u " +
                 "INNER JOIN FETCH ub.branchOffice b "+
             "WHERE u.state <> 'DELETED' " +
-                "AND u.rol.id = :idRol"
+                "AND u.rol.id = :idRol " +
+                "AND u.id =:idUser"
             )
-    List<User_BranchOffice> findUser_BranchOfficeByIdUserRol(@Param("idRol") String idRol);
+    List<User_BranchOffice> getUser_BranchOfficeByIdUserAndIdRol(@Param("idUser") String idUser,
+                                                                 @Param("idRol") String idRol);
 
+    //TODO REVISAR EN CASO DE ADMIN'S
     @Query("SELECT ub FROM User_BranchOffice ub " +
                 "INNER JOIN FETCH ub.user u " +
                 "INNER JOIN FETCH ub.branchOffice b "+

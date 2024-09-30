@@ -20,6 +20,12 @@
             <version>5.0.0</version> <!-- O la versión compatible con tu proyecto -->
             <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.20.6</version>
+        </dependency>
         <!-- Dependencias de otros módulos -->
         <dependency>
             <groupId>com.upb.repositories</groupId>
