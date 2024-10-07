@@ -15,10 +15,16 @@ public class ProductListDto {
     private String name;
     private String category;
 
+    private String productName;
+    private String beverageFormat;
+
     public ProductListDto(Product p) {
         this.id = p.getId();
         this.name = this.productNameStructure(p.getName(), p.getBeverageFormat());
         this.category = p.getCategory();
+
+        this.productName = p.getName();
+        this.beverageFormat = p.getBeverageFormat();
     }
 
     private String productNameStructure(String name, String beverageFormat){

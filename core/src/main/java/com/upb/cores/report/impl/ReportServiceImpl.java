@@ -2,17 +2,14 @@ package com.upb.cores.report.impl;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.upb.cores.BranchOfficeService;
-import com.upb.cores.impl.UserServiceImpl;
 import com.upb.cores.report.ReportService;
 import com.upb.cores.report.dto.ReportFileDto;
 import com.upb.models.branchOffice.BranchOffice;
 import com.upb.models.user.User;
-import com.upb.models.user.dto.AllUserDataDto;
 import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.repositories.UserBranchOfficeRepository;
 import com.upb.repositories.WarehouseRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
@@ -21,7 +18,6 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -43,9 +39,6 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ByteArrayOutputStream exportReport(String fileName, String report, String typeReport, Map<String, Object> params, List list) throws IOException, JRException {
-        if(list.isEmpty()) {
-                throw new NoSuchElementException("Lista sin elementos. No fue posible recuperar los valores correspondientes al reporte de quiebre");
-        }
 
         File file = ResourceUtils.getFile("classpath:reports/"+report);
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
@@ -82,12 +75,12 @@ public class ReportServiceImpl implements ReportService {
         User user = (User) auth.getPrincipal();
 
         List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
-        log.info("idBranchOffice {}", idBranchOffice);
         BranchOffice b = branchOfficeService.getBranchOfficeById(idBranchOffice);
 
         if(ub.isEmpty()) {
             throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario");
         }
+
         Page<WarehousePagedDto> pagedResp =  warehouseRepository.getEnterprisePageable(ub.get(0).getBranchOffice().getEnterprise().getId(),
                 idBranchOffice, productName, category, maxOrMinLimit, pageable);
 
@@ -95,11 +88,15 @@ public class ReportServiceImpl implements ReportService {
             mapParams.put("username", user.getEmail());
             mapParams.put("branchOffice", b.getName());
 
+        List<WarehousePagedDto> list = new ArrayList<>();
+        if(!pagedResp.isEmpty()) {
+            list = pagedResp.stream().toList();
+        }
 
         String fileName = "reporte_de_quiebre.pdf";
         ReportFileDto rep = new ReportFileDto();
         rep.setFilename(fileName);
-        ByteArrayOutputStream stream = exportReport(fileName, "REP01_PRODUCT_WAREHOUSE.jrxml", "pdf", mapParams, pagedResp.stream().toList());
+        ByteArrayOutputStream stream = exportReport(fileName, "REP01_PRODUCT_WAREHOUSE.jrxml", "pdf", mapParams, list);
         byte[] bs = stream.toByteArray();
 
         rep.setBase64(getStreamAsBase64(new ByteArrayInputStream(bs)));

@@ -4,21 +4,16 @@ package com.upb.cores.impl;
 import ch.qos.logback.core.util.StringUtil;
 import com.upb.cores.BranchOfficeService;
 import com.upb.cores.ProductService;
-import com.upb.cores.UserService;
 import com.upb.cores.WarehouseService;
 import com.upb.cores.utils.NumberUtilMod;
-import com.upb.cores.utils.StringUtilMod;
 import com.upb.models.branchOffice.BranchOffice;
 import com.upb.models.product.Product;
-import com.upb.models.product.dto.ProductDto;
-import com.upb.models.product.dto.ProductListDto;
 import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.models.warehouse.Warehouse;
 import com.upb.models.warehouse.dto.WarehouseDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.models.warehouse.dto.WarehouseStateDto;
-import com.upb.repositories.ProductRepository;
 import com.upb.repositories.UserBranchOfficeRepository;
 import com.upb.repositories.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +63,18 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional(readOnly = true)
     public Warehouse getWarehouseById(String idWarehouse) {
-        return warehouseRepository.findWarehouseByIdAndStateNotDeleted(idWarehouse).orElseThrow(
+        return warehouseRepository.findWarehouseByIdAndStateTrue(idWarehouse).orElseThrow(
+                () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al almacén")
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Warehouse getWarehouseByIdBranchOfficeProductNameAndBeverageFormat(String idBranchOffice, String productName, String beverageFormat) {
+        productName = productName.toUpperCase();
+        beverageFormat = (!beverageFormat.equals("empty")) ? beverageFormat.toUpperCase() : null;
+
+        return warehouseRepository.findWarehouseByIdBranchOfficeProductNameBeverageFormatAndStateTrue(idBranchOffice, productName, beverageFormat).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al almacén")
         );
     }
@@ -110,7 +116,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         NumberUtilMod.throwNumberIsNullOrEmpty(maxProduct, "máximo de producto");
         NumberUtilMod.throwNumberIsNullOrEmpty(minProduct, "mínimo de producto");
 
-        Warehouse w = warehouseRepository.findWarehouseByIdAndStateNotDeleted(id).orElseThrow(
+        Warehouse w = warehouseRepository.findWarehouseByIdAndStateTrue(id).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al almacén")
         );
 
@@ -128,7 +134,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public WarehouseStateDto deleteWarehouseById(String id) {
-        Warehouse w = warehouseRepository.findWarehouseByIdAndStateNotDeleted(id).orElseThrow(
+        Warehouse w = warehouseRepository.findWarehouseByIdAndStateTrue(id).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al almacén")
         );
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="REP01_PRODUCT_WAREHOUSE" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6e352f10-4f39-46a1-adf2-b62ddd9c4fc6">
-	<property name="ireport.zoom" value="3.138428376721008"/>
-	<property name="ireport.x" value="366"/>
-	<property name="ireport.y" value="55"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="REP01_PRODUCT_WAREHOUSE" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6e352f10-4f39-46a1-adf2-b62ddd9c4fc6" whenNoDataType="AllSectionsNoDetail">
+	<property name="ireport.zoom" value="2.357947691000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
 	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
 	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
@@ -134,50 +134,51 @@
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="2" y="0" width="143" height="20" uuid="4baf335e-15e1-4e61-a2ce-61bf1d8748c5"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement verticalAlignment="Middle">
 					<font fontName="Zilla Slab"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="145" y="0" width="110" height="20" uuid="506cbcaa-b6f9-45ad-858f-cc487020f306"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement verticalAlignment="Middle">
 					<font fontName="Zilla Slab"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{category}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="255" y="0" width="83" height="20" uuid="4cba5c9b-0093-4867-8a99-93b112a6ac5a"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Zilla Slab"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{unitaryCost}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="338" y="0" width="83" height="20" uuid="874dd60d-a760-4ad6-8dd3-f28f1c4f53dc"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Zilla Slab"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="487" y="0" width="66" height="20" uuid="d7e6d4db-4e54-4ac0-bf13-cc13a74304ac"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Zilla Slab"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{max}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="421" y="0" width="66" height="20" uuid="71b4ca14-5eed-45e0-bce8-d8c7e13df7da"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Zilla Slab"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{min}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
+
 	<pageFooter>
 		<band height="25" splitType="Stretch">
 			<frame>

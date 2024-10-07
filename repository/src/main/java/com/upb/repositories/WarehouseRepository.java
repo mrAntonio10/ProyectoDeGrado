@@ -1,10 +1,7 @@
 package com.upb.repositories;
 
 
-import com.upb.models.enterprise.dto.EnterpriseDto;
-import com.upb.models.user.User;
 import com.upb.models.warehouse.Warehouse;
-import com.upb.models.warehouse.dto.WarehouseDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +44,20 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, String> {
                 "AND p.state = true " +
                 "AND w.id =:id"
     )
-    Optional<Warehouse> findWarehouseByIdAndStateNotDeleted(@Param("id") String id);
+    Optional<Warehouse> findWarehouseByIdAndStateTrue(@Param("id") String id);
+
+    @Query("SELECT w FROM Warehouse w " +
+                "INNER JOIN FETCH w.product p " +
+                "INNER JOIN FETCH w.branchOffice b " +
+            "WHERE w.state <> 'DELETED' " +
+                "AND b.state <> 'DELETED' " +
+                "AND p.state = true " +
+                "AND UPPER(p.name) =:productName " +
+                "AND (:bFormat IS NULL OR UPPER(p.beverageFormat) =:bFormat) " +
+                "AND b.id =:idBranchOffice"
+    )
+    Optional<Warehouse> findWarehouseByIdBranchOfficeProductNameBeverageFormatAndStateTrue(@Param("idBranchOffice") String idBranchOffice,
+                                                                                           @Param("productName") String productName,
+                                                                                           @Param("bFormat") String beverageFormat);
 
 }

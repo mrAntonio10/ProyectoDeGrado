@@ -1,17 +1,11 @@
 package com.upb.toffi.rest;
 
-import com.upb.cores.EnterpriseService;
 import com.upb.cores.WarehouseService;
-import com.upb.models.enterprise.Enterprise;
-import com.upb.models.enterprise.dto.EnterpriseDto;
-import com.upb.models.enterprise.dto.EnterpriseStateDto;
 import com.upb.models.warehouse.Warehouse;
 import com.upb.models.warehouse.dto.WarehouseDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.models.warehouse.dto.WarehouseStateDto;
 import com.upb.toffi.config.util.GenericResponse;
-import com.upb.toffi.rest.request.enterprise.CreateEnterpriseRequest;
-import com.upb.toffi.rest.request.enterprise.UpdateEnterpriseRequest;
 import com.upb.toffi.rest.request.warehouse.CreateWarehouseRequest;
 import com.upb.toffi.rest.request.warehouse.UpdateWarehouseRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -34,8 +27,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequestMapping("/api/v1/warehouses")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8084"}, allowCredentials = "true", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
-
+@CrossOrigin(origins = "*", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class WarehouseController {
     private final WarehouseService warehouseService;
 
@@ -71,7 +63,7 @@ public class WarehouseController {
     }
 
     @GetMapping("{id-warehouse}")
-    public ResponseEntity<GenericResponse<Warehouse>> getEnterpriseById(@PathVariable("id-warehouse") String idWarehouse
+    public ResponseEntity<GenericResponse<Warehouse>> getWarehouseById(@PathVariable("id-warehouse") String idWarehouse
     ) {
         try {
 
@@ -80,6 +72,29 @@ public class WarehouseController {
             );
         } catch (NoSuchElementException e) {
             log.error("Error {} ID: {}, causa {}", e.getMessage(), idWarehouse,e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
+                            e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error genérico al obtener", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
+
+    @GetMapping("{id-branchOffice}/{product-name}/{beverage-format}")
+    public ResponseEntity<GenericResponse<Warehouse>> getWarehouseByIdBranchOfficeAndProductName(@PathVariable("id-branchOffice") String idBranchOffice,
+                                                                        @PathVariable("product-name") String productName,
+                                                                        @PathVariable("beverage-format") String beverageFormat
+    ) {
+        try {
+
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    this.warehouseService.getWarehouseByIdBranchOfficeProductNameAndBeverageFormat(idBranchOffice, productName, beverageFormat))
+            );
+        } catch (NoSuchElementException e) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
                             e.getMessage()));
