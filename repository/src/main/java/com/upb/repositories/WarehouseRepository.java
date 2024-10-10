@@ -2,6 +2,7 @@ package com.upb.repositories;
 
 
 import com.upb.models.warehouse.Warehouse;
+import com.upb.models.warehouse.dto.WarehousePageableProductsDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,12 +30,27 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, String> {
                 "     OR (:limit = 'MAX' AND w.maxProduct > w.stock) " +
                 "     OR (:limit = 'MIN' AND w.minProduct > w.stock))"
     )
-    Page<WarehousePagedDto> getEnterprisePageable(@Param("idEnterprise") String idEnterprise,
-                                                  @Param("idBranchOffice") String idBranchOffice,
-                                                  @Param("pName") String productName,
-                                                  @Param("category") String category,
-                                                  @Param("limit") String limit,
-                                                  Pageable pageable);
+    Page<WarehousePagedDto> getWarehousePageable(@Param("idEnterprise") String idEnterprise,
+                                                 @Param("idBranchOffice") String idBranchOffice,
+                                                 @Param("pName") String productName,
+                                                 @Param("category") String category,
+                                                 @Param("limit") String limit,
+                                                 Pageable pageable);
+
+    @Query("SELECT w FROM Warehouse w " +
+                "INNER JOIN FETCH w.product p " +
+                "INNER JOIN FETCH w.branchOffice b " +
+            "WHERE w.state <> 'DELETED' " +
+                "AND b.state <> 'DELETED' " +
+                "AND p.state = true " +
+                "AND (:pName IS NULL OR UPPER(w.productCode) LIKE :pName OR UPPER(p.name) LIKE :pName) " +
+                "AND (:category IS NULL OR UPPER(p.category) LIKE :category) " +
+                "AND (b.id = :idBranchOffice)"
+    )
+    Page<WarehousePageableProductsDto> getWarehousePageableProducts(@Param("idBranchOffice") String idBranchOffice,
+                                                                    @Param("pName") String productName,
+                                                                    @Param("category") String category,
+                                                                    Pageable pageable);
 
     @Query("SELECT w FROM Warehouse w " +
                 "INNER JOIN FETCH w.product p " +

@@ -12,6 +12,7 @@ import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.models.warehouse.Warehouse;
 import com.upb.models.warehouse.dto.WarehouseDto;
+import com.upb.models.warehouse.dto.WarehousePageableProductsDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.models.warehouse.dto.WarehouseStateDto;
 import com.upb.repositories.UserBranchOfficeRepository;
@@ -56,8 +57,28 @@ public class WarehouseServiceImpl implements WarehouseService {
         if(ub.isEmpty()) {
             throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario");
         }
-        return warehouseRepository.getEnterprisePageable(ub.get(0).getBranchOffice().getEnterprise().getId(),
+        return warehouseRepository.getWarehousePageable(ub.get(0).getBranchOffice().getEnterprise().getId(),
                 idBranchOffice, productName, category, maxOrMinLimit, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<WarehousePageableProductsDto> getWarehousePageableProductsForDetail(Authentication auth, String productNameOrCode, String category, Pageable pageable) {
+        productNameOrCode = (!StringUtil.isNullOrEmpty(productNameOrCode) ? "%" +productNameOrCode.toUpperCase() +"%" : null);
+        /*BEBIDA, ALMUERZO, SANDWICH, EMPANADA*/
+        category = (!StringUtil.isNullOrEmpty(category) ? "%"+ category.toUpperCase() +"%" : null);
+
+        String idRol = auth.getAuthorities().stream().toList().get(0).toString();
+        User user = (User) auth.getPrincipal();
+
+        List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
+
+        if(ub.isEmpty()) {
+            throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario");
+        }
+        return warehouseRepository.getWarehousePageableProducts(ub.get(0).getBranchOffice().getId(),
+                productNameOrCode, category, pageable);
+
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.upb.toffi.rest;
 import com.upb.cores.WarehouseService;
 import com.upb.models.warehouse.Warehouse;
 import com.upb.models.warehouse.dto.WarehouseDto;
+import com.upb.models.warehouse.dto.WarehousePageableProductsDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.models.warehouse.dto.WarehouseStateDto;
 import com.upb.toffi.config.util.GenericResponse;
@@ -48,6 +49,35 @@ public class WarehouseController {
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
                     (this.warehouseService.getWarehouseProductsList(authentication, filterByProductName, idBranchOffice, category, maxOrMinLimit, pageable))))
+            );
+        } catch(NoSuchElementException e) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
+                            e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error genérico al obtener", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
+
+    @GetMapping("/warehouse-products")
+    public ResponseEntity<GenericResponse<PagedModel<WarehousePageableProductsDto>>> getWarehousePageableProducts(@RequestParam(value = "filter", defaultValue = "") String filterByProductNameOrCode,
+                                                                                                                  @RequestParam(value = "category", defaultValue = "") String category,
+                                                                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                                  @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
+                                                                                                                  @RequestParam(value = "sortDir", defaultValue = "DESC")  String sortDir,
+                                                                                                                  @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
+    ) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
+
+            return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
+                    (this.warehouseService.getWarehousePageableProductsForDetail(authentication, filterByProductNameOrCode, category, pageable))))
             );
         } catch(NoSuchElementException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());

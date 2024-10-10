@@ -81,7 +81,7 @@ public class ReportServiceImpl implements ReportService {
             throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario");
         }
 
-        Page<WarehousePagedDto> pagedResp =  warehouseRepository.getEnterprisePageable(ub.get(0).getBranchOffice().getEnterprise().getId(),
+        Page<WarehousePagedDto> pagedResp =  warehouseRepository.getWarehousePageable(ub.get(0).getBranchOffice().getEnterprise().getId(),
                 idBranchOffice, productName, category, maxOrMinLimit, pageable);
 
         Map<String, Object> mapParams = new HashMap<>();

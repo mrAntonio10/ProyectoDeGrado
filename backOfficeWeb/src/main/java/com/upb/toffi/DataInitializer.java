@@ -78,6 +78,18 @@ public class DataInitializer implements CommandLineRunner {
             rolAdmin = rolAdminOpt.get();
         }
 
+        Optional<Rol> rolSalesPointOpt = rolRepository.findByNameAndStateTrue("SALES_POINT");
+        Rol rolSalesPoint;
+        if(!rolSalesPointOpt.isPresent()) {
+            rolSalesPoint = Rol.builder()
+                    .state(true)
+                    .name("SALES_POINT")
+                    .build();
+            rolRepository.save(rolSalesPoint);
+        } else {
+            rolSalesPoint = rolSalesPointOpt.get();
+        }
+
         if (!userRepository.findByEmailAndStateActive("admin@gmail.com").isPresent()) {
             User adminUser = new User();
             adminUser.setName("ADMIN");
@@ -122,6 +134,21 @@ public class DataInitializer implements CommandLineRunner {
         } else {
             System.out.println("Usuario STUDENT ya existe.");
         }
+
+        if (!userRepository.findByEmailAndStateActive("sales@gmail.com").isPresent()) {
+            User salesUser = new User();
+            salesUser.setName("SALES");
+            salesUser.setLastname("Sales");
+            salesUser.setEmail("sales@gmail.com");
+            salesUser.setPassword(passwordEncoder.encode("sales"));
+            salesUser.setState("ACTIVE");
+            salesUser.setRol(rolSalesPoint);
+            userRepository.save(salesUser);
+
+            System.out.println("Usuario SALES creado.");
+        } else {
+            System.out.println("Usuario SALES ya existe.");
+        }
     }
 
     private void createResources(){
@@ -134,12 +161,15 @@ public class DataInitializer implements CommandLineRunner {
         Rol student = rolRepository.findByNameAndStateTrue("STUDENT").orElseThrow(
                 () -> new NoSuchElementException("No se encontró el rol de usuario student"));
 
+        Rol sales = rolRepository.findByNameAndStateTrue("SALES_POINT").orElseThrow(
+                () -> new NoSuchElementException("No se encontró el rol de usuario sales_point"));
+
         //Recurso Padre - Gestión
         String idManagementResource = this.createUpdateResource("Gestión", "/dashboard/management", "pi pi-fw pi-database","Recurso padre para la gestión de empresas, sucursales y usuarios",null, 1, null, root, admin);
         this.createUpdateResource("Empresas", "/enterprise", "pi pi-fw pi-briefcase","Recurso encargado de gestionar las empresas dentro del sistema",idManagementResource, 1, PermissionsEnum.EnterprisePermissions.class, root);
         this.createUpdateResource("Sucursales", "/branchOffice", "pi pi-fw pi-building","Recurso encargado de gestionar las sucursales dentro del sistema",idManagementResource, 2, PermissionsEnum.BranchOfficePermissions.class, root, admin);
         this.createUpdateResource("Usuarios", "/user", "pi pi-fw pi-users","Recurso encargado de gestionar los usuarios dentro del sistema",idManagementResource, 3, PermissionsEnum.UserPermissions.class, root, admin);
-        this.createUpdateResource("Almacén", "/warehouse", "pi pi-fw pi-book","Recurso encargado de gestionar los productos de un almacén dentro del sistema",idManagementResource, 4, PermissionsEnum.WarehousePermission.class, root, admin);
+        this.createUpdateResource("Almacén", "/warehouse", "pi pi-fw pi-book","Recurso encargado de gestionar los productos de un almacén dentro del sistema",idManagementResource, 4, PermissionsEnum.WarehousePermission.class, admin);
 
 
         //Recurso Padre - Ajustes
@@ -147,6 +177,10 @@ public class DataInitializer implements CommandLineRunner {
         this.createUpdateResource("Parámetros", "/parameter", "pi pi-fw pi-code","Recurso encargado de gestionar parámetros del sistema",idConfigurationResource, 1, null, root, admin);
         this.createUpdateResource("Dominios", "/domain", "pi pi-fw pi-box","Recurso encargado de gestionar los dominios del sistema",idConfigurationResource, 2, null, root);
         this.createUpdateResource("Permisos", "/permission", "pi pi-exclamation-triangle","Recurso encargado de gestionar los permisos por roles de usuarios en el sistema",idConfigurationResource, 3, null, root, admin);
+
+        //Recurso Padre - Gestión comercial
+        String idComercialManagementResource = this.createUpdateResource("Gestión comercial", "/dashboard/comercial-management", "pi pi-desktop","Recurso padre para la gestión comercial de puntos de ventas",null, 2, null, sales);
+        this.createUpdateResource("Panel de venta", "/sales-panel", "pi pi-cart-plus","Recurso encargado de gestionar el panel de productos de un punto de venta",idComercialManagementResource, 1, PermissionsEnum.SalesPanelPermission.class, sales);
 
     }
 

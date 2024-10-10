@@ -1,6 +1,7 @@
 package com.upb.toffi.rest;
 
 import com.upb.cores.utils.StringUtilMod;
+import com.upb.models.user.User;
 import com.upb.models.user.dto.UserAuthenticationResponse;
 import com.upb.toffi.config.JwtService;
 import com.upb.toffi.config.util.GenericResponse;
@@ -45,10 +46,22 @@ public class AuthController {
            UserDetails userDetails = (UserDetails) auth.getPrincipal();
            var jwt = jwtService.generateToken(userDetails);
 
+           User userRequest = (User) auth.getPrincipal();
+           String resourceUrl;
+            switch (userRequest.getRol().getName().toUpperCase()) {
+                case "SALES_POINT":
+                    resourceUrl = "/dashboard/comercial-management/sales-panel";
+                    break;
+                default:
+                    resourceUrl = "/dashboard";
+                    break;
+            }
+
         return ok(GenericResponse.success(HttpStatus.OK.value(),
                 UserAuthenticationResponse.builder()
                 .token(jwt)
                 .user(((UserDetails) auth.getPrincipal()).getUsername())
+                .resourceUrl(resourceUrl)
                 .build()));
        } catch (NullPointerException | IllegalArgumentException e) {
            log.error("Error {}, causa {}", e.getMessage(), e.getCause());

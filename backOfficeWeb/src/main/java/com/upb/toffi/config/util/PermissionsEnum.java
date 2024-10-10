@@ -37,6 +37,14 @@ public class PermissionsEnum {
         REPORT
     }
 
+    public enum SalesPanelPermission {
+        CREATE,
+        UPDATE,
+        DELETE,
+        VIEW,
+        REPORT
+    }
+
     public enum RolResourcesPermissions {
         UPDATE,
         VIEW
