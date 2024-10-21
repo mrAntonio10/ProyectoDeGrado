@@ -11,6 +11,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 @Data
@@ -54,7 +55,7 @@ public class Document implements Serializable {
     private BranchOffice branchOfficeInfo;
 
     @Column(name = "DELIVERY_DATE")
-    private ZonedDateTime deliveryDate;
+    private Long deliveryDate;
 
     @Basic
     @Column(name = "DELIVERY_INFORMATION", length = 60)

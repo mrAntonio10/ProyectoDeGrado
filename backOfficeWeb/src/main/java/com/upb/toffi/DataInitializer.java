@@ -181,7 +181,7 @@ public class DataInitializer implements CommandLineRunner {
         //Recurso Padre - Gestión comercial
         String idComercialManagementResource = this.createUpdateResource("Gestión comercial", "/dashboard/comercial-management", "pi pi-desktop","Recurso padre para la gestión comercial de puntos de ventas",null, 2, null, sales);
         this.createUpdateResource("Panel de venta", "/sales-panel", "pi pi-cart-plus","Recurso encargado de gestionar el panel de productos de un punto de venta",idComercialManagementResource, 1, PermissionsEnum.SalesPanelPermission.class, sales);
-
+        this.createUpdateResource("Gestión de ventas", "/user-sales", "pi pi-cart-plus","Recurso encargado de gestionar las ventas realizadas por un usuario punto de venta",idComercialManagementResource, 2, PermissionsEnum.UserSalesPermission.class, sales);
     }
 
     private void createOperations() {

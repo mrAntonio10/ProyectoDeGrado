@@ -20,11 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.TimeZone;
 
 @Service
 @Slf4j
@@ -47,10 +46,14 @@ public class DocumentServiceImpl implements DocumentService {
         User_BranchOffice ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUser(user.getId()).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario."));
 
+        ZonedDateTime boliviaDateTime = ZonedDateTime.now(ZoneId.of("America/La_Paz"));
+
+//        log.info("Fecha {}", ZonedDateTime.ofInstant(Instant.ofEpochMilli(boliviaDateTime.toInstant().toEpochMilli()), ZoneId.of("America/La_Paz")));
+
         Document doc = Document.builder()
                 .state("ACEPTADO")
                 .type("VENTA")
-                .deliveryDate(ZonedDateTime.now(ZoneId.of("America/La_Paz")))
+                .deliveryDate(boliviaDateTime.toInstant().toEpochMilli())
                 .branchOfficeInfo(ub.getBranchOffice())
                 .salesUser(user)
                 .totalDiscount(totalDiscount)

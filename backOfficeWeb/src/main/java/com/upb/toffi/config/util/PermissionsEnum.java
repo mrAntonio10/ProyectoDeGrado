@@ -45,6 +45,12 @@ public class PermissionsEnum {
         REPORT
     }
 
+    public enum UserSalesPermission {
+        DELETE,
+        VIEW,
+        REPORT
+    }
+
     public enum RolResourcesPermissions {
         UPDATE,
         VIEW
