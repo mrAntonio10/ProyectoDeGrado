@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
         StringUtilMod.notNullStringMaxLength(password, 60, "Contraseña");
         StringUtilMod.notNullEmailMatcher(email, "Email");
 
-        StringUtilMod.canNullNumberMatcherMaxLength(phoneNumber, 20, "Número telefónico");
+        StringUtilMod.canBeNull_NumberMatcherMaxLength(phoneNumber, 20, "Número telefónico");
 
         BranchOffice branchOffice = branchOfficeService.getBranchOfficeById(idBranchOffice);
         Rol rol = rolService.getRolById(idRol);
@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
         StringUtilMod.notNullEmailMatcher(email, "Email");
         StringUtilMod.throwStringIsNullOrEmpty(state, "Estado");
 
-        StringUtilMod.canNullNumberMatcherMaxLength(phoneNumber, 20, "Número telefónico");
+        StringUtilMod.canBeNull_NumberMatcherMaxLength(phoneNumber, 20, "Número telefónico");
 
         Rol rol = rolService.getRolById(idRol);
         User_BranchOffice userBranchOffice = userBranchOfficeRepository.findUser_BranchOfficeByIdUser(id).orElseThrow(

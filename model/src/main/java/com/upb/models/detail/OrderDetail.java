@@ -31,6 +31,10 @@ public class OrderDetail implements Serializable {
     private BigInteger quantity;
 
     @Basic
+    @Column(name = "UNITARY_COST")
+    private BigDecimal unitaryCost;
+
+    @Basic
     @Column(name = "DISCOUNT")
     private BigDecimal discount;
 
@@ -38,9 +42,9 @@ public class OrderDetail implements Serializable {
     @Column(name = "TOTAL_PRICE")
     private BigDecimal totalPrice;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_PRODUCT", referencedColumnName = "ID")
-    private Product productInfo;
+    private Product product;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

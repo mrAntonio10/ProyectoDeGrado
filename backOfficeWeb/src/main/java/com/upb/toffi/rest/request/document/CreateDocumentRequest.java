@@ -1,11 +1,11 @@
 package com.upb.toffi.rest.request.document;
 
+import com.upb.models.detail.dto.DetailListRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 @Getter

@@ -1,4 +1,4 @@
-package com.upb.toffi.rest.request.document;
+package com.upb.models.detail.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +13,7 @@ public class DetailListRequest {
     private BigDecimal totalDiscount;
     private BigDecimal totalPrice;
     private BigInteger quantity;
+    private BigDecimal unitaryCost;
 
     private String idProduct;
 

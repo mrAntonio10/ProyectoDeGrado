@@ -1,20 +1,11 @@
 package com.upb.toffi.rest;
 
-import com.upb.cores.WarehouseService;
+import com.upb.cores.DocumentService;
 import com.upb.models.document.dto.DocumentCreatedDto;
-import com.upb.models.warehouse.Warehouse;
-import com.upb.models.warehouse.dto.WarehouseDto;
-import com.upb.models.warehouse.dto.WarehousePagedDto;
-import com.upb.models.warehouse.dto.WarehouseStateDto;
 import com.upb.toffi.config.util.GenericResponse;
 import com.upb.toffi.rest.request.document.CreateDocumentRequest;
-import com.upb.toffi.rest.request.warehouse.CreateWarehouseRequest;
-import com.upb.toffi.rest.request.warehouse.UpdateWarehouseRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -31,7 +22,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class DocumentController {
-    private final WarehouseService warehouseService;
+    private final DocumentService documentService;
 
 //    @GetMapping("")
 //    public ResponseEntity<GenericResponse<PagedModel<WarehousePagedDto>>> getWarehouseProductsPageable(@RequestParam(value = "filter", defaultValue = "") String filterByProductName,
@@ -85,30 +76,32 @@ public class DocumentController {
 //        }
 //    }
 
-//    @PostMapping()
-//    public ResponseEntity<GenericResponse<DocumentCreatedDto>> createDetailDocument(@RequestBody CreateDocumentRequest d) {
-//        try {
-//            return ok(GenericResponse.success(HttpStatus.OK.value(),
-//                    warehouseService.createWarehouse(w.getIdProduct(), w.getIdBranchOffice(), w.getStock(),
-//                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct()))
-//            );
-//        } catch (NullPointerException | IllegalArgumentException e) {
-//            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
-//            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-//                    .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),
-//                            e.getMessage()));
-//        } catch (NoSuchElementException e) {
-//            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
-//                            e.getMessage()));
-//        } catch (Exception e) {
-//            log.error("Error genérico al obtener", e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-//                            "Error en el servidor. Favor contactarse con el administrador."));
-//        }
-//    }
+    @PostMapping()
+    public ResponseEntity<GenericResponse<String>> createDetailDocument(@RequestBody CreateDocumentRequest d) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    documentService.createDetailDocument(authentication, d.getDeliveryInformation(), d.getTotalPrice(),
+                            d.getTotalDiscount(), d.getPaymentMethod(), d.getDetailList())
+            ));
+        } catch (NullPointerException | IllegalArgumentException e) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),
+                            e.getMessage()));
+        } catch (NoSuchElementException e) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
+                            e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error genérico al obtener", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
 
 //    @PutMapping("")
 //    public ResponseEntity<GenericResponse<WarehouseDto>> updateWarehouse(@RequestBody UpdateWarehouseRequest w) {

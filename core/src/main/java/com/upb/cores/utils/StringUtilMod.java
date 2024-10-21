@@ -58,7 +58,7 @@ public class StringUtilMod {
     /*
         CAN BE NULL
      */
-    public static void canNullNumberMatcherMaxLength(String value, int length, String attributeName) {
+    public static void canBeNull_NumberMatcherMaxLength(String value, int length, String attributeName) {
 
         Pattern pattern = Pattern.compile("^[0-9]+$");
         Matcher matcher = pattern.matcher(value);
@@ -72,7 +72,7 @@ public class StringUtilMod {
         }
     }
 
-    public static void canNullStringMaxLength(String value, int length, String attributeName) {
+    public static void canBeNull_StringMaxLength(String value, int length, String attributeName) {
         if (value.length() > length) {
             throw new IllegalArgumentException("Valor [" + attributeName + "]: No acepta más de " +length+ " caracteres.");
         }

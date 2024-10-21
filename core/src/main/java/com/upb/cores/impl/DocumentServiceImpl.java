@@ -1,33 +1,28 @@
 package com.upb.cores.impl;
 
 
-import ch.qos.logback.core.util.StringUtil;
-import com.upb.cores.BranchOfficeService;
 import com.upb.cores.DocumentService;
-import com.upb.cores.ProductService;
-import com.upb.cores.WarehouseService;
+import com.upb.cores.OrderDetailService;
 import com.upb.cores.utils.NumberUtilMod;
-import com.upb.models.branchOffice.BranchOffice;
+import com.upb.cores.utils.StringUtilMod;
+import com.upb.models.detail.dto.DetailCreatedDto;
+import com.upb.models.detail.dto.DetailListRequest;
+import com.upb.models.document.Document;
 import com.upb.models.document.dto.DocumentCreatedDto;
-import com.upb.models.product.Product;
 import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
-import com.upb.models.warehouse.Warehouse;
-import com.upb.models.warehouse.dto.WarehouseDto;
-import com.upb.models.warehouse.dto.WarehousePagedDto;
-import com.upb.models.warehouse.dto.WarehouseStateDto;
+import com.upb.repositories.DocumentRepository;
 import com.upb.repositories.UserBranchOfficeRepository;
-import com.upb.repositories.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -35,10 +30,39 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RequiredArgsConstructor
 public class DocumentServiceImpl implements DocumentService {
+    private final DocumentRepository documentRepository;
+    private final UserBranchOfficeRepository userBranchOfficeRepository;
+    private final OrderDetailService orderDetailService;
 
-
+    @Transactional
     @Override
-    public DocumentCreatedDto createDetailDocument(String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct) {
-        return null;
+    public String createDetailDocument(Authentication auth, String deliveryInformation, BigDecimal totalPrice, BigDecimal totalDiscount, String paymentMethod, List<DetailListRequest> detailList) {
+        NumberUtilMod.throwNumberMaxDecimal(totalPrice, 2, "Precio total");
+        NumberUtilMod.throwNumberMaxDecimal(totalDiscount, 2, "Descuento total");
+        StringUtilMod.throwStringIsNullOrEmpty(paymentMethod, "Método de pago");
+        StringUtilMod.canBeNull_StringMaxLength(deliveryInformation, 60, "Información de venta");
+
+        User user = (User) auth.getPrincipal();
+
+        User_BranchOffice ub = userBranchOfficeRepository.findUser_BranchOfficeByIdUser(user.getId()).orElseThrow(
+                () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al usuario."));
+
+        Document doc = Document.builder()
+                .state("ACEPTADO")
+                .type("VENTA")
+                .deliveryDate(ZonedDateTime.now(ZoneId.of("America/La_Paz")))
+                .branchOfficeInfo(ub.getBranchOffice())
+                .salesUser(user)
+                .totalDiscount(totalDiscount)
+                .totalPrice(totalPrice)
+                .paymentMethod(paymentMethod)
+                .deliveryInformation(deliveryInformation)
+                .build();
+
+        documentRepository.save(doc);
+
+        orderDetailService.createDetail(doc, detailList);
+
+        return doc.getId();
     }
 }

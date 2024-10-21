@@ -38,4 +38,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     )
     List<ProductListDto> getProductsListByCategoryAndStateTrue(@Param("cat") String category);
 
+    @Query("SELECT p FROM Product p " +
+            "WHERE p.id IN :list " +
+                "AND p.state <> false")
+    List<Product> getProductListByIdList(@Param("list") List<String> idList);
+
 }
