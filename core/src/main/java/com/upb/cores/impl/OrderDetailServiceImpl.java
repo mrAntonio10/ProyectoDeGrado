@@ -5,6 +5,7 @@ import com.upb.cores.OrderDetailService;
 import com.upb.models.detail.OrderDetail;
 import com.upb.models.detail.dto.DetailCreatedDto;
 import com.upb.models.detail.dto.DetailListRequest;
+import com.upb.models.detail.dto.AllDetailInfoDto;
 import com.upb.models.document.Document;
 import com.upb.models.product.Product;
 import com.upb.repositories.OrderDetailRepository;
@@ -12,14 +13,13 @@ import com.upb.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -49,8 +49,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         .totalPrice(d.getTotalPrice())
                         .product(p)
                         .quantity(d.getQuantity())
-                        .unitaryCost(d.getUnitaryCost())
+                        .unitaryPrice(d.getUnitaryCost())
                         .document(document)
+                        .productCode(d.getProductCode())
                         .build();
 
                 orderDetailRepository.save(od);
@@ -60,6 +61,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         });
 
         return resp;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<AllDetailInfoDto> getDetailDocumentInfo(String idDocument) {
+        return orderDetailRepository.getDetailAndDocumentInfo(idDocument);
     }
 }
 

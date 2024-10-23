@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,4 +21,6 @@ public interface ReportService {
 
     ReportFileDto outOfStockReport(Authentication auth, String productName, String idBranchOffice, String category, String maxOrMinLimit, Pageable pageable,
             Map<String, Object> params) throws JRException, IOException;
+    ReportFileDto userSalesReport(Authentication auth, String filter, LocalDate date, Pageable pageable,
+                                  Map<String, Object> params) throws JRException, IOException;
 }

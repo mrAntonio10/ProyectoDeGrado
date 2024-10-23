@@ -1,5 +1,6 @@
 package com.upb.models.document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.upb.models.branchOffice.BranchOffice;
 import com.upb.models.user.User;
 import jakarta.persistence.*;
@@ -50,6 +51,7 @@ public class Document implements Serializable {
     @JoinColumn(name = "ID_SALES_USER", referencedColumnName = "ID")
     private User salesUser;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_BRANCH_OFFICE", referencedColumnName = "ID")
     private BranchOffice branchOfficeInfo;

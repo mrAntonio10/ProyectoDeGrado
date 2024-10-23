@@ -5,9 +5,11 @@ import com.upb.cores.BranchOfficeService;
 import com.upb.cores.report.ReportService;
 import com.upb.cores.report.dto.ReportFileDto;
 import com.upb.models.branchOffice.BranchOffice;
+import com.upb.models.document.dto.SalesUserDocumentDto;
 import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
+import com.upb.repositories.DocumentRepository;
 import com.upb.repositories.UserBranchOfficeRepository;
 import com.upb.repositories.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 
@@ -36,6 +40,7 @@ public class ReportServiceImpl implements ReportService {
     private final UserBranchOfficeRepository userBranchOfficeRepository;
     private final WarehouseRepository warehouseRepository;
     private final BranchOfficeService branchOfficeService;
+    private final DocumentRepository documentRepository;
 
     @Override
     public ByteArrayOutputStream exportReport(String fileName, String report, String typeReport, Map<String, Object> params, List list) throws IOException, JRException {
@@ -97,6 +102,46 @@ public class ReportServiceImpl implements ReportService {
         ReportFileDto rep = new ReportFileDto();
         rep.setFilename(fileName);
         ByteArrayOutputStream stream = exportReport(fileName, "REP01_PRODUCT_WAREHOUSE.jrxml", "pdf", mapParams, list);
+        byte[] bs = stream.toByteArray();
+
+        rep.setBase64(getStreamAsBase64(new ByteArrayInputStream(bs)));
+        rep.setLength(bs.length);
+
+        return rep;
+    }
+
+    @Override
+    public ReportFileDto userSalesReport(Authentication auth, String filter, LocalDate date, Pageable pageable, Map<String, Object> params) throws JRException, IOException {
+        filter = (!StringUtil.isNullOrEmpty(filter) ? "%" +filter.toUpperCase()+ "%" : null);
+
+        User user = (User) auth.getPrincipal();
+        String idRol = auth.getAuthorities().stream().toList().get(0).toString();
+
+        log.info("USUARIO ID{}", user.getId());
+        List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
+        BranchOffice b = branchOfficeService.getBranchOfficeById(ub.get(0).getBranchOffice().getId());
+
+
+        Long start = date.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long finish = date.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+
+
+
+        Map<String, Object> mapParams = new HashMap<>();
+            mapParams.put("branchOffice", b.getName());
+            mapParams.put("userPOS", user.getName() +" "+ user.getLastname());
+
+        Page<SalesUserDocumentDto> pagedResp = this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, pageable);
+
+        List<SalesUserDocumentDto> list = new ArrayList<>();
+        if(!pagedResp.isEmpty()) {
+            list = pagedResp.stream().toList();
+        }
+
+        String fileName = "reporte_de_ventas.pdf";
+        ReportFileDto rep = new ReportFileDto();
+        rep.setFilename(fileName);
+        ByteArrayOutputStream stream = exportReport(fileName, "REP02_USER_SALES_REPORT.jrxml", "pdf", mapParams, list);
         byte[] bs = stream.toByteArray();
 
         rep.setBase64(getStreamAsBase64(new ByteArrayInputStream(bs)));
