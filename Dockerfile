@@ -1,13 +1,18 @@
+# Fase de construcción con instalación de Maven
 FROM amazoncorretto:17-al2023 AS build
+WORKDIR /app
+
+# Instalar Maven
+RUN yum update -y && \
+    yum install -y maven
+
+# Copiar el proyecto y construir
 COPY . .
-
 RUN mvn clean install
-RUN mvn clean package
 
-# Etapa final
+# Fase final con Amazon Corretto 17
 FROM amazoncorretto:17-al2023
-COPY --from=build /target/toffi-0.0.1-SNAPSHOT.jar /demo.jar
-EXPOSE 8084
-ENTRYPOINT ["java", "-jar", "/demo.jar"]
+COPY --from=build /app/target/*.jar /app/demo.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/demo.jar"]
 
-##https://www.youtube.com/watch?v=9MR6VMZ9MBo&t=905s
