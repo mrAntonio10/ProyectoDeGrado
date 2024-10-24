@@ -33,4 +33,18 @@ public interface DocumentRepository extends JpaRepository<Document, String> {
                                                            @Param("sDate") Long sDate,
                                                            @Param("fDate") Long fDate,
                                                            Pageable pageable);
+
+    @Query("SELECT d FROM Document d " +
+                "INNER JOIN FETCH d.salesUser u " +
+            "WHERE d.state <> 'DELETED' " +
+                "AND (:filter IS NULL OR UPPER(d.paymentMethod) LIKE :filter) " +
+                "AND (:idUser IS NULL OR u.id =:idUser) " +
+                "AND d.deliveryDate > :sDate " +
+                "AND d.deliveryDate < :fDate"
+    )
+    Page<SalesUserDocumentDto> getManagementUserDocumetPageable(@Param("idUser") String idUser,
+                                                           @Param("filter") String paymentMethod,
+                                                           @Param("sDate") Long sDate,
+                                                           @Param("fDate") Long fDate,
+                                                           Pageable pageable);
 }

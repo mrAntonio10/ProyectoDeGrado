@@ -50,6 +50,18 @@ public class DocumentServiceImpl implements DocumentService {
 
         return this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, pageable);
     }
+    @Transactional(readOnly = true)
+    @Override
+    public Page<SalesUserDocumentDto> getManagementSalesDocumentList(String filter, LocalDate date, String idUser, Pageable pageable) {
+        filter = (!StringUtil.isNullOrEmpty(filter) ? "%" +filter.toUpperCase()+ "%" : null);
+
+        idUser = (!StringUtil.isNullOrEmpty(idUser) ? idUser : null);
+
+        Long start = date.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long finish = date.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+
+        return this.documentRepository.getManagementUserDocumetPageable(idUser, filter, start, finish, pageable);
+    }
 
     @Override
     public SalesDocumentInfoDto getDocumentById(String idDocument) {
