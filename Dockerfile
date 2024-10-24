@@ -5,6 +5,7 @@ FROM amazoncorretto:17-al2023 AS build
 RUN yum update -y && \
     yum install -y maven
 
+COPY . .
 RUN mvn clean install
 
 # Fase final con Amazon Corretto 17
