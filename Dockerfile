@@ -5,6 +5,12 @@ FROM amazoncorretto:17-al2023 AS build
 RUN yum update -y && \
     yum install -y maven
 
+# Instalar la fuente "Zilla Slab"
+RUN yum install -y fontconfig && \
+    mkdir -p /usr/share/fonts/truetype/zilla-slab && \
+    curl -o /usr/share/fonts/truetype/zilla-slab/ZillaSlab-Regular.ttf https://github.com/google/fonts/raw/main/ofl/zillaslab/ZillaSlab-Regular.ttf && \
+    fc-cache -f -v
+
 COPY . .
 RUN mvn clean install
 
