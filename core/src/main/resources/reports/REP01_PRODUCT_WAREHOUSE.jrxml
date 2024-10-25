@@ -79,7 +79,7 @@
 			</textField>
 			<image>
 				<reportElement x="451" y="20" width="102" height="110" uuid="d1ab8362-8f1b-4d0b-8d99-9a54758db749"/>
-				<imageExpression><![CDATA["C:\\Users\\Jose Maria\\Desktop\\coff.png"]]></imageExpression>
+				<imageExpression><![CDATA["reports/coff.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>
