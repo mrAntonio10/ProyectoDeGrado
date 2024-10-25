@@ -28,7 +28,9 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -54,7 +56,6 @@ public class ReportServiceImpl implements ReportService {
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, dataSource);
-        jasperPrint.setLocaleCode(new java.util.Locale("es", "ES").toString());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if(typeReport.equalsIgnoreCase("excel")) {
@@ -97,6 +98,7 @@ public class ReportServiceImpl implements ReportService {
         Map<String, Object> mapParams = new HashMap<>();
             mapParams.put("username", user.getEmail());
             mapParams.put("branchOffice", b.getName());
+            mapParams.put("generatedDate", this.getDateTime(java.time.LocalDateTime.now()));
 
         List<WarehousePagedDto> list = new ArrayList<>();
         if(!pagedResp.isEmpty()) {
@@ -135,6 +137,7 @@ public class ReportServiceImpl implements ReportService {
         Map<String, Object> mapParams = new HashMap<>();
             mapParams.put("branchOffice", b.getName());
             mapParams.put("userPOS", user.getName() +" "+ user.getLastname());
+            mapParams.put("generatedDate", this.getDateTime(java.time.LocalDateTime.now()));
 
         Page<SalesUserDocumentDto> pagedResp = this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, pageable);
 
@@ -161,5 +164,11 @@ public class ReportServiceImpl implements ReportService {
             return Base64.getEncoder().encodeToString(bytes);
         }
         return null;
+    }
+
+    private String getDateTime(LocalDateTime dt) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd-MMMM-yyyy", new Locale("es", "ES"));
+
+        return dt.format(formatter).substring(0, 1).toUpperCase() + dt.format(formatter).substring(1).toLowerCase();
     }
 }
