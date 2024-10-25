@@ -11,6 +11,7 @@ import java.math.BigInteger;
 @NoArgsConstructor @AllArgsConstructor
 public class CreateWarehouseRequest {
     private String idProduct;
+    private String productCode;
     private String idBranchOffice;
     private BigInteger stock;
     private BigDecimal unitaryCost;

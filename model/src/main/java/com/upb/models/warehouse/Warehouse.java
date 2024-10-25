@@ -29,7 +29,7 @@ public class Warehouse implements Serializable {
     @JoinColumn(name="ID_PRODUCT", referencedColumnName = "ID", nullable=false)
     private Product product;
 
-    @Column(name = "PRODUCT_CODE")
+    @Column(name = "PRODUCT_CODE", length = 6)
     private String productCode;
 
     @Column(name = "STOCK")

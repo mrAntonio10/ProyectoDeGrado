@@ -17,6 +17,7 @@ import java.math.BigInteger;
 public class WarehouseDto {
     private String id;
     private String productName;
+    private String productCode;
     private BigInteger stock;
     private String state;
 
@@ -26,6 +27,7 @@ public class WarehouseDto {
         this.productName = this.productNameStructure(w.getProduct().getName(), w.getProduct().getBeverageFormat());
         this.stock = w.getStock();
         this.state = w.getState();
+        this.productCode = getProductCode();
     }
 
     private String productNameStructure(String name, String beverageFormat){

@@ -24,11 +24,13 @@ public interface UserBranchOfficeRepository extends JpaRepository<User_BranchOff
                 "AND b.state <> 'DELETED' " +
                 "AND (:name IS NULL OR UPPER(u.name) LIKE :name OR UPPER(u.lastname) LIKE :name) " +
                 "AND (:idBranchOffice IS NULL OR b.id =:idBranchOffice) " +
-                "AND e.id =:idEnterprise"
+                "AND e.id =:idEnterprise " +
+                "AND u.id <> :actualUserId"
     )
     Page<UserDto> getUserPageableByIdBranchOffice(@Param("name") String name,
                                   @Param("idBranchOffice") String idBranchOffice,
                                   @Param("idEnterprise") String idEnterprise,
+                                  @Param("actualUserId") String idUser,
                                   Pageable pageable);
 
     @Query("SELECT u_b FROM User_BranchOffice u_b " +

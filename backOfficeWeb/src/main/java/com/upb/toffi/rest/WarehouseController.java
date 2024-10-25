@@ -141,7 +141,7 @@ public class WarehouseController {
         try {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     warehouseService.createWarehouse(w.getIdProduct(), w.getIdBranchOffice(), w.getStock(),
-                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct()))
+                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct(), w.getProductCode()))
             );
         } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());

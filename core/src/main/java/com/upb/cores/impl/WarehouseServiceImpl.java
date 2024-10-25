@@ -6,6 +6,7 @@ import com.upb.cores.BranchOfficeService;
 import com.upb.cores.ProductService;
 import com.upb.cores.WarehouseService;
 import com.upb.cores.utils.NumberUtilMod;
+import com.upb.cores.utils.StringUtilMod;
 import com.upb.models.branchOffice.BranchOffice;
 import com.upb.models.product.Product;
 import com.upb.models.user.User;
@@ -102,7 +103,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
-    public WarehouseDto createWarehouse(String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct) {
+    public WarehouseDto createWarehouse(String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String productCode) {
         Product product = productService.getProductById(idProduct);
         BranchOffice branchO = branchOfficeService.getBranchOfficeById(idBranchOffice);
 
@@ -110,6 +111,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         NumberUtilMod.throwNumberMaxDecimal(unitaryCost, 2,"precio unitario");
         NumberUtilMod.throwNumberIsNullOrEmpty(maxProduct, "máximo de producto");
         NumberUtilMod.throwNumberIsNullOrEmpty(minProduct, "mínimo de producto");
+        StringUtilMod.notNullStringMaxLength(productCode, 6, "sku/código producto");
 
         Warehouse w = Warehouse.builder()
                 .branchOffice(branchO)
@@ -119,6 +121,7 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .unitaryCost(unitaryCost)
                 .maxProduct(maxProduct)
                 .minProduct(minProduct)
+                .productCode(productCode)
                 .build();
 
         warehouseRepository.save(w);

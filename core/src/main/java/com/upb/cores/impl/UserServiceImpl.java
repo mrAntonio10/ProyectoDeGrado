@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
         if(!ub.isEmpty()) {
             log.info("PAGINACION DE NORMAL {}, {}", name, idBranchOffice);
-            return userBranchOfficeRepository.getUserPageableByIdBranchOffice(name, idBranchOffice, ub.get(0).getBranchOffice().getEnterprise().getId(), pageable);
+            return userBranchOfficeRepository.getUserPageableByIdBranchOffice(name, idBranchOffice, ub.get(0).getBranchOffice().getEnterprise().getId(), user.getId(),pageable);
         } else {
             log.info("PAGINACION DE ROOT {}, {}", name, idBranchOffice);
             return userBranchOfficeRepository.getUserPageableByIdBranchOfficeForRoot(name, idBranchOffice, pageable);
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(String id, String name, String lastname, String password, String phoneNumber, String email, String idRol, String state, String idBranchOffice) {
         StringUtilMod.notNullStringMaxLength(name, 60, "Nombre");
         StringUtilMod.notNullStringMaxLength(lastname, 60, "apellido");
-        StringUtilMod.notNullStringMaxLength(password, 60, "Contraseña");
+        StringUtilMod.canBeNull_StringMaxLength(password, 60, "Contraseña");
         StringUtilMod.notNullEmailMatcher(email, "Email");
         StringUtilMod.throwStringIsNullOrEmpty(state, "Estado");
 
