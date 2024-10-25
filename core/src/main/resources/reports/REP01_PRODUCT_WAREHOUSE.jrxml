@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="REP01_PRODUCT_WAREHOUSE" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6e352f10-4f39-46a1-adf2-b62ddd9c4fc6">
-	<property name="ireport.zoom" value="2.357947691000006"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.zoom" value="3.4522712143931114"/>
+	<property name="ireport.x" value="127"/>
+	<property name="ireport.y" value="91"/>
 	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
 	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
 	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
@@ -56,7 +56,7 @@
 			<frame>
 				<reportElement mode="Opaque" x="179" y="110" width="172" height="20" backcolor="#C0C0C0" uuid="dbac6ba5-6353-4aae-9771-727b0a3c0ec3"/>
 				<textField>
-					<reportElement x="3" y="0" width="31" height="20" uuid="10d797f5-284f-40bb-9000-af0e6dca0e18"/>
+					<reportElement x="3" y="0" width="38" height="20" uuid="10d797f5-284f-40bb-9000-af0e6dca0e18"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Serif" isBold="true"/>
 					</textElement>
@@ -71,7 +71,7 @@
 				<textFieldExpression><![CDATA[$P{username}]]></textFieldExpression>
 			</textField>
 			<textField pattern="EEEEE dd MMMMM yyyy">
-				<reportElement style="Title" x="213" y="110" width="138" height="20" forecolor="#000000" uuid="d456c7b6-98ea-420b-86ec-10dd46c185d6"/>
+				<reportElement style="Title" x="220" y="110" width="131" height="20" forecolor="#000000" uuid="d456c7b6-98ea-420b-86ec-10dd46c185d6"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Serif" size="10" isBold="false"/>
 				</textElement>

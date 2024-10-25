@@ -54,6 +54,7 @@ public class ReportServiceImpl implements ReportService {
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, dataSource);
+        jasperPrint.setLocaleCode(new java.util.Locale("es", "ES").toString());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if(typeReport.equalsIgnoreCase("excel")) {
