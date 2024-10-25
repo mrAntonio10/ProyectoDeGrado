@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="REP01_PRODUCT_WAREHOUSE" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6e352f10-4f39-46a1-adf2-b62ddd9c4fc6" whenNoDataType="AllSectionsNoDetail">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="REP01_PRODUCT_WAREHOUSE" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6e352f10-4f39-46a1-adf2-b62ddd9c4fc6">
 	<property name="ireport.zoom" value="2.357947691000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -32,14 +32,14 @@
 			<staticText>
 				<reportElement style="Title" mode="Transparent" x="2" y="56" width="449" height="44" forecolor="#404040" uuid="286aba86-061c-4f43-8933-57db6567aca4"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="36" isBold="true"/>
+					<font fontName="Serif" size="30" isBold="true"/>
 				</textElement>
 				<text><![CDATA[REPORTE DE QUIEBRE]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="3" y="20" width="405" height="36" forecolor="#404040" uuid="88aa1cca-c67e-460c-86a6-99e3281df00e"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="14"/>
+					<font fontName="Serif" size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{branchOffice}]]></textFieldExpression>
 			</textField>
@@ -48,7 +48,7 @@
 				<textField>
 					<reportElement x="3" y="0" width="41" height="20" uuid="f38d0809-07f5-4a45-98d7-9529b26fb7ee"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="Zilla Slab" isBold="true"/>
+						<font fontName="Serif" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA["Usuario:"]]></textFieldExpression>
 				</textField>
@@ -58,7 +58,7 @@
 				<textField>
 					<reportElement x="3" y="0" width="31" height="20" uuid="10d797f5-284f-40bb-9000-af0e6dca0e18"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="Zilla Slab" isBold="true"/>
+						<font fontName="Serif" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA["Fecha:"]]></textFieldExpression>
 				</textField>
@@ -66,14 +66,14 @@
 			<textField>
 				<reportElement x="46" y="110" width="128" height="20" forecolor="#000000" uuid="b0668c7a-be11-425b-8443-6407b3814c2c"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="10"/>
+					<font fontName="Serif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{username}]]></textFieldExpression>
 			</textField>
 			<textField pattern="EEEEE dd MMMMM yyyy">
 				<reportElement style="Title" x="213" y="110" width="138" height="20" forecolor="#000000" uuid="d456c7b6-98ea-420b-86ec-10dd46c185d6"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="10" isBold="false"/>
+					<font fontName="Serif" size="10" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
@@ -91,42 +91,42 @@
 			<staticText>
 				<reportElement mode="Opaque" x="2" y="0" width="143" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="0fd45d3e-f512-48a4-82a6-88bbdd8f1e33"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Producto]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="145" y="0" width="110" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="ee5001c0-ea71-4147-92b7-29d46ad0158e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Categoría]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="255" y="0" width="83" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="b471cfcc-d8fe-422a-ab9f-c466cef75571"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Costo unitario]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="338" y="0" width="83" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="ed49253a-5e5d-400c-b288-17a1b1d09f65"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Stock]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="487" y="0" width="66" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="9bc5df0a-ab18-4a01-ab25-e9892e214f0b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Max]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="421" y="0" width="66" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="f4b7ea85-66b7-47f7-9e17-52be3736787d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Min]]></text>
 			</staticText>
@@ -137,48 +137,47 @@
 			<textField isBlankWhenNull="true">
 				<reportElement x="2" y="0" width="143" height="20" uuid="4baf335e-15e1-4e61-a2ce-61bf1d8748c5"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="145" y="0" width="110" height="20" uuid="506cbcaa-b6f9-45ad-858f-cc487020f306"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{category}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="255" y="0" width="83" height="20" uuid="4cba5c9b-0093-4867-8a99-93b112a6ac5a"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{unitaryCost}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="338" y="0" width="83" height="20" uuid="874dd60d-a760-4ad6-8dd3-f28f1c4f53dc"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="487" y="0" width="66" height="20" uuid="d7e6d4db-4e54-4ac0-bf13-cc13a74304ac"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{max}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="421" y="0" width="66" height="20" uuid="71b4ca14-5eed-45e0-bce8-d8c7e13df7da"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{min}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
-
 	<pageFooter>
 		<band height="25" splitType="Stretch">
 			<frame>
@@ -186,14 +185,14 @@
 				<textField evaluationTime="Report">
 					<reportElement style="Column header" x="513" y="0" width="40" height="20" forecolor="#FFFFFF" uuid="407739b9-72fd-4381-bd46-27ca23ede107"/>
 					<textElement verticalAlignment="Middle">
-						<font size="10" isBold="false"/>
+						<font fontName="Serif" size="10" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement style="Column header" x="433" y="0" width="80" height="20" forecolor="#FFFFFF" uuid="2638460b-0837-4bf7-b6a6-22d9ed15c73a"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font size="10" isBold="false"/>
+						<font fontName="Serif" size="10" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
 				</textField>

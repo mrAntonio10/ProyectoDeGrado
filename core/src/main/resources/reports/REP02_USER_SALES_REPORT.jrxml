@@ -37,14 +37,14 @@
 			<staticText>
 				<reportElement style="Title" mode="Transparent" x="2" y="56" width="433" height="44" forecolor="#404040" uuid="286aba86-061c-4f43-8933-57db6567aca4"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="36" isBold="true"/>
+					<font fontName="Serif" size="30" isBold="true"/>
 				</textElement>
 				<text><![CDATA[REPORTE DE VENTAS]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="3" y="20" width="283" height="36" forecolor="#404040" uuid="88aa1cca-c67e-460c-86a6-99e3281df00e"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="14"/>
+					<font fontName="Serif" size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{branchOffice}]]></textFieldExpression>
 			</textField>
@@ -53,7 +53,7 @@
 				<textField>
 					<reportElement x="3" y="0" width="41" height="20" uuid="f38d0809-07f5-4a45-98d7-9529b26fb7ee"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="Zilla Slab" isBold="true"/>
+						<font fontName="Serif" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA["Usuario:"]]></textFieldExpression>
 				</textField>
@@ -63,7 +63,7 @@
 				<textField>
 					<reportElement x="3" y="0" width="37" height="20" uuid="10d797f5-284f-40bb-9000-af0e6dca0e18"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="Zilla Slab" isBold="true"/>
+						<font fontName="Serif" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA["Fecha:"]]></textFieldExpression>
 				</textField>
@@ -71,7 +71,7 @@
 			<textField pattern="EEEEE dd MMMMM yyyy">
 				<reportElement style="Title" x="265" y="109" width="138" height="20" forecolor="#000000" uuid="d456c7b6-98ea-420b-86ec-10dd46c185d6"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="10" isBold="false"/>
+					<font fontName="Serif" size="10" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
@@ -82,7 +82,7 @@
 			<textField>
 				<reportElement x="46" y="110" width="166" height="20" uuid="8a85cc4a-0b10-498d-a3b3-25217006a660"/>
 				<textElement textAlignment="Justified" verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{userPOS}]]></textFieldExpression>
 			</textField>
@@ -96,35 +96,35 @@
 			<staticText>
 				<reportElement mode="Opaque" x="2" y="0" width="138" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="0fd45d3e-f512-48a4-82a6-88bbdd8f1e33"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Fecha de venta]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="286" y="0" width="111" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="ee5001c0-ea71-4147-92b7-29d46ad0158e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Método de pago]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="476" y="0" width="79" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="2e70be51-bb01-4bf9-87d4-85c4b0a13d14"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="140" y="0" width="146" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="4ec50db7-10ee-4ccc-8029-b2be14720d5e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Cliente]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="397" y="0" width="79" height="20" forecolor="#FFFFFF" backcolor="#C0392B" uuid="7eb56acb-1271-4ef2-bb27-273a39fc3485"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" isBold="true"/>
+					<font fontName="Serif" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Descuento]]></text>
 			</staticText>
@@ -135,35 +135,35 @@
 			<textField isStretchWithOverflow="true">
 				<reportElement stretchType="RelativeToTallestObject" x="2" y="0" width="138" height="20" uuid="8cd97262-d8dd-4284-8256-ee139580cd10"/>
 				<textElement>
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{salesDate}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement stretchType="RelativeToTallestObject" x="286" y="0" width="111" height="20" uuid="e5592619-0857-4508-b1de-de50563fd54f"/>
 				<textElement>
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{paymentMethod}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement stretchType="RelativeToTallestObject" x="140" y="0" width="146" height="20" uuid="76d50aeb-84a6-4209-9818-539a81659a93"/>
 				<textElement>
-					<font fontName="Zilla Slab" isBold="false"/>
+					<font fontName="Serif" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{client}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="397" y="0" width="79" height="20" uuid="db29e967-537d-481c-bd02-c5bb746221f8"/>
 				<textElement textAlignment="Right">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalDiscount}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="476" y="0" width="79" height="20" uuid="d73f2273-f640-453b-ae58-9a6aeac51c08"/>
 				<textElement textAlignment="Right">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{totalPrice}]]></textFieldExpression>
 			</textField>
@@ -176,14 +176,14 @@
 				<textField evaluationTime="Report">
 					<reportElement style="Column header" x="515" y="0" width="40" height="20" forecolor="#FFFFFF" uuid="407739b9-72fd-4381-bd46-27ca23ede107"/>
 					<textElement verticalAlignment="Middle">
-						<font size="12" isBold="false"/>
+						<font fontName="Serif" size="12" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement style="Column header" x="435" y="0" width="80" height="20" forecolor="#FFFFFF" uuid="2638460b-0837-4bf7-b6a6-22d9ed15c73a"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font size="12" isBold="false"/>
+						<font fontName="Serif" size="12" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
 				</textField>
@@ -195,28 +195,28 @@
 			<textField>
 				<reportElement x="286" y="0" width="111" height="20" uuid="a1250006-01e4-4f04-ba06-064fce14fa94"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{sumDiscount}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="476" y="0" width="79" height="20" uuid="cf37946a-5c14-4f2a-8d1a-6266be35326f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Zilla Slab"/>
+					<font fontName="Serif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{sumTotal}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Opaque" x="140" y="0" width="146" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="41309927-398c-4dfe-84d5-668451fcbb67"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="12" isBold="true"/>
+					<font fontName="Serif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Descuento total:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="397" y="0" width="79" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="41ee957b-9d99-440f-be3e-91874002b865"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Zilla Slab" size="12" isBold="true"/>
+					<font fontName="Serif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total a pagar:]]></text>
 			</staticText>
