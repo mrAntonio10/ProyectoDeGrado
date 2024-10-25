@@ -44,9 +44,13 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ByteArrayOutputStream exportReport(String fileName, String report, String typeReport, Map<String, Object> params, List list) throws IOException, JRException {
+        InputStream reportStream = getClass().getResourceAsStream("/reports/"+report);
+        if (reportStream == null) {
+            throw new FileNotFoundException("El archivo de reporte no se encontró");
+        }
 
-        File file = ResourceUtils.getFile("classpath:reports/"+report);
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, dataSource);
