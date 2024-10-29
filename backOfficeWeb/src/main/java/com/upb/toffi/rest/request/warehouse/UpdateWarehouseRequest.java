@@ -18,4 +18,5 @@ public class UpdateWarehouseRequest {
     private BigInteger maxProduct;
     private BigInteger minProduct;
     private String state;
+    private String sku;
 }

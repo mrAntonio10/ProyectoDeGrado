@@ -12,4 +12,5 @@ public class UpdateProductRequest {
     private String name;
     private String category;
     private String beverageFormat;
+    private String sku;
 }

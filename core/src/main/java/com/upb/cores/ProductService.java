@@ -13,11 +13,11 @@ import java.util.List;
 
 @Service
 public interface ProductService {
-    Page<ProductListDto> getProductsList(String productName, String category, Pageable pageable);
-    List<ProductListDto> getProductsListByCategory(String category);
+    Page<ProductListDto> getProductsList(Authentication auth, String productName, String category, Pageable pageable);
+    List<ProductListDto> getProductsListByCategory(Authentication auth, String category);
     Product getProductById(String idProduct);
-    ProductDto createProduct(String name, String category, String beverageFormat);
-    ProductDto updateProduct(String idProduct, String name, String category, String beverageFormat);
+    ProductDto createProduct(Authentication auth, String name, String category, String beverageFormat, String sku);
+    ProductDto updateProduct(String idProduct, String name, String category, String beverageFormat, String sku);
 
     ProductDto deleteProduct(String idProduct);
 }

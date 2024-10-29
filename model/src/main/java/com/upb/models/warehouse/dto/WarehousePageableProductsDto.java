@@ -15,15 +15,15 @@ import java.math.BigInteger;
 @AllArgsConstructor @NoArgsConstructor
 public class WarehousePageableProductsDto {
     private String idProduct;
-    private String productCode;
     private String productName;
     private BigDecimal unitaryCost;
+    private String sku;
 
     public WarehousePageableProductsDto(Warehouse w) {
         this.idProduct = w.getProduct().getId();
-        this.productCode = w.getProductCode();
         this.productName = productNameStructure(w.getProduct().getName(), w.getProduct().getBeverageFormat());
         this.unitaryCost = w.getUnitaryCost();
+        this.sku = w.getProduct().getSku();
     }
 
     private String productNameStructure(String name, String beverageFormat){

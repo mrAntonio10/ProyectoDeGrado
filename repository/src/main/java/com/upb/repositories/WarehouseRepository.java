@@ -43,7 +43,7 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, String> {
             "WHERE w.state <> 'DELETED' " +
                 "AND b.state <> 'DELETED' " +
                 "AND p.state = true " +
-                "AND (:pName IS NULL OR UPPER(w.productCode) LIKE :pName OR UPPER(p.name) LIKE :pName) " +
+                "AND (:pName IS NULL OR UPPER(p.sku) LIKE :pName OR UPPER(p.name) LIKE :pName) " +
                 "AND (:category IS NULL OR UPPER(p.category) LIKE :category) " +
                 "AND (b.id = :idBranchOffice)"
     )

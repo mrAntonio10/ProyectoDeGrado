@@ -14,7 +14,7 @@ import java.math.BigInteger;
 @Builder
 @AllArgsConstructor @NoArgsConstructor
 public class AllDetailInfoDto {
-    private String productCode;
+    private String sku;
     private String productName;
     private BigInteger quantity;
     private BigDecimal unitaryPrice;
@@ -24,7 +24,7 @@ public class AllDetailInfoDto {
     private Document doc;
 
     public AllDetailInfoDto(OrderDetail o) {
-        this.productCode = o.getProductCode();
+        this.sku = o.getSku();
         this.productName = o.getProduct().getName();
         this.quantity = o.getQuantity();
         this.unitaryPrice = o.getUnitaryPrice();

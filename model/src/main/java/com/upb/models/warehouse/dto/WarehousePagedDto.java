@@ -23,6 +23,7 @@ public class WarehousePagedDto {
     private BigInteger min;
     private String branchOfficeName;
     private Boolean stockState;
+    private String sku;
 
 
     public WarehousePagedDto(Warehouse w) {
@@ -35,6 +36,7 @@ public class WarehousePagedDto {
         this.min = w.getMinProduct();
         this.branchOfficeName = w.getBranchOffice().getName();
         this.stockState = isStockStateValid(w.getStock(), w.getMinProduct());
+        this.sku = w.getProduct().getSku();
     }
 
     private Boolean isStockStateValid(BigInteger stock, BigInteger min) {

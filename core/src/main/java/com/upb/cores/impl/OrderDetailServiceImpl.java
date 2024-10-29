@@ -51,7 +51,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         .quantity(d.getQuantity())
                         .unitaryPrice(d.getUnitaryCost())
                         .document(document)
-                        .productCode(d.getProductCode())
+                        .sku(d.getSku())
                         .build();
 
                 orderDetailRepository.save(od);

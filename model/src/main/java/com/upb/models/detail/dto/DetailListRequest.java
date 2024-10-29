@@ -15,7 +15,7 @@ public class DetailListRequest {
     private BigInteger quantity;
     private BigDecimal unitaryCost;
 
-    private String productCode;
+    private String sku;
     private String idProduct;
 
 }

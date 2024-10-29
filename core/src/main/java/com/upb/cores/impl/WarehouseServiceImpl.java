@@ -16,6 +16,7 @@ import com.upb.models.warehouse.dto.WarehouseDto;
 import com.upb.models.warehouse.dto.WarehousePageableProductsDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.models.warehouse.dto.WarehouseStateDto;
+import com.upb.repositories.ProductRepository;
 import com.upb.repositories.UserBranchOfficeRepository;
 import com.upb.repositories.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     private final UserBranchOfficeRepository userBranchOfficeRepository;
 
     private final WarehouseRepository warehouseRepository;
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -103,7 +105,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
-    public WarehouseDto createWarehouse(String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String productCode) {
+    public WarehouseDto createWarehouse(String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct) {
         Product product = productService.getProductById(idProduct);
         BranchOffice branchO = branchOfficeService.getBranchOfficeById(idBranchOffice);
 
@@ -111,7 +113,6 @@ public class WarehouseServiceImpl implements WarehouseService {
         NumberUtilMod.throwNumberMaxDecimal(unitaryCost, 2,"precio unitario");
         NumberUtilMod.throwNumberIsNullOrEmpty(maxProduct, "máximo de producto");
         NumberUtilMod.throwNumberIsNullOrEmpty(minProduct, "mínimo de producto");
-        StringUtilMod.notNullStringMaxLength(productCode, 6, "sku/código producto");
 
         Warehouse w = Warehouse.builder()
                 .branchOffice(branchO)
@@ -121,7 +122,6 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .unitaryCost(unitaryCost)
                 .maxProduct(maxProduct)
                 .minProduct(minProduct)
-                .productCode(productCode)
                 .build();
 
         warehouseRepository.save(w);
@@ -131,7 +131,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
-    public WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct) {
+    public WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String sku) {
         Product product = productService.getProductById(idProduct);
         BranchOffice branchO = branchOfficeService.getBranchOfficeById(idBranchOffice);
 
@@ -139,6 +139,11 @@ public class WarehouseServiceImpl implements WarehouseService {
         NumberUtilMod.throwNumberMaxDecimal(unitaryCost, 2,"precio unitario");
         NumberUtilMod.throwNumberIsNullOrEmpty(maxProduct, "máximo de producto");
         NumberUtilMod.throwNumberIsNullOrEmpty(minProduct, "mínimo de producto");
+
+        if(!sku.toUpperCase().equals(product.getSku())) {
+            product.setSku(sku.toUpperCase());
+            productRepository.save(product);
+        }
 
         Warehouse w = warehouseRepository.findWarehouseByIdAndStateTrue(id).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al almacén")

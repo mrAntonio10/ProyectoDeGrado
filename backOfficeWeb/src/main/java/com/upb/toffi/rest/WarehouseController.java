@@ -141,7 +141,7 @@ public class WarehouseController {
         try {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     warehouseService.createWarehouse(w.getIdProduct(), w.getIdBranchOffice(), w.getStock(),
-                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct(), w.getProductCode()))
+                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct()))
             );
         } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
@@ -166,7 +166,7 @@ public class WarehouseController {
         try {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     warehouseService.updateWarehouse(w.getId(), w.getIdProduct(), w.getIdBranchOffice(), w.getStock(),
-                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct()))
+                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct(), w.getSku()))
             );
         } catch (NoSuchElementException e) {
             log.error("Error {} ID: {}, causa {}", e.getMessage(), w.getId(),e.getCause());

@@ -43,8 +43,8 @@ public class OrderDetail implements Serializable {
     private BigDecimal totalPrice;
 
     @Basic
-    @Column(name = "PRODUCT_CODE")
-    private String productCode;
+    @Column(name = "SKU")
+    private String sku;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_PRODUCT", referencedColumnName = "ID")

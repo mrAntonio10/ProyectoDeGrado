@@ -19,7 +19,7 @@ public interface WarehouseService {
     Page<WarehousePageableProductsDto> getWarehousePageableProductsForDetail(Authentication auth, String productNameOrCode, String category, Pageable pageable);
     Warehouse getWarehouseById(String idWarehouse);
     Warehouse getWarehouseByIdBranchOfficeProductNameAndBeverageFormat(String idBranchOffice, String productName, String beverageFormat);
-    WarehouseDto createWarehouse(String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String productCode);
-    WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct);
+    WarehouseDto createWarehouse(String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct);
+    WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String sku);
     WarehouseStateDto deleteWarehouseById(String id);
 }

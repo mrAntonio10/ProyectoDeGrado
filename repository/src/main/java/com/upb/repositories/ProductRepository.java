@@ -17,11 +17,13 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
     @Query("SELECT p FROM Product p " +
+                "INNER JOIN FETCH p.enterprise e " +
             "WHERE p.state <> false " +
                 "AND (:cat IS NULL OR UPPER(p.category) LIKE :cat) " +
-                "AND (:name IS NULL OR UPPER(p.name) LIKE :name )"
+                "AND (:name IS NULL OR UPPER(p.name) LIKE :name )" +
+                "AND e.id =:idEnterprise"
     )
-    Page<ProductListDto> getProductPageable(
+    Page<ProductListDto> getProductPageable(@Param("idEnterprise") String idEnterprise,
                                         @Param("name") String productName,
                                         @Param("cat") String cat,
                                         Pageable pageable);
@@ -33,10 +35,13 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     Optional<Product> findProductByIdAndStateTrue(@Param("id") String id);
 
     @Query("SELECT p FROM Product p " +
+                "INNER JOIN FETCH p.enterprise e " +
             "WHERE p.state <> false " +
+                "AND e.id =:idEnterprise " +
                 "AND UPPER(p.category) =:cat"
     )
-    List<ProductListDto> getProductsListByCategoryAndStateTrue(@Param("cat") String category);
+    List<ProductListDto> getEnterpriseProductsListByCategoryAndStateTrue(@Param("idEnterprise") String idEnterprise,
+                                                                        @Param("cat") String category);
 
     @Query("SELECT p FROM Product p " +
             "WHERE p.id IN :list " +

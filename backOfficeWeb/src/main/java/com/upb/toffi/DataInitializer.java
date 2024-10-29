@@ -34,7 +34,8 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
       this.createRolesAndUsers();
-//      this.createOperations();
+//        this.createOperations();
+
       this.createResources();
     }
 
@@ -183,7 +184,7 @@ public class DataInitializer implements CommandLineRunner {
         this.createUpdateResource("Panel de venta", "/sales-panel", "pi pi-cart-plus","Recurso encargado de gestionar el panel de productos de un punto de venta",idComercialManagementResource, 1, PermissionsEnum.SalesPanelPermission.class, sales);
         this.createUpdateResource("Ventas", "/user-sales", "pi pi-dollar","Recurso encargado de gestionar las ventas realizadas por un usuario punto de venta",idComercialManagementResource, 2, PermissionsEnum.UserSalesPermission.class, sales);
 
-        this.createUpdateResource("Gestión de ventas", "/sales-management", "pi pi-dollar","Recurso encargado de gestionar las ventas realizadas por los usuarios punto de venta",idComercialManagementResource, 2, PermissionsEnum.UserSalesPermission.class, admin);
+//        this.createUpdateResource("Gestión de ventas", "/sales-management", "pi pi-dollar","Recurso encargado de gestionar las ventas realizadas por los usuarios punto de venta",idComercialManagementResource, 2, PermissionsEnum.UserSalesPermission.class, admin);
     }
 
     private void createOperations() {

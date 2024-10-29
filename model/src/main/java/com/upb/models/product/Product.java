@@ -1,9 +1,9 @@
 package com.upb.models.product;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.upb.models.branchOffice.BranchOffice;
+import com.upb.models.enterprise.Enterprise;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,5 +35,13 @@ public class Product implements Serializable {
 
     @Column(name = "STATE")
     private Boolean state;
+
+    @Column(name = "SKU", length = 6)
+    private String sku;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ID_ENTERPRISE", referencedColumnName = "ID", nullable=false)
+    private Enterprise enterprise;
 
 }

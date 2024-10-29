@@ -43,10 +43,12 @@ public class ProductController {
                                                                                                        @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
     ) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
             PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
-                    (this.productService.getProductsList(filterByProductName, category, pageable))))
+                    (this.productService.getProductsList(auth, filterByProductName, category, pageable))))
             );
         } catch (Exception e) {
             log.error("Error genérico al obtener", e);
@@ -78,10 +80,13 @@ public class ProductController {
     }
 
     @GetMapping("/list/{category}")
-    public ResponseEntity<GenericResponse<List<ProductListDto>>> getProductListByCategory(@PathVariable("category") String category) {
+    public ResponseEntity<GenericResponse<List<ProductListDto>>> getProductListByCategory(
+            @PathVariable("category") String category) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
             return ok(GenericResponse.success(HttpStatus.OK.value(),
-                    this.productService.getProductsListByCategory(category))
+                    this.productService.getProductsListByCategory(auth, category))
             );
         } catch (NoSuchElementException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
@@ -99,8 +104,11 @@ public class ProductController {
     @PostMapping()
     public ResponseEntity<GenericResponse<ProductDto>> createProduct(@RequestBody CreateProductRequest product) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
             return ok(GenericResponse.success(HttpStatus.OK.value(),
-                    productService.createProduct(product.getName(), product.getCategory(), product.getBeverageFormat())
+                    productService.createProduct(auth, product.getName(), product.getCategory(), product.getBeverageFormat(),
+                            product.getSku())
                     )
             );
         } catch (NullPointerException | IllegalArgumentException e) {
@@ -121,7 +129,8 @@ public class ProductController {
         try {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                             productService.updateProduct(product.getId(),
-                                    product.getName(), product.getCategory(), product.getBeverageFormat())
+                                    product.getName(), product.getCategory(), product.getBeverageFormat(),
+                                    product.getSku())
                     )
             );
         } catch (NullPointerException | IllegalArgumentException e) {

@@ -11,4 +11,5 @@ public class CreateProductRequest {
     private String name;
     private String category;
     private String beverageFormat;
+    private String sku;
 }

@@ -14,7 +14,7 @@ import java.math.BigInteger;
 @Builder
 @AllArgsConstructor @NoArgsConstructor
 public class DetailInfoDto {
-    private String productCode;
+    private String sku;
     private String productName;
     private BigInteger quantity;
     private BigDecimal unitaryPrice;
@@ -22,7 +22,7 @@ public class DetailInfoDto {
     private BigDecimal total;
 
     public DetailInfoDto(AllDetailInfoDto d) {
-        this.productCode = d.getProductCode();
+        this.sku = d.getSku();
         this.productName = d.getProductName();
         this.quantity = d.getQuantity();
         this.unitaryPrice = d.getUnitaryPrice();
