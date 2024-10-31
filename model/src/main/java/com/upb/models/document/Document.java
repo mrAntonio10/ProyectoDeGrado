@@ -47,6 +47,7 @@ public class Document implements Serializable {
     @Column(name = "TOTAL_DISCOUNT")
     private BigDecimal totalDiscount;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_SALES_USER", referencedColumnName = "ID")
     private User salesUser;

@@ -52,6 +52,9 @@ public class AuthController {
                 case "SALES_POINT":
                     resourceUrl = "/dashboard/comercial-management/sales-panel";
                     break;
+                case "ROOT":
+                    resourceUrl = "/dashboard/management/enterprise";
+                    break;
                 default:
                     resourceUrl = "/dashboard";
                     break;

@@ -1,6 +1,7 @@
 package com.upb.toffi.rest;
 
 import com.upb.cores.DocumentService;
+import com.upb.models.detail.dto.CharInfoDto;
 import com.upb.models.document.dto.SalesDocumentInfoDto;
 import com.upb.models.document.dto.SalesUserDocumentDto;
 import com.upb.toffi.config.util.GenericResponse;
