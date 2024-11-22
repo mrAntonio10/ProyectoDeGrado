@@ -5,7 +5,6 @@ import com.upb.cores.BranchOfficeService;
 import com.upb.cores.OrderDetailService;
 import com.upb.cores.utils.StringUtilMod;
 import com.upb.models.branchOffice.BranchOffice;
-import com.upb.models.branchOffice.dto.BranchOfficeDto;
 import com.upb.models.branchOffice.dto.BranchOfficeStateDto;
 import com.upb.models.detail.OrderDetail;
 import com.upb.models.detail.dto.*;
@@ -14,9 +13,11 @@ import com.upb.models.enterprise.Enterprise;
 import com.upb.models.product.Product;
 import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
+import com.upb.models.warehouse.Warehouse;
 import com.upb.repositories.OrderDetailRepository;
 import com.upb.repositories.ProductRepository;
 import com.upb.repositories.UserBranchOfficeRepository;
+import com.upb.repositories.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +41,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     private final ProductRepository productRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final UserBranchOfficeRepository userBranchOfficeRepository;
+    private final WarehouseRepository warehouseRepository;
+
     private final BranchOfficeService branchOfficeService;
 
     @Override
@@ -48,16 +50,23 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         List<DetailCreatedDto> resp = new ArrayList<>();
 
         List<String> idList =detailList.stream().map(DetailListRequest::getIdProduct).toList();
-        List<Product> productList = productRepository.getProductListByIdList(idList);
+
+        List<Product> productList = productRepository.getProductsListByIdList(idList);
+
+        List< Warehouse> warehouseList = warehouseRepository.getWarehousesListByIdProductList(idList);
 
         if(idList.size() < productList.size()) {
             throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al producto.");
         }
-        Map<String, DetailListRequest> detailsByProductId = detailList.stream()
+        Map<String, DetailListRequest> detailsByProductIdMap = detailList.stream()
                 .collect(Collectors.toMap(DetailListRequest::getIdProduct, d -> d));
 
+        Map<String, Warehouse> warehouseByProductIdMap = warehouseList.stream()
+                .collect(Collectors.toMap(w -> w.getProduct().getId(), w -> w));
+
         productList.forEach(p -> {
-            DetailListRequest d = detailsByProductId.get(p.getId());
+            DetailListRequest d = detailsByProductIdMap.get(p.getId());
+            Warehouse w = warehouseByProductIdMap.get(p.getId());
 
             if (d != null) {
                 OrderDetail od = OrderDetail.builder()
@@ -73,6 +82,13 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 orderDetailRepository.save(od);
 
                 resp.add(new DetailCreatedDto(od));
+
+                if(w.getStock().compareTo(d.getQuantity()) < 0) {
+                    throw new NoSuchElementException("El producto: " +p.getName()+ "de stock " +w.getStock()+ ", es inferior a la orden de " +d.getQuantity());
+                }
+
+                w.setStock(w.getStock().subtract(d.getQuantity()));
+                warehouseRepository.save(w);
             }
         });
 

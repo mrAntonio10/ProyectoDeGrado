@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -75,5 +76,15 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, String> {
     Optional<Warehouse> findWarehouseByIdBranchOfficeProductNameBeverageFormatAndStateTrue(@Param("idBranchOffice") String idBranchOffice,
                                                                                            @Param("productName") String productName,
                                                                                            @Param("bFormat") String beverageFormat);
+
+
+    @Query("SELECT w FROM Warehouse w " +
+                "INNER JOIN FETCH w.product p " +
+                "INNER JOIN FETCH w.branchOffice b " +
+            "WHERE w.state <> 'DELETED' " +
+                "AND b.state <> 'DELETED' " +
+                "AND p.id IN :list"
+    )
+    List<Warehouse> getWarehousesListByIdProductList(@Param("list") List<String> idList);
 
 }
