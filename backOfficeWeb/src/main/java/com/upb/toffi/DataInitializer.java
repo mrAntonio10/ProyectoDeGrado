@@ -10,6 +10,7 @@ import com.upb.models.user.User;
 import com.upb.repositories.*;
 import com.upb.toffi.config.util.PermissionsEnum;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -174,10 +176,10 @@ public class DataInitializer implements CommandLineRunner {
 
 
         //Recurso Padre - Ajustes
-//        String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, null, root, admin);
-//        this.createUpdateResource("Parámetros", "/parameter", "pi pi-fw pi-code","Recurso encargado de gestionar parámetros del sistema",idConfigurationResource, 1, null, root, admin);
-//        this.createUpdateResource("Dominios", "/domain", "pi pi-fw pi-box","Recurso encargado de gestionar los dominios del sistema",idConfigurationResource, 2, null, root);
-//        this.createUpdateResource("Permisos", "/permission", "pi pi-exclamation-triangle","Recurso encargado de gestionar los permisos por roles de usuarios en el sistema",idConfigurationResource, 3, null, root, admin);
+        String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, null, root, admin);
+        this.createUpdateResource("Parámetros", "/parameter", "pi pi-fw pi-code","Recurso encargado de gestionar parámetros del sistema",idConfigurationResource, 1, null, root, admin);
+        this.createUpdateResource("Dominios", "/domain", "pi pi-fw pi-box","Recurso encargado de gestionar los dominios del sistema",idConfigurationResource, 2, null, root);
+        this.createUpdateResource("Permisos", "/permission", "pi pi-exclamation-triangle","Recurso encargado de gestionar los permisos por roles de usuarios en el sistema",idConfigurationResource, 3, null, root, admin);
 
         //Recurso Padre - Gestión comercial
         String idComercialManagementResource = this.createUpdateResource("Gestión comercial", "/dashboard/comercial-management", "pi pi-desktop","Recurso padre para la gestión comercial de puntos de ventas",null, 2, null, sales);
@@ -247,6 +249,8 @@ public class DataInitializer implements CommandLineRunner {
                     .priority(priority)
                     .state(true)
                     .build();
+
+            log.info("Se creó el recurso con nombre [{}]", resourceName);
         }
 
         resourceRepository.save(resource);
@@ -275,6 +279,7 @@ public class DataInitializer implements CommandLineRunner {
                                 .operation(operation)
                                 .rol(rol)
                                 .build();
+                        log.info("Al rol [{}], y recurso [{}], se le adjunto la operacion de [{}]", rol.getName(), resource.getName(), operation.getName());
 
                         permissionRepository.save(permission);
                     }

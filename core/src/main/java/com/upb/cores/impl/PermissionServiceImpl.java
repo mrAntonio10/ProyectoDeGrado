@@ -69,11 +69,9 @@ public class PermissionServiceImpl implements PermissionService {
     @Transactional(readOnly = true)
     public List<ResourcePermissionDto> getPermissionsByAuthenticationAndResourceUrl(Authentication authentication, String resourceUrl) {
         String idRol = authentication.getAuthorities().stream().toList().get(0).toString();
-
         Rol rol = rolRepository.findByIdAndStateTrue(idRol).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al rol solicitado")
         );
-
         return permissionRepository.getPermissionByIdRolAndResourceUrlAndStatesTrue(rol.getId(), "/"+resourceUrl);
     }
 
