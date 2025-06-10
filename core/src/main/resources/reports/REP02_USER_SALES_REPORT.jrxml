@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="REP02_USER_SALES_REPORT" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6e352f10-4f39-46a1-adf2-b62ddd9c4fc6">
-	<property name="ireport.zoom" value="5.054470284992971"/>
-	<property name="ireport.x" value="1010"/>
-	<property name="ireport.y" value="397"/>
+	<property name="ireport.zoom" value="3.7974983358324343"/>
+	<property name="ireport.x" value="443"/>
+	<property name="ireport.y" value="369"/>
 	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
 	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
 	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
@@ -194,7 +194,7 @@
 	<summary>
 		<band height="20" splitType="Stretch">
 			<textField>
-				<reportElement x="286" y="0" width="111" height="20" uuid="a1250006-01e4-4f04-ba06-064fce14fa94"/>
+				<reportElement x="316" y="0" width="79" height="20" uuid="a1250006-01e4-4f04-ba06-064fce14fa94"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Serif"/>
 				</textElement>
@@ -208,15 +208,15 @@
 				<textFieldExpression><![CDATA[$V{sumTotal}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="140" y="0" width="146" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="41309927-398c-4dfe-84d5-668451fcbb67"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<reportElement mode="Opaque" x="227" y="0" width="89" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="41309927-398c-4dfe-84d5-668451fcbb67"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Serif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Descuento total:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="397" y="0" width="79" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="41ee957b-9d99-440f-be3e-91874002b865"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<reportElement mode="Opaque" x="395" y="0" width="81" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="41ee957b-9d99-440f-be3e-91874002b865"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Serif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total a pagar:]]></text>

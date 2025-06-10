@@ -18,12 +18,14 @@ public class WarehousePageableProductsDto {
     private String productName;
     private BigDecimal unitaryCost;
     private String sku;
+    private BigInteger stock;
 
     public WarehousePageableProductsDto(Warehouse w) {
         this.idProduct = w.getProduct().getId();
         this.productName = productNameStructure(w.getProduct().getName(), w.getProduct().getBeverageFormat());
         this.unitaryCost = w.getUnitaryCost();
         this.sku = w.getProduct().getSku();
+        this.stock = w.getStock();
     }
 
     private String productNameStructure(String name, String beverageFormat){
