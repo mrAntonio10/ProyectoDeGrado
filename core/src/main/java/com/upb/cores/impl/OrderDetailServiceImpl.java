@@ -46,6 +46,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     private final BranchOfficeService branchOfficeService;
 
     @Override
+    @Transactional
     public List<DetailCreatedDto> createDetail(Document document, List<DetailListRequest> detailList) {
         List<DetailCreatedDto> resp = new ArrayList<>();
 
@@ -53,7 +54,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         List<Product> productList = productRepository.getProductsListByIdList(idList);
 
-        List< Warehouse> warehouseList = warehouseRepository.getWarehousesListByIdProductList(idList);
+        List<Warehouse> warehouseList = warehouseRepository.getWarehousesListByIdProductList(idList);
 
         if(idList.size() < productList.size()) {
             throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al producto.");
