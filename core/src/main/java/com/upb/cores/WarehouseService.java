@@ -20,6 +20,6 @@ public interface WarehouseService {
     Warehouse getWarehouseById(String idWarehouse);
     Warehouse getWarehouseByIdBranchOfficeProductNameAndBeverageFormat(String idBranchOffice, String productName, String beverageFormat);
     WarehouseDto createWarehouse(String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct);
-    WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String sku);
+    WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String sku, String beverageFormat);
     WarehouseStateDto deleteWarehouseById(String id);
 }

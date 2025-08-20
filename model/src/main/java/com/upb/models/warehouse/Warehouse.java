@@ -25,7 +25,7 @@ public class Warehouse implements Serializable {
     @UuidGenerator
     private String  id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name="ID_PRODUCT", referencedColumnName = "ID", nullable=false)
     private Product product;
 
