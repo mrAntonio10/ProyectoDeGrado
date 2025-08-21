@@ -93,7 +93,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         Page<WarehousePagedDto> pagedResp =  warehouseRepository.getWarehousePageable(ub.get(0).getBranchOffice().getEnterprise().getId(),
-                idBranchOffice, productName, category, maxOrMinLimit, pageable);
+                idBranchOffice, productName, category, maxOrMinLimit,  Pageable.unpaged());
 
         Map<String, Object> mapParams = new HashMap<>();
             mapParams.put("username", user.getEmail());
@@ -101,9 +101,7 @@ public class ReportServiceImpl implements ReportService {
             mapParams.put("generatedDate", this.getDateTime(java.time.LocalDateTime.now()));
 
         List<WarehousePagedDto> list = new ArrayList<>();
-        if(!pagedResp.isEmpty()) {
-            list = pagedResp.stream().toList();
-        }
+
 
         String fileName = "reporte_de_quiebre.pdf";
         ReportFileDto rep = new ReportFileDto();
@@ -119,7 +117,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ReportFileDto userSalesReport(Authentication auth, String filter, LocalDate date, Pageable pageable, Map<String, Object> params) throws JRException, IOException {
-        filter = (!StringUtil.isNullOrEmpty(filter) ? "%" +filter.toUpperCase()+ "%" : null);
+        filter = !StringUtil.isNullOrEmpty(filter) ? "%" +filter.toUpperCase()+ "%" : null;
 
         User user = (User) auth.getPrincipal();
         String idRol = auth.getAuthorities().stream().toList().get(0).toString();
@@ -139,12 +137,10 @@ public class ReportServiceImpl implements ReportService {
             mapParams.put("userPOS", user.getName() +" "+ user.getLastname());
             mapParams.put("generatedDate", this.getDateTime(java.time.LocalDateTime.now()));
 
-        Page<SalesUserDocumentDto> pagedResp = this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, pageable);
+        Page<SalesUserDocumentDto> pagedResp = this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, Pageable.unpaged());
 
         List<SalesUserDocumentDto> list = new ArrayList<>();
-        if(!pagedResp.isEmpty()) {
-            list = pagedResp.stream().toList();
-        }
+        list = pagedResp.stream().toList();
 
         String fileName = "reporte_de_ventas.pdf";
         ReportFileDto rep = new ReportFileDto();
@@ -169,6 +165,6 @@ public class ReportServiceImpl implements ReportService {
     private String getDateTime(LocalDateTime dt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd-MMMM-yyyy", new Locale("es", "ES"));
 
-        return dt.format(formatter).substring(0, 1).toUpperCase() + dt.format(formatter).substring(1).toLowerCase();
+        return dt.atZone(ZoneId.of("America/La_Paz")).format(formatter).substring(0, 1).toUpperCase() + dt.atZone(ZoneId.of("America/La_Paz")).format(formatter).substring(1).toLowerCase();
     }
 }
