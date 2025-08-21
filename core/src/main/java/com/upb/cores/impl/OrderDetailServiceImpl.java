@@ -55,6 +55,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         List<Product> productList = productRepository.getProductsListByIdList(idList);
 
         List<Warehouse> warehouseList = warehouseRepository.getWarehousesListByIdProductList(idList);
+        log.info("warehouse by idProducts {}", warehouseList);
 
         if(idList.size() < productList.size()) {
             throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al producto.");

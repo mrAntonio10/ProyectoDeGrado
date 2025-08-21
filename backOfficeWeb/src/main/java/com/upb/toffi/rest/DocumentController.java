@@ -127,7 +127,13 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),
                             e.getMessage()));
-        } catch (NoSuchElementException e) {
+        } catch (IllegalStateException e ) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),
+                            e.getMessage()));
+        }
+        catch (NoSuchElementException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
