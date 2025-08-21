@@ -144,6 +144,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         product.setSku(sku.toUpperCase());
         product.setBeverageFormat(StringUtil.isNullOrEmpty(beverageFormat) ? "" : beverageFormat);
+        productRepository.save(product);
 
         log.info("The producto instance is {}", product);
 
