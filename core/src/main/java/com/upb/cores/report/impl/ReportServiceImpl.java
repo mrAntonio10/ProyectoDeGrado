@@ -135,9 +135,9 @@ public class ReportServiceImpl implements ReportService {
         Map<String, Object> mapParams = new HashMap<>();
             mapParams.put("branchOffice", b.getName());
             mapParams.put("userPOS", user.getName() +" "+ user.getLastname());
-            mapParams.put("generatedDate", this.getDateTime(java.time.LocalDateTime.now()));
+            mapParams.put("generatedDate", this.getDateTime(date.atStartOfDay()));
 
-        Page<SalesUserDocumentDto> pagedResp = this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, Pageable.unpaged());
+        Page<SalesUserDocumentDto> pagedResp = this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, "ACEPTADO",Pageable.unpaged());
 
         List<SalesUserDocumentDto> list = new ArrayList<>();
         list = pagedResp.stream().toList();

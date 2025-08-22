@@ -27,6 +27,7 @@ public class SalesUserDocumentDto {
     private String paymentMethod;
     private BigDecimal totalDiscount;
     private BigDecimal totalPrice;
+    private String state;
 
     public SalesUserDocumentDto(Document d) {
         this.id = d.getId();
@@ -35,6 +36,7 @@ public class SalesUserDocumentDto {
         this.paymentMethod = this.getPaymentMethod(d.getPaymentMethod());
         this.totalDiscount = d.getTotalDiscount();
         this.totalPrice = d.getTotalPrice();
+        this.state = (d.getState().equals("ACEPTADO")) ? "Aceptado" : "Eliminado";
     }
 
     private String getPaymentMethod(String paymentMethod) {

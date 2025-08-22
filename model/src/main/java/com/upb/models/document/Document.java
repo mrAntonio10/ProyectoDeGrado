@@ -63,4 +63,8 @@ public class Document implements Serializable {
     @Basic
     @Column(name = "DELIVERY_INFORMATION", length = 60)
     private String deliveryInformation;
+
+    @Basic
+    @Column(name = "REASON")
+    private String reason;
 }

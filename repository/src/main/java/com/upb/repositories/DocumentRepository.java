@@ -22,7 +22,7 @@ public interface DocumentRepository extends JpaRepository<Document, String> {
 
     @Query("SELECT d FROM Document d " +
                 "INNER JOIN FETCH d.salesUser u " +
-            "WHERE d.state <> 'DELETED' " +
+            "WHERE d.state =:state " +
                 "AND (:filter IS NULL) " +
                 "AND u.id =:idUser " +
                 "AND d.deliveryDate > :sDate " +
@@ -32,6 +32,7 @@ public interface DocumentRepository extends JpaRepository<Document, String> {
                                                            @Param("filter") String paymentMethod,
                                                            @Param("sDate") Long sDate,
                                                            @Param("fDate") Long fDate,
+                                                           @Param("state") String state,
                                                            Pageable pageable);
 
     @Query("SELECT d FROM Document d " +
@@ -47,4 +48,10 @@ public interface DocumentRepository extends JpaRepository<Document, String> {
                                                            @Param("sDate") Long sDate,
                                                            @Param("fDate") Long fDate,
                                                            Pageable pageable);
+
+    @Query("SELECT d FROM Document d " +
+            "WHERE d.id =:id " +
+                "AND d.state <> 'DELETED'"
+    )
+    Optional<Document> getDocumentByIdDocument(@Param("id") String id);
 }

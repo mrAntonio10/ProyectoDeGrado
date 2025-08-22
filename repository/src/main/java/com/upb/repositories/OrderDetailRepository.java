@@ -18,8 +18,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, String
                 "INNER JOIN FETCH detail.product p " +
                 "INNER JOIN FETCH detail.document doc " +
                 "INNER JOIN FETCH doc.salesUser user " +
-            "WHERE doc.state <> 'DELETED' " +
-                "AND p.state = true " +
+            "WHERE p.state = true " +
                 "AND doc.id =:idDoc " +
                 "AND user.state <> 'DELETED'"
     )
