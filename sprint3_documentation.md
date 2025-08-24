@@ -1,5 +1,4 @@
 # Sprint 3: Almacén y Productos
-*Fecha: Martes, 17 de septiembre de 2025*
 
 ## Objetivo
 El propósito de este sprint es gestionar el almacén de una sucursal y los productos registrados en él, proporcionando APIs para administrar productos y el inventario del almacén.
