@@ -1,6 +1,7 @@
 com\upb\cores\impl\WarehouseServiceImpl.class
 com\upb\cores\impl\UserServiceImpl.class
 com\upb\cores\report\dto\ReportFileDto.class
+com\upb\cores\stereum\a.class
 com\upb\cores\report\impl\ReportServiceImpl.class
 com\upb\cores\ResourceService.class
 com\upb\cores\impl\DocumentServiceImpl.class
