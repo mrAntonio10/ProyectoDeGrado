@@ -19,4 +19,5 @@ public class UpdateWarehouseRequest {
     private BigInteger minProduct;
     private String state;
     private String sku;
+    private String beverageFormat;
 }

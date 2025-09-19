@@ -10,6 +10,7 @@ import com.upb.models.user.User;
 import com.upb.repositories.*;
 import com.upb.toffi.config.util.PermissionsEnum;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -34,7 +36,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
       this.createRolesAndUsers();
-//        this.createOperations();
+        this.createOperations();
 
       this.createResources();
     }
@@ -188,40 +190,57 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createOperations() {
-        Operation reportOperation = Operation.builder()
-                .name("REPORT")
-                .description("Operación que permite otorgar permisos de generar reportes")
-                .state(true)
-                .build();
-        operationRepository.save(reportOperation);
+        Optional<Operation> rOp = operationRepository.findOperationByName("REPORT");
+        if(rOp.isEmpty()) {
+            Operation reportOperation = Operation.builder()
+                    .name("REPORT")
+                    .description("Operación que permite otorgar permisos de generar reportes")
+                    .state(true)
+                    .build();
+            operationRepository.save(reportOperation);
+            log.info("Se creó la operación para generar reportes");
+        }
 
-        Operation createOperation = Operation.builder()
-                .name("CREATE")
-                .description("Operación que permite otorgar permisos de creación")
-                .state(true)
-                .build();
-        operationRepository.save(createOperation);
-
-        Operation updateOperation = Operation.builder()
-                .name("UPDATE")
-                .description("Operación que permite otorgar permisos de actualización")
-                .state(true)
-                .build();
-        operationRepository.save(updateOperation);
-
-        Operation deleteOperation = Operation.builder()
-                .name("DELETE")
-                .description("Operación que permite otorgar permisos de eliminación")
-                .state(true)
-                .build();
-        operationRepository.save(deleteOperation);
-
-        Operation viewOperation = Operation.builder()
-                .name("VIEW")
-                .description("Operación que permite otorgar permisos de vista al recurso principal")
-                .state(true)
-                .build();
-        operationRepository.save(viewOperation);
+        Optional<Operation> cOp = operationRepository.findOperationByName("CREATE");
+        if(cOp.isEmpty()) {
+            Operation createOperation = Operation.builder()
+                    .name("CREATE")
+                    .description("Operación que permite otorgar permisos de creación")
+                    .state(true)
+                    .build();
+            operationRepository.save(createOperation);
+            log.info("Se creó la operación para crear");
+        }
+        Optional<Operation> uOp = operationRepository.findOperationByName("UPDATE");
+        if(uOp.isEmpty()) {
+            Operation updateOperation = Operation.builder()
+                    .name("UPDATE")
+                    .description("Operación que permite otorgar permisos de actualización")
+                    .state(true)
+                    .build();
+            operationRepository.save(updateOperation);
+            log.info("Se creó la operación para actualizar");
+        }
+        Optional<Operation> dOp = operationRepository.findOperationByName("DELETE");
+        if(dOp.isEmpty()) {
+            Operation deleteOperation = Operation.builder()
+                    .name("DELETE")
+                    .description("Operación que permite otorgar permisos de eliminación")
+                    .state(true)
+                    .build();
+            operationRepository.save(deleteOperation);
+            log.info("Se creó la operación para eliminar");
+        }
+        Optional<Operation> vOp = operationRepository.findOperationByName("VIEW");
+        if(vOp.isEmpty()) {
+            Operation viewOperation = Operation.builder()
+                    .name("VIEW")
+                    .description("Operación que permite otorgar permisos de vista al recurso principal")
+                    .state(true)
+                    .build();
+            operationRepository.save(viewOperation);
+            log.info("Se creó la operación para visualizar");
+        }
     }
 
 
@@ -247,6 +266,8 @@ public class DataInitializer implements CommandLineRunner {
                     .priority(priority)
                     .state(true)
                     .build();
+
+            log.info("Se creó el recurso con nombre [{}]", resourceName);
         }
 
         resourceRepository.save(resource);
@@ -275,6 +296,7 @@ public class DataInitializer implements CommandLineRunner {
                                 .operation(operation)
                                 .rol(rol)
                                 .build();
+                        log.info("Al rol [{}], y recurso [{}], se le adjunto la operacion de [{}]", rol.getName(), resource.getName(), operation.getName());
 
                         permissionRepository.save(permission);
                     }

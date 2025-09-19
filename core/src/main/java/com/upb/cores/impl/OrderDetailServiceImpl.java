@@ -46,6 +46,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     private final BranchOfficeService branchOfficeService;
 
     @Override
+    @Transactional
     public List<DetailCreatedDto> createDetail(Document document, List<DetailListRequest> detailList) {
         List<DetailCreatedDto> resp = new ArrayList<>();
 
@@ -53,7 +54,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         List<Product> productList = productRepository.getProductsListByIdList(idList);
 
-        List< Warehouse> warehouseList = warehouseRepository.getWarehousesListByIdProductList(idList);
+        List<Warehouse> warehouseList = warehouseRepository.getWarehousesListByIdProductList(idList);
+        log.info("warehouse by idProducts {}", warehouseList);
 
         if(idList.size() < productList.size()) {
             throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al producto.");
@@ -111,25 +113,27 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 .stream().map(User_BranchOffice::getBranchOffice).map(BranchOffice::getEnterprise)
                 .map(Enterprise::getId).toList().get(0);
 
+
         List<String> idB = branchOfficeService.getBranchOfficeListByIdEnterprise(idEnterprise).stream()
                 .map(BranchOfficeStateDto::getId).toList();
 
         Long first = date.atStartOfDay(ZoneId.of("America/La_Paz")).withDayOfMonth(1).toInstant().toEpochMilli();
         Long last = date.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
 
-        return orderDetailRepository.getCharInfoDataList(idB, first, last).stream()
+        List<CharInfoDto> resp = orderDetailRepository.getCharInfoDataList(idB, first, last);
+
+        return resp.stream()
                 .collect(Collectors.groupingBy(data -> data.getBranchOffice().getId(),
                         Collectors.collectingAndThen(Collectors.toList(),
                                 list -> {
                                     String branchOfficeName = list.get(0).getBranchOffice().getName();
 
                                     BigDecimal totalPrice = list.stream()
-                                            .map(CharInfoDto::getDocument)
-                                            .map(Document::getTotalPrice)
+                                            .map(CharInfoDto::getSellPrice)
                                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                                     BigInteger totalQuantity = list.stream()
-                                            .map(CharInfoDto::getQuantity)
+                                                    .map(CharInfoDto::getQuantity)
                                             .reduce(BigInteger.ZERO, BigInteger::add);
 
                                     return new TotalCharInfoDto(branchOfficeName, totalPrice, totalQuantity);

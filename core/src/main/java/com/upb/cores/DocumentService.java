@@ -14,8 +14,9 @@ import java.util.List;
 
 @Service
 public interface DocumentService {
-    Page<SalesUserDocumentDto> getSalesUserDocumentList(Authentication auth, String filter, LocalDate date, Pageable pageable);
+    Page<SalesUserDocumentDto> getSalesUserDocumentList(Authentication auth, String filter, LocalDate date, String state,Pageable pageable);
     Page<SalesUserDocumentDto> getManagementSalesDocumentList(String filter, LocalDate date, String idUser,Pageable pageable);
-    SalesDocumentInfoDto getDocumentById(String idDocument);
+    SalesDocumentInfoDto getSalesDocumentInfoByDocumentById(String idDocument);
     String createDetailDocument(Authentication auth, String deliveryInformation, BigDecimal totalPrice, BigDecimal totalDiscount, String paymentMethod, List<DetailListRequest> detailList);
+    String deleteDocumentById(String idDocument);
 }

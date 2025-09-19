@@ -41,14 +41,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<SalesUserDocumentDto> getSalesUserDocumentList(Authentication auth, String filter, LocalDate date, Pageable pageable) {
+    public Page<SalesUserDocumentDto> getSalesUserDocumentList(Authentication auth, String filter, LocalDate date, String state, Pageable pageable) {
         filter = (!StringUtil.isNullOrEmpty(filter) ? "%" +filter.toUpperCase()+ "%" : null);
 
         User user = (User) auth.getPrincipal();
         Long start = date.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
         Long finish = date.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
 
-        return this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, pageable);
+        return this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, state.toUpperCase(),pageable);
     }
     @Transactional(readOnly = true)
     @Override
@@ -64,7 +64,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public SalesDocumentInfoDto getDocumentById(String idDocument) {
+    public SalesDocumentInfoDto getSalesDocumentInfoByDocumentById(String idDocument) {
         List<AllDetailInfoDto> allDetailInfo = orderDetailService.getDetailDocumentInfo(idDocument);
 
         if(allDetailInfo.isEmpty()) {
@@ -72,7 +72,9 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         SalesDocumentInfoDto salesDocumentInfo = new SalesDocumentInfoDto(allDetailInfo.get(0).getDoc());
+
         salesDocumentInfo.setDetailInfoList(allDetailInfo.stream().map(DetailInfoDto::new).collect(Collectors.toList()));
+
         salesDocumentInfo.setSubTotal(allDetailInfo.stream()
                 .map(AllDetailInfoDto::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
@@ -110,6 +112,16 @@ public class DocumentServiceImpl implements DocumentService {
         documentRepository.save(doc);
 
         orderDetailService.createDetail(doc, detailList);
+
+        return doc.getId();
+    }
+
+    @Override
+    public String deleteDocumentById(String idDocument) {
+        Document doc = documentRepository.getDocumentByIdDocument(idDocument)
+                .orElseThrow(() -> new NoSuchElementException("No fue posible recuperar el Documento con Id "+idDocument ));
+        doc.setState("DELETED");
+        documentRepository.save(doc);
 
         return doc.getId();
     }

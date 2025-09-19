@@ -131,19 +131,22 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
-    public WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String sku) {
+    public WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String sku, String beverageFormat) {
         Product product = productService.getProductById(idProduct);
         BranchOffice branchO = branchOfficeService.getBranchOfficeById(idBranchOffice);
+
 
         NumberUtilMod.throwNumberIsNullOrEmpty(stock, "stock");
         NumberUtilMod.throwNumberMaxDecimal(unitaryCost, 2,"precio unitario");
         NumberUtilMod.throwNumberIsNullOrEmpty(maxProduct, "máximo de producto");
         NumberUtilMod.throwNumberIsNullOrEmpty(minProduct, "mínimo de producto");
 
-        if(!sku.toUpperCase().equals(product.getSku())) {
-            product.setSku(sku.toUpperCase());
-            productRepository.save(product);
-        }
+
+        product.setSku(sku.toUpperCase());
+        product.setBeverageFormat(StringUtil.isNullOrEmpty(beverageFormat) ? "" : beverageFormat);
+        productRepository.save(product);
+
+        log.info("The producto instance is {}", product);
 
         Warehouse w = warehouseRepository.findWarehouseByIdAndStateTrue(id).orElseThrow(
                 () -> new NoSuchElementException("No fue posible recuperar los valores correspondientes al almacén")
@@ -155,7 +158,6 @@ public class WarehouseServiceImpl implements WarehouseService {
         w.setMaxProduct(maxProduct);
         w.setUnitaryCost(unitaryCost);
         w.setMinProduct(minProduct);
-
         warehouseRepository.save(w);
 
         return new WarehouseDto(w);

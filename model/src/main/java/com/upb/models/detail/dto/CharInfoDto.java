@@ -19,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor @NoArgsConstructor
 public class CharInfoDto {
     private BigInteger quantity;
+    private BigDecimal sellPrice;
     private Document document;
     private BranchOffice branchOffice;
     private Product product;
@@ -26,6 +27,7 @@ public class CharInfoDto {
     public CharInfoDto(OrderDetail d) {
         this.quantity = d.getQuantity();
         this.document = d.getDocument();
+        this.sellPrice = d.getTotalPrice();
         this.branchOffice = d.getDocument().getBranchOfficeInfo();
         this.product = d.getProduct();
     }

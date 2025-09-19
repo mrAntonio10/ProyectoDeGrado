@@ -1,0 +1,13 @@
+com\upb\repositories\ProductRepository.class
+com\upb\repositories\RolResourceRepository.class
+com\upb\repositories\PermissionRepository.class
+com\upb\repositories\WarehouseRepository.class
+com\upb\repositories\DocumentRepository.class
+com\upb\repositories\EnterpriseRepository.class
+com\upb\repositories\ResourceRepository.class
+com\upb\repositories\RolRepository.class
+com\upb\repositories\OrderDetailRepository.class
+com\upb\repositories\OperationRepository.class
+com\upb\repositories\UserRepository.class
+com\upb\repositories\BranchOfficeRepository.class
+com\upb\repositories\UserBranchOfficeRepository.class

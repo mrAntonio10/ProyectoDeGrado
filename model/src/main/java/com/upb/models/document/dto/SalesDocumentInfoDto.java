@@ -34,6 +34,7 @@ public class SalesDocumentInfoDto {
     private BigDecimal totalPrice;
 
     private List<DetailInfoDto> detailInfoList;
+    private String state;
     public SalesDocumentInfoDto(Document d) {
         this.id = d.getId();
 
@@ -44,6 +45,7 @@ public class SalesDocumentInfoDto {
 
         this.totalDiscount = d.getTotalDiscount();
         this.totalPrice = d.getTotalPrice();
+        this.state = (d.getState().equals("ACEPTADO")) ? "Aceptado" : "Eliminado";
     }
 
     private String getPaymentMethod(String paymentMethod) {

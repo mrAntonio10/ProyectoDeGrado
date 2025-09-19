@@ -4,9 +4,11 @@ package com.upb.repositories;
 import com.upb.models.warehouse.Warehouse;
 import com.upb.models.warehouse.dto.WarehousePageableProductsDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -77,7 +79,7 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, String> {
                                                                                            @Param("productName") String productName,
                                                                                            @Param("bFormat") String beverageFormat);
 
-
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT w FROM Warehouse w " +
                 "INNER JOIN FETCH w.product p " +
                 "INNER JOIN FETCH w.branchOffice b " +

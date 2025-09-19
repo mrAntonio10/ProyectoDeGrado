@@ -50,4 +50,10 @@ public interface BranchOfficeRepository extends JpaRepository<BranchOffice, Stri
                 "AND b.state <> 'DELETED'"
     )
     List<BranchOfficeStateDto> getBranchOfficeListByIdEnterprise(@Param("idEnterprise") String idEnterprise);
+
+    @Query("SELECT b.enterprise.id " +
+            "FROM BranchOffice b " +
+            "JOIN User_BranchOffice ubo ON ubo.branchOffice.id = b.id " +
+            "WHERE ubo.user.id = :userId")
+    String findEnterpriseIdByUserId(@Param("userId") String userId);
 }

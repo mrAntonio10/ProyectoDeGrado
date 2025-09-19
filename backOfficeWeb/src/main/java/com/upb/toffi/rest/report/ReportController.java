@@ -48,7 +48,7 @@ public class ReportController {
                                                    @RequestParam(value = "category", defaultValue = "") String category,
                                                    @RequestParam(value = "limit", defaultValue = "") String maxOrMinLimit,
                                                    @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                   @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
+                                                   @RequestParam(value = "size", defaultValue = "10000") Integer pageSize,
                                                    @RequestParam(value = "sortDir", defaultValue = "DESC")  String sortDir,
                                                    @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
     ) throws IOException, JRException {
