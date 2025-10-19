@@ -23,7 +23,7 @@ import java.time.ZonedDateTime;
 @Table(name = "DOCUMENT")
 public class Document implements Serializable {
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", length = 36)
     @UuidGenerator
     private String  id;
 

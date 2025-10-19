@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Table(name = "DOMAIN")
 public class Domain implements Serializable {
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", length = 36)
     @UuidGenerator
     private String  id;
 

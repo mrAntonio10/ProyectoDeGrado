@@ -24,7 +24,7 @@ import java.util.List;
 @Table(name = "USER_MNG")
 public class User implements Serializable, UserDetails {
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", length = 36)
     @UuidGenerator
     private String  id;
 

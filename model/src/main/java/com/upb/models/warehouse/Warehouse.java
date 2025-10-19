@@ -21,7 +21,7 @@ import java.math.BigInteger;
 @Table(name = "WAREHOUSE")
 public class Warehouse implements Serializable {
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", length = 36)
     @UuidGenerator
     private String  id;
 

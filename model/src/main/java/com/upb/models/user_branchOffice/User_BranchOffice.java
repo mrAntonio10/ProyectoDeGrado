@@ -27,7 +27,7 @@ import java.util.List;
 @Table(name = "USER_BRANCH_OFFICE")
 public class User_BranchOffice implements Serializable {
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", length = 36)
     @UuidGenerator
     private String  id;
 

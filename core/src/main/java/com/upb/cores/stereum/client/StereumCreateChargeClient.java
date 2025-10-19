@@ -31,8 +31,6 @@ public class StereumCreateChargeClient {
     @Value("${stereum.api.base-url}")
     private String baseUrl;
 
-//    @Value("${stereum.api.key}")
-//    private String apiKey;
 
     public JsonNode createCharge(StereumCreateChargeRequest req, User user) {
         try {

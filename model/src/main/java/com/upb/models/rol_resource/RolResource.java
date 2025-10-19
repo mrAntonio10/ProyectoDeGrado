@@ -19,7 +19,7 @@ import java.io.Serializable;
 @Table(name = "ROL_RESOURCE")
 public class RolResource implements Serializable {
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", length = 36)
     @UuidGenerator
     private String  id;
 

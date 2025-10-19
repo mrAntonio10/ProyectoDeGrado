@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Table(name = "PERMISSION")
 public class Permission implements Serializable {
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", length = 36)
     @UuidGenerator
     private String  id;
 
