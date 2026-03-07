@@ -76,8 +76,11 @@ public class ReportController {
 
     @GetMapping("user-sales-report")
     public ResponseEntity<GenericResponse<ReportFileDto>> getUserSalesReport(@RequestParam(value = "filter", defaultValue = "") String filter,
-                                                                                                      @RequestParam(value = "date", defaultValue = "#{T(java.time.LocalDateTime).now()}")
-                                                                                                      @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate date,
+                                                                                                      @RequestParam(value = "startDate", defaultValue = "#{T(java.time.LocalDateTime).now()}")
+                                                                                                      @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate startDate,
+                                                                                                      @RequestParam(value = "endDate", defaultValue = "#{T(java.time.LocalDateTime).now()}")
+                                                                                                      @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate endDate,
+                                                                                                      @RequestParam(value = "state", defaultValue = "ACEPTADO") String state,
                                                                                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                                       @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
                                                                                                       @RequestParam(value = "sortDir", defaultValue = "DESC")  String sortDir,
@@ -89,7 +92,7 @@ public class ReportController {
             PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
 
             return ok(GenericResponse.success(HttpStatus.OK.value(),
-                    (this.reportService.userSalesReport(authentication, filter, date, pageable, null)))
+                    (this.reportService.userSalesReport(authentication, filter, startDate, endDate, state, pageable, null)))
             );
         } catch(NoSuchElementException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
@@ -104,4 +107,37 @@ public class ReportController {
         }
     }
 
+    @GetMapping("admin-sales-report")
+    public ResponseEntity<GenericResponse<ReportFileDto>> getAdminSalesReport(
+            @RequestParam(value = "idBranchOffice", defaultValue = "") String idBranchOffice,
+            @RequestParam(value = "filter", defaultValue = "") String filter,
+            @RequestParam(value = "startDate", defaultValue = "#{T(java.time.LocalDateTime).now()}")
+            @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate startDate,
+            @RequestParam(value = "endDate", defaultValue = "#{T(java.time.LocalDateTime).now()}")
+            @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate endDate,
+            @RequestParam(value = "state", defaultValue = "ACEPTADO") String state,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
+            @RequestParam(value = "sortDir", defaultValue = "DESC")  String sortDir,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            Authentication authentication) throws IOException {
+        try {
+            Sort sortBy = Sort.by(Sort.Direction.fromString(sortDir), sort);
+            PageRequest pageable = PageRequest.of(page, pageSize, sortBy);
+
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    (this.reportService.adminSalesReport(authentication, idBranchOffice, startDate, endDate, state, pageable, null)))
+            );
+        } catch(NoSuchElementException e) {
+            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
+                            e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error genérico al obtener", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
 }

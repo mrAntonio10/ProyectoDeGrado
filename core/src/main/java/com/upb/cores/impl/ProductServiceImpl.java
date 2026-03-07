@@ -7,6 +7,7 @@ import com.upb.cores.utils.StringUtilMod;
 import com.upb.models.product.Product;
 import com.upb.models.product.dto.ProductDto;
 import com.upb.models.product.dto.ProductListDto;
+import com.upb.models.product.dto.ProductWithImageDto;
 import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
 import com.upb.repositories.ProductRepository;
@@ -42,8 +43,21 @@ public class ProductServiceImpl implements ProductService {
 
         List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
 
-
         return productRepository.getProductPageable(ub.get(0).getBranchOffice().getEnterprise().getId(), productName, category, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductWithImageDto> getProductsWithImagesList(Authentication auth, String productName, String category, Pageable pageable) {
+        productName = (!StringUtil.isNullOrEmpty(productName) ? "%" +productName.toUpperCase() +"%" : null);
+        category = (!StringUtil.isNullOrEmpty(category) ? "%"+ category.toUpperCase() +"%" : null);
+
+        String idRol = auth.getAuthorities().stream().toList().get(0).toString();
+        User user = (User) auth.getPrincipal();
+
+        List<User_BranchOffice> ub = userBranchOfficeRepository.getUser_BranchOfficeByIdUserAndIdRol(user.getId(), idRol);
+
+        return productRepository.getProductWithImagePageable(ub.get(0).getBranchOffice().getEnterprise().getId(), ub.get(0).getBranchOffice().getId(), productName, category, pageable);
     }
 
     @Override
@@ -66,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto createProduct(Authentication auth, String name, String category, String beverageFormat, String sku) {
+    public ProductDto createProduct(Authentication auth, String name, String category, String beverageFormat, String sku, String photo) {
         StringUtilMod.notNullStringMaxLength(name, 60, "nombre");
         StringUtilMod.notNullStringMaxLength(category, 30, "categoría");
         StringUtilMod.notNullStringMaxLength(sku, 6, "sku/código producto");
@@ -89,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
                 .state(true)
                 .sku(sku.toUpperCase())
                 .enterprise(ub.get(0).getBranchOffice().getEnterprise())
+                .photo(photo)
                 .build();
 
         productRepository.save(product);
@@ -97,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(String idProduct, String name, String category, String beverageFormat, String sku) {
+    public ProductDto updateProduct(String idProduct, String name, String category, String beverageFormat, String sku, String photo) {
         StringUtilMod.notNullStringMaxLength(name, 60, "nombre");
         StringUtilMod.notNullStringMaxLength(category, 30, "categoría");
         StringUtilMod.notNullStringMaxLength(sku, 6, "sku/código producto");
@@ -116,6 +131,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         product.setBeverageFormat(beverageFormat);
         product.setSku(sku.toUpperCase());
+        product.setPhoto(photo);
         productRepository.save(product);
 
         return new ProductDto(product);

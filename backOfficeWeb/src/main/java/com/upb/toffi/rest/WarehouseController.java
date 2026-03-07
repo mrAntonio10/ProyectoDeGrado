@@ -167,7 +167,7 @@ public class WarehouseController {
             log.info("PUT DE WAREHOUSE FORMAT {} ", w.getBeverageFormat());
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     warehouseService.updateWarehouse(w.getId(), w.getIdProduct(), w.getIdBranchOffice(), w.getStock(),
-                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct(), w.getSku(), w.getBeverageFormat()))
+                            w.getUnitaryCost(), w.getMaxProduct(), w.getMinProduct(), w.getSku(), w.getBeverageFormat(), w.getPhoto()))
             );
         } catch (NoSuchElementException e) {
             log.error("Error {} ID: {}, causa {}", e.getMessage(), w.getId(),e.getCause());

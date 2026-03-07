@@ -7,6 +7,7 @@ com\upb\toffi\config\util\PermissionsEnum$BranchOfficePermissions.class
 com\upb\toffi\config\util\GenericResponse$GenericResponseBuilder.class
 com\upb\toffi\rest\DocumentController.class
 com\upb\toffi\rest\request\product\UpdateProductRequest.class
+com\upb\toffi\config\util\PermissionsEnum$AdminSalesReportPermissions.class
 com\upb\toffi\rest\request\user\UpdateUserRequest.class
 com\upb\toffi\config\JwtService.class
 com\upb\toffi\rest\ProductController.class
@@ -16,6 +17,8 @@ com\upb\toffi\config\ApplicationConfig.class
 com\upb\toffi\rest\ResourceController.class
 com\upb\toffi\config\util\PermissionsEnum.class
 com\upb\toffi\DataInitializer.class
+com\upb\toffi\rest\StereumController.class
+com\upb\toffi\rest\request\paymentIntegration\PaymentIntegrationCreateRequest.class
 com\upb\toffi\config\util\PermissionsEnum$WarehousePermission.class
 com\upb\toffi\config\util\PermissionsEnum$UserPermissions.class
 com\upb\toffi\rest\report\ReportController.class
@@ -35,6 +38,7 @@ com\upb\toffi\rest\EnterpriseController.class
 com\upb\toffi\rest\request\branchOffice\UpdateBranchOfficeRequest.class
 com\upb\toffi\rest\BranchOfficeController.class
 com\upb\toffi\rest\OrderDetailController.class
+com\upb\toffi\rest\PaymentIntegrationController.class
 com\upb\toffi\rest\WarehouseController.class
 com\upb\toffi\config\util\PermissionsEnum$SalesPanelPermission.class
 com\upb\toffi\rest\request\user\CreateUserRequest.class

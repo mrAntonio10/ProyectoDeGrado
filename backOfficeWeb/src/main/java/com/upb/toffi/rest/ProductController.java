@@ -4,6 +4,7 @@ import com.upb.cores.ProductService;
 import com.upb.models.product.Product;
 import com.upb.models.product.dto.ProductDto;
 import com.upb.models.product.dto.ProductListDto;
+import com.upb.models.product.dto.ProductWithImageDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.toffi.config.util.GenericResponse;
 import com.upb.toffi.rest.request.product.CreateProductRequest;
@@ -49,6 +50,30 @@ public class ProductController {
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
                     (this.productService.getProductsList(auth, filterByProductName, category, pageable))))
+            );
+        } catch (Exception e) {
+            log.error("Error genérico al obtener", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
+
+    @GetMapping("/with-images")
+    public ResponseEntity<GenericResponse<PagedModel<ProductWithImageDto>>> getProductsWithImagesPageable(@RequestParam(value = "filter", defaultValue = "") String filterByProductName,
+                                                                                                       @RequestParam(value = "category", defaultValue = "") String category,
+                                                                                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                                                       @RequestParam(value = "size", defaultValue = "15") Integer pageSize,
+                                                                                                       @RequestParam(value = "sortDir", defaultValue = "DESC")  String sortDir,
+                                                                                                       @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
+    ) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+            PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
+
+            return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
+                    (this.productService.getProductsWithImagesList(auth, filterByProductName, category, pageable))))
             );
         } catch (Exception e) {
             log.error("Error genérico al obtener", e);
@@ -108,7 +133,7 @@ public class ProductController {
 
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     productService.createProduct(auth, product.getName(), product.getCategory(), product.getBeverageFormat(),
-                            product.getSku())
+                            product.getSku(), product.getPhoto())
                     )
             );
         } catch (NullPointerException | IllegalArgumentException e) {
@@ -130,7 +155,7 @@ public class ProductController {
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                             productService.updateProduct(product.getId(),
                                     product.getName(), product.getCategory(), product.getBeverageFormat(),
-                                    product.getSku())
+                                    product.getSku(), product.getPhoto())
                     )
             );
         } catch (NullPointerException | IllegalArgumentException e) {

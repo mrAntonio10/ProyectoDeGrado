@@ -55,4 +55,9 @@ public class PermissionsEnum {
         UPDATE,
         VIEW
     }
+
+    public enum AdminSalesReportPermissions {
+        VIEW,
+        REPORT
+    }
 }

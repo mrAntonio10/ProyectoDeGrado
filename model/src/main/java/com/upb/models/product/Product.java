@@ -44,4 +44,7 @@ public class Product implements Serializable {
     @JoinColumn(name="ID_ENTERPRISE", referencedColumnName = "ID", nullable=false)
     private Enterprise enterprise;
 
+    @Column(name = "PHOTO", columnDefinition = "TEXT")
+    private String photo;
+
 }

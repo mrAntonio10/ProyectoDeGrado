@@ -33,8 +33,10 @@ public class DocumentController {
 
     @GetMapping("")
     public ResponseEntity<GenericResponse<PagedModel<SalesUserDocumentDto>>> getUserSalesPageableDocument(@RequestParam(value = "filter", defaultValue = "") String filter,
-                                                                                                      @RequestParam(value = "date", defaultValue = "#{T(java.time.LocalDateTime).now()}")
-                                                                                                         @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate date,
+                                                                                                      @RequestParam(value = "startDate", defaultValue = "#{T(java.time.LocalDateTime).now()}")
+                                                                                                         @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate startDate,
+                                                                                                      @RequestParam(value = "endDate", defaultValue = "#{T(java.time.LocalDateTime).now()}")
+                                                                                                         @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate endDate,
                                                                                                       @RequestParam(value = "state", defaultValue = "") String state,
                                                                                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                                       @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
@@ -47,7 +49,7 @@ public class DocumentController {
             PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
-                    (this.documentService.getSalesUserDocumentList(authentication, filter, date, state,pageable))))
+                    (this.documentService.getSalesUserDocumentList(authentication, filter, startDate, endDate, state,pageable))))
             );
         } catch(NoSuchElementException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
@@ -64,8 +66,10 @@ public class DocumentController {
 
     @GetMapping("management")
     public ResponseEntity<GenericResponse<PagedModel<SalesUserDocumentDto>>> getSalesPageableDocument(@RequestParam(value = "filter", defaultValue = "") String filter,
-                                                                                                          @RequestParam(value = "date", defaultValue = "#{T(java.time.LocalDateTime).now()}")
-                                                                                                             @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate date,
+                                                                                                          @RequestParam(value = "startDate", defaultValue = "#{T(java.time.LocalDateTime).now()}")
+                                                                                                             @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate startDate,
+                                                                                                          @RequestParam(value = "endDate", defaultValue = "#{T(java.time.LocalDateTime).now()}")
+                                                                                                             @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate endDate,
                                                                                                           @RequestParam(value = "idUser", defaultValue = "") String idUser,
                                                                                                           @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                                           @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
@@ -77,7 +81,7 @@ public class DocumentController {
             PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
 
             return ok(GenericResponse.success(HttpStatus.OK.value(), new PagedModel<>(
-                    (this.documentService.getManagementSalesDocumentList(filter, date, idUser,pageable))))
+                    (this.documentService.getManagementSalesDocumentList(filter, startDate, endDate, idUser,pageable))))
             );
         } catch(NoSuchElementException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
@@ -120,7 +124,7 @@ public class DocumentController {
 
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                     documentService.createDetailDocument(authentication, d.getDeliveryInformation(), d.getTotalPrice(),
-                            d.getTotalDiscount(), d.getPaymentMethod(), d.getDetailList())
+                            d.getTotalDiscount(), d.getPaymentMethod(), d.getDetailList(), d.getIsInvoiced())
             ));
         } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());

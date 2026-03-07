@@ -3,6 +3,7 @@ package com.upb.repositories;
 
 import com.upb.models.product.Product;
 import com.upb.models.product.dto.ProductListDto;
+import com.upb.models.product.dto.ProductWithImageDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,5 +47,21 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "WHERE p.id IN :list " +
                 "AND p.state <> false")
     List<Product> getProductsListByIdList(@Param("list") List<String> idList);
+
+    @Query("SELECT new com.upb.models.product.dto.ProductWithImageDto(p, w.stock, w.unitaryCost) FROM Product p " +
+                "INNER JOIN p.enterprise e " +
+                "INNER JOIN com.upb.models.warehouse.Warehouse w ON w.product.id = p.id AND w.state <> 'INACTIVO' " +
+            "WHERE p.state <> false " +
+                "AND w.branchOffice.id = :idBranchOffice " +
+                "AND w.stock > 0 " +
+                "AND (:cat IS NULL OR UPPER(p.category) LIKE :cat) " +
+                "AND (:name IS NULL OR UPPER(p.name) LIKE :name )" +
+                "AND e.id =:idEnterprise"
+    )
+    Page<ProductWithImageDto> getProductWithImagePageable(@Param("idEnterprise") String idEnterprise,
+                                            @Param("idBranchOffice") String idBranchOffice,
+                                            @Param("name") String productName,
+                                            @Param("cat") String cat,
+                                            Pageable pageable);
 
 }

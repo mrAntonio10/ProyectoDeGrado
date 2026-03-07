@@ -41,24 +41,24 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<SalesUserDocumentDto> getSalesUserDocumentList(Authentication auth, String filter, LocalDate date, String state, Pageable pageable) {
+    public Page<SalesUserDocumentDto> getSalesUserDocumentList(Authentication auth, String filter, LocalDate startDate, LocalDate endDate, String state, Pageable pageable) {
         filter = (!StringUtil.isNullOrEmpty(filter) ? "%" +filter.toUpperCase()+ "%" : null);
 
         User user = (User) auth.getPrincipal();
-        Long start = date.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
-        Long finish = date.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long start = startDate.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long finish = endDate.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
 
         return this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, state.toUpperCase(),pageable);
     }
     @Transactional(readOnly = true)
     @Override
-    public Page<SalesUserDocumentDto> getManagementSalesDocumentList(String filter, LocalDate date, String idUser, Pageable pageable) {
+    public Page<SalesUserDocumentDto> getManagementSalesDocumentList(String filter, LocalDate startDate, LocalDate endDate, String idUser, Pageable pageable) {
         filter = (!StringUtil.isNullOrEmpty(filter) ? "%" +filter.toUpperCase()+ "%" : null);
 
         idUser = (!StringUtil.isNullOrEmpty(idUser) ? idUser : null);
 
-        Long start = date.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
-        Long finish = date.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long start = startDate.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long finish = endDate.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
 
         return this.documentRepository.getManagementUserDocumetPageable(idUser, filter, start, finish, pageable);
     }
@@ -84,7 +84,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Transactional
     @Override
-    public String createDetailDocument(Authentication auth, String deliveryInformation, BigDecimal totalPrice, BigDecimal totalDiscount, String paymentMethod, List<DetailListRequest> detailList) {
+    public String createDetailDocument(Authentication auth, String deliveryInformation, BigDecimal totalPrice, BigDecimal totalDiscount, String paymentMethod, List<DetailListRequest> detailList, Boolean isInvoiced) {
         NumberUtilMod.throwNumberMaxDecimal(totalPrice, 2, "Precio total");
         NumberUtilMod.throwNumberMaxDecimal(totalDiscount, 2, "Descuento total");
         StringUtilMod.throwStringIsNullOrEmpty(paymentMethod, "Método de pago");
@@ -107,6 +107,7 @@ public class DocumentServiceImpl implements DocumentService {
                 .totalPrice(totalPrice)
                 .paymentMethod(paymentMethod)
                 .deliveryInformation(deliveryInformation)
+                .isInvoiced(isInvoiced)
                 .build();
 
         documentRepository.save(doc);

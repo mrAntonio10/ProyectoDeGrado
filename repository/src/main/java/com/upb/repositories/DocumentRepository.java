@@ -54,4 +54,18 @@ public interface DocumentRepository extends JpaRepository<Document, String> {
                 "AND d.state <> 'DELETED'"
     )
     Optional<Document> getDocumentByIdDocument(@Param("id") String id);
+
+    @Query("SELECT d FROM Document d " +
+                "INNER JOIN FETCH d.salesUser u " +
+            "WHERE (:state = 'TODOS' OR d.state = :state) " +
+                "AND EXISTS (SELECT 1 FROM User_BranchOffice ub WHERE ub.user.id = u.id AND ub.branchOffice.id = :idBranchOffice) " +
+                "AND d.deliveryDate > :sDate " +
+                "AND d.deliveryDate < :fDate " +
+            "ORDER BY d.isInvoiced DESC, d.deliveryDate ASC"
+    )
+    Page<Document> getAdminSalesDocumentPageable(@Param("idBranchOffice") String idBranchOffice,
+                                                            @Param("sDate") Long sDate,
+                                                            @Param("fDate") Long fDate,
+                                                            @Param("state") String state,
+                                                            Pageable pageable);
 }

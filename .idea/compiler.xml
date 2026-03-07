@@ -14,11 +14,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="backOffice" target="17" />
       <module name="backOfficeWeb" target="17" />
-      <module name="core" target="17" />
-      <module name="model" target="17" />
-      <module name="repository" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

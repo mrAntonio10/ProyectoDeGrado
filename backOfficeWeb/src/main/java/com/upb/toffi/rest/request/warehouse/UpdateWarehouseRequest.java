@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-@Getter
+import lombok.Setter;
+
+@Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class UpdateWarehouseRequest {
     private String id;
@@ -20,4 +22,5 @@ public class UpdateWarehouseRequest {
     private String state;
     private String sku;
     private String beverageFormat;
+    private String photo;
 }

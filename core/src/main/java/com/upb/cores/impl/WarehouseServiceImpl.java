@@ -131,7 +131,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
-    public WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String sku, String beverageFormat) {
+    public WarehouseDto updateWarehouse(String id, String idProduct, String idBranchOffice, BigInteger stock, BigDecimal unitaryCost, BigInteger maxProduct, BigInteger minProduct, String sku, String beverageFormat, String photo) {
         Product product = productService.getProductById(idProduct);
         BranchOffice branchO = branchOfficeService.getBranchOfficeById(idBranchOffice);
 
@@ -144,6 +144,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         product.setSku(sku.toUpperCase());
         product.setBeverageFormat(StringUtil.isNullOrEmpty(beverageFormat) ? "" : beverageFormat);
+        product.setPhoto(photo);
         productRepository.save(product);
 
         log.info("The producto instance is {}", product);

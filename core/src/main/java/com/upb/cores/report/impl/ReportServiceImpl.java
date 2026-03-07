@@ -5,6 +5,7 @@ import com.upb.cores.BranchOfficeService;
 import com.upb.cores.report.ReportService;
 import com.upb.cores.report.dto.ReportFileDto;
 import com.upb.models.branchOffice.BranchOffice;
+import com.upb.models.document.Document;
 import com.upb.models.document.dto.SalesUserDocumentDto;
 import com.upb.models.user.User;
 import com.upb.models.user_branchOffice.User_BranchOffice;
@@ -116,8 +117,9 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public ReportFileDto userSalesReport(Authentication auth, String filter, LocalDate date, Pageable pageable, Map<String, Object> params) throws JRException, IOException {
+    public ReportFileDto userSalesReport(Authentication auth, String filter, LocalDate startDate, LocalDate endDate, String state, Pageable pageable, Map<String, Object> params) throws JRException, IOException {
         filter = !StringUtil.isNullOrEmpty(filter) ? "%" +filter.toUpperCase()+ "%" : null;
+        state = !StringUtil.isNullOrEmpty(state) ? state.toUpperCase() : "ACEPTADO";
 
         User user = (User) auth.getPrincipal();
         String idRol = auth.getAuthorities().stream().toList().get(0).toString();
@@ -127,17 +129,17 @@ public class ReportServiceImpl implements ReportService {
         BranchOffice b = branchOfficeService.getBranchOfficeById(ub.get(0).getBranchOffice().getId());
 
 
-        Long start = date.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
-        Long finish = date.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long start = startDate.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long finish = endDate.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
 
 
 
         Map<String, Object> mapParams = new HashMap<>();
             mapParams.put("branchOffice", b.getName());
             mapParams.put("userPOS", user.getName() +" "+ user.getLastname());
-            mapParams.put("generatedDate", this.getDateTime(date.atStartOfDay()));
+            mapParams.put("generatedDate", this.getDateTime(startDate.atStartOfDay()) + " al " + this.getDateTime(endDate.atStartOfDay()));
 
-        Page<SalesUserDocumentDto> pagedResp = this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, "ACEPTADO",Pageable.unpaged());
+        Page<SalesUserDocumentDto> pagedResp = this.documentRepository.getSalesUserDocumetPageable(user.getId(), filter, start, finish, state, Pageable.unpaged());
 
         List<SalesUserDocumentDto> list = new ArrayList<>();
         list = pagedResp.stream().toList();
@@ -146,6 +148,39 @@ public class ReportServiceImpl implements ReportService {
         ReportFileDto rep = new ReportFileDto();
         rep.setFilename(fileName);
         ByteArrayOutputStream stream = exportReport(fileName, "REP02_USER_SALES_REPORT.jrxml", "pdf", mapParams, list);
+        byte[] bs = stream.toByteArray();
+
+        rep.setBase64(getStreamAsBase64(new ByteArrayInputStream(bs)));
+        rep.setLength(bs.length);
+
+        return rep;
+    }
+
+    @Override
+    public ReportFileDto adminSalesReport(Authentication auth, String idBranchOffice, LocalDate startDate, LocalDate endDate, String state, Pageable pageable, Map<String, Object> params) throws JRException, IOException {
+        state = !StringUtil.isNullOrEmpty(state) ? state.toUpperCase() : "ACEPTADO";
+
+        User user = (User) auth.getPrincipal();
+
+        BranchOffice b = branchOfficeService.getBranchOfficeById(idBranchOffice);
+
+        Long start = startDate.atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+        Long finish = endDate.plusDays(1).atStartOfDay(ZoneId.of("America/La_Paz")).toInstant().toEpochMilli();
+
+        Map<String, Object> mapParams = new HashMap<>();
+        mapParams.put("branchOffice", b.getName());
+        mapParams.put("generatedDate", this.getDateTime(startDate.atStartOfDay()) + " al " + this.getDateTime(endDate.atStartOfDay()));
+
+        Page<Document> pagedResp = this.documentRepository.getAdminSalesDocumentPageable(b.getId(), start, finish, state, Pageable.unpaged());
+
+        List<com.upb.models.document.dto.AdminSalesDocumentDto> list = pagedResp.stream()
+                .map(com.upb.models.document.dto.AdminSalesDocumentDto::new)
+                .toList();
+
+        String fileName = "reporte_de_ventas_admin.pdf";
+        ReportFileDto rep = new ReportFileDto();
+        rep.setFilename(fileName);
+        ByteArrayOutputStream stream = exportReport(fileName, "REP03_ADMIN_SALES_REPORT.jrxml", "pdf", mapParams, list);
         byte[] bs = stream.toByteArray();
 
         rep.setBase64(getStreamAsBase64(new ByteArrayInputStream(bs)));

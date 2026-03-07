@@ -18,4 +18,5 @@ public class CreateDocumentRequest {
 
     private List<DetailListRequest> detailList;
 
+    private Boolean isInvoiced;
 }

@@ -21,6 +21,8 @@ public interface ReportService {
 
     ReportFileDto outOfStockReport(Authentication auth, String productName, String idBranchOffice, String category, String maxOrMinLimit, Pageable pageable,
             Map<String, Object> params) throws JRException, IOException;
-    ReportFileDto userSalesReport(Authentication auth, String filter, LocalDate date, Pageable pageable,
+    ReportFileDto userSalesReport(Authentication auth, String filter, LocalDate startDate, LocalDate endDate, String state, Pageable pageable,
+                                  Map<String, Object> params) throws JRException, IOException;
+    ReportFileDto adminSalesReport(Authentication auth, String idBranchOffice, LocalDate startDate, LocalDate endDate, String state, Pageable pageable,
                                   Map<String, Object> params) throws JRException, IOException;
 }

@@ -6,6 +6,7 @@ com\upb\repositories\DocumentRepository.class
 com\upb\repositories\EnterpriseRepository.class
 com\upb\repositories\ResourceRepository.class
 com\upb\repositories\RolRepository.class
+com\upb\repositories\PaymentIntegrationRepository.class
 com\upb\repositories\OrderDetailRepository.class
 com\upb\repositories\OperationRepository.class
 com\upb\repositories\UserRepository.class

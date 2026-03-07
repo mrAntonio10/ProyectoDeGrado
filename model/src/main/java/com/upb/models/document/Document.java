@@ -67,4 +67,7 @@ public class Document implements Serializable {
     @Basic
     @Column(name = "REASON")
     private String reason;
+
+    @Column(name = "IS_INVOICED")
+    private Boolean isInvoiced;
 }

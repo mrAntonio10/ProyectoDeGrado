@@ -187,6 +187,10 @@ public class DataInitializer implements CommandLineRunner {
         this.createUpdateResource("Ventas", "/user-sales", "pi pi-dollar","Recurso encargado de gestionar las ventas realizadas por un usuario punto de venta",idComercialManagementResource, 2, PermissionsEnum.UserSalesPermission.class, sales);
 
 //        this.createUpdateResource("Gestión de ventas", "/sales-management", "pi pi-dollar","Recurso encargado de gestionar las ventas realizadas por los usuarios punto de venta",idComercialManagementResource, 2, PermissionsEnum.UserSalesPermission.class, admin);
+
+        //Recurso Padre - Reportes
+        String idReportsResource = this.createUpdateResource("Reportes", "/dashboard/reports", "pi pi-file-pdf","Recurso padre para la gestión de reportes del sistema",null, 3, null, admin);
+        this.createUpdateResource("Reporte de Ventas", "/admin-sales-report", "pi pi-money-bill","Recurso encargado de generar reportes de ventas consolidados",idReportsResource, 1, PermissionsEnum.AdminSalesReportPermissions.class, admin);
     }
 
     private void createOperations() {

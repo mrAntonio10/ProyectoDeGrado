@@ -3,6 +3,7 @@ package com.upb.cores;
 import com.upb.models.product.Product;
 import com.upb.models.product.dto.ProductDto;
 import com.upb.models.product.dto.ProductListDto;
+import com.upb.models.product.dto.ProductWithImageDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +15,11 @@ import java.util.List;
 @Service
 public interface ProductService {
     Page<ProductListDto> getProductsList(Authentication auth, String productName, String category, Pageable pageable);
+    Page<ProductWithImageDto> getProductsWithImagesList(Authentication auth, String productName, String category, Pageable pageable);
     List<ProductListDto> getProductsListByCategory(Authentication auth, String category);
     Product getProductById(String idProduct);
-    ProductDto createProduct(Authentication auth, String name, String category, String beverageFormat, String sku);
-    ProductDto updateProduct(String idProduct, String name, String category, String beverageFormat, String sku);
+    ProductDto createProduct(Authentication auth, String name, String category, String beverageFormat, String sku, String photo);
+    ProductDto updateProduct(String idProduct, String name, String category, String beverageFormat, String sku, String photo);
 
     ProductDto deleteProduct(String idProduct);
 }
