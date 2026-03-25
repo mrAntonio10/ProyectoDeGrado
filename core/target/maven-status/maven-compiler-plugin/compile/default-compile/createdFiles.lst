@@ -16,6 +16,7 @@ com\upb\cores\impl\ResourceServiceImpl.class
 com\upb\cores\utils\NumberUtilMod.class
 com\upb\cores\WarehouseService.class
 com\upb\cores\report\ReportService.class
+com\upb\cores\impl\DomainServiceImpl.class
 com\upb\cores\stereum\client\StereumAuthClient.class
 com\upb\cores\utils\StringUtilMod.class
 com\upb\cores\ProductService.class
@@ -29,5 +30,6 @@ com\upb\cores\impl\PaymentIntegrationServiceImpl.class
 com\upb\cores\PermissionService.class
 com\upb\cores\stereum\client\StereumCreateChargeClient.class
 com\upb\cores\stereum\dto\AuthRequest.class
+com\upb\cores\DomainService.class
 com\upb\cores\PaymentIntegrationService.class
 com\upb\cores\BranchOfficeService.class

@@ -7,6 +7,7 @@ import com.upb.models.rol.Rol;
 import com.upb.models.rol_resource.RolResource;
 import com.upb.models.rol_resource.dto.RolResourceDto;
 import com.upb.models.user.User;
+import com.upb.models.enterprise.Enterprise;
 import com.upb.repositories.*;
 import com.upb.toffi.config.util.PermissionsEnum;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +32,37 @@ public class DataInitializer implements CommandLineRunner {
     private final RolResourceRepository rolResourceRepository;
     private final OperationRepository operationRepository;
     private final PermissionRepository permissionRepository;
-
+    private final DomainRepository domainRepository;
+    private final EnterpriseRepository enterpriseRepository;
 
     @Override
     public void run(String... args) throws Exception {
       this.createRolesAndUsers();
-        this.createOperations();
-
+      this.createOperations();
       this.createResources();
+      this.createDefaultDomains();
+    }
+
+    private void createDefaultDomains() {
+        // Enlazar el dominio con las empresas que existan, o crearlo a nivel de ADMIN/Sistema si se requiere
+        Enterprise defaultEnterprise = enterpriseRepository.findAll().stream().findFirst().orElse(null);
+        if (defaultEnterprise != null) {
+            Optional<com.upb.models.utils.Domain> existingMasterCategory = 
+                domainRepository.findByEnterpriseIdAndDomainAndNameIgnoreCaseAndIsDeletedFalse(
+                    defaultEnterprise.getId(), "SISTEMA", "CATEGORIAS_PRODUCTOS");
+            
+            if (existingMasterCategory.isEmpty()) {
+                com.upb.models.utils.Domain masterDomain = com.upb.models.utils.Domain.builder()
+                        .domain("SISTEMA")
+                        .name("CATEGORIAS_PRODUCTOS")
+                        .description("Categorías de Productos")
+                        .enterprise(defaultEnterprise)
+                        .isDeleted(false)
+                        .build();
+                domainRepository.save(masterDomain);
+                log.info("Se creó el dominio padre: CATEGORIAS_PRODUCTOS");
+            }
+        }
     }
 
 
@@ -176,9 +200,9 @@ public class DataInitializer implements CommandLineRunner {
 
 
         //Recurso Padre - Ajustes
-//        String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, null, root, admin);
+        String idConfigurationResource = this.createUpdateResource("Ajustes", "/dashboard/configuration", "pi pi-fw pi-cog","Recurso padre para la gestión de dominios y parámetros del sistema",null, 2, null, root, admin);
 //        this.createUpdateResource("Parámetros", "/parameter", "pi pi-fw pi-code","Recurso encargado de gestionar parámetros del sistema",idConfigurationResource, 1, null, root, admin);
-//        this.createUpdateResource("Dominios", "/domain", "pi pi-fw pi-box","Recurso encargado de gestionar los dominios del sistema",idConfigurationResource, 2, null, root);
+        this.createUpdateResource("Dominios", "/domain", "pi pi-fw pi-box","Recurso encargado de gestionar los dominios del sistema",idConfigurationResource, 2, null, root, admin);
 //        this.createUpdateResource("Permisos", "/permission", "pi pi-exclamation-triangle","Recurso encargado de gestionar los permisos por roles de usuarios en el sistema",idConfigurationResource, 3, null, root, admin);
 
         //Recurso Padre - Gestión comercial

@@ -15,9 +15,12 @@ com\upb\models\warehouse\dto\WarehousePagedDto.class
 com\upb\models\user\dto\UserAuthenticationResponse.class
 com\upb\models\user\dto\StereumCreateChargeRequest.class
 com\upb\models\warehouse\dto\WarehousePageableProductsDto$WarehousePageableProductsDtoBuilder.class
+com\upb\models\utils\dto\DomainAdminDto$DomainAdminDtoBuilder.class
 com\upb\models\branchOffice\BranchOffice.class
 com\upb\models\enterprise\dto\EnterpriseDto.class
 com\upb\models\detail\dto\CharInfoDto.class
+com\upb\models\utils\dto\CategoryDto$CategoryDtoBuilder.class
+com\upb\models\utils\dto\DomainAdminDto.class
 com\upb\models\operation\Operation$OperationBuilder.class
 com\upb\models\document\Document.class
 com\upb\models\enterprise\Enterprise$EnterpriseBuilder.class
@@ -35,6 +38,7 @@ com\upb\models\rol_resource\RolResource$RolResourceBuilder.class
 com\upb\models\warehouse\dto\WarehouseStateDto.class
 com\upb\models\permission\dto\PermissionResponseDto.class
 com\upb\models\permission\Permission.class
+com\upb\models\utils\Domain$DomainBuilder.class
 com\upb\models\utils\MessageGenericResponseDto.class
 com\upb\models\user\User.class
 com\upb\models\rol\dto\RolForListDto$RolForListDtoBuilder.class
@@ -71,6 +75,7 @@ com\upb\models\product\dto\ProductListDto.class
 com\upb\models\permission\dto\ResourcePermissionDto.class
 com\upb\models\rol_resource\dto\RolResourceDto$RolResourceDtoBuilder.class
 com\upb\models\detail\dto\DetailInfoDto$DetailInfoDtoBuilder.class
+com\upb\models\utils\dto\CategoryDto.class
 com\upb\models\detail\dto\AllDetailInfoDto.class
 com\upb\models\document\dto\AdminSalesDocumentDto$AdminSalesDocumentDtoBuilder.class
 com\upb\models\branchOffice\BranchOffice$BranchOfficeBuilder.class
