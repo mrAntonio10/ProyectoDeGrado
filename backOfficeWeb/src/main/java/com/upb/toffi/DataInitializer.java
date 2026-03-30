@@ -195,8 +195,11 @@ public class DataInitializer implements CommandLineRunner {
         String idManagementResource = this.createUpdateResource("Gestión", "/dashboard/management", "pi pi-fw pi-database","Recurso padre para la gestión de empresas, sucursales y usuarios",null, 1, null, root, admin);
         this.createUpdateResource("Empresas", "/enterprise", "pi pi-fw pi-briefcase","Recurso encargado de gestionar las empresas dentro del sistema",idManagementResource, 1, PermissionsEnum.EnterprisePermissions.class, root);
         this.createUpdateResource("Sucursales", "/branchOffice", "pi pi-fw pi-building","Recurso encargado de gestionar las sucursales dentro del sistema",idManagementResource, 2, PermissionsEnum.BranchOfficePermissions.class, root, admin);
-        this.createUpdateResource("Usuarios", "/user", "pi pi-fw pi-users","Recurso encargado de gestionar los usuarios dentro del sistema",idManagementResource, 3, PermissionsEnum.UserPermissions.class, root, admin);
-        this.createUpdateResource("Almacén", "/warehouse", "pi pi-fw pi-book","Recurso encargado de gestionar los productos de un almacén dentro del sistema",idManagementResource, 4, PermissionsEnum.WarehousePermission.class, admin);
+        this.createUpdateResource("Proveedores", "/supplier", "pi pi-fw pi-users", "Recurso encargado de los proveedores tercerizados", idManagementResource, 3, PermissionsEnum.SupplierPermissions.class, root, admin);
+        this.createUpdateResource("Usuarios", "/user", "pi pi-fw pi-users","Recurso encargado de gestionar los usuarios dentro del sistema",idManagementResource, 4, PermissionsEnum.UserPermissions.class, root, admin);
+        this.createUpdateResource("Almacén", "/warehouse", "pi pi-fw pi-book","Recurso encargado de gestionar los productos de un almacén dentro del sistema",idManagementResource, 5, PermissionsEnum.WarehousePermission.class, admin);
+        this.createUpdateResource("Traspasos y Tickets", "/transfer-ticket", "pi pi-fw pi-truck","Recurso encargado de gestionar los traspasos entre almacenes/proveedores",idManagementResource, 6, PermissionsEnum.TransferTicketPermissions.class, admin, root);
+
 
 
         //Recurso Padre - Ajustes

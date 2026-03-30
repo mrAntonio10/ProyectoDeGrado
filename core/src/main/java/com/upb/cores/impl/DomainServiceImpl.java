@@ -54,7 +54,7 @@ public class DomainServiceImpl implements DomainService {
     @Transactional(readOnly = true)
     public List<String> getMasterDomains(Authentication auth) {
         Enterprise enterprise = getEnterpriseFromAuth(auth);
-        List<Domain> systemDomains = domainRepository.findByEnterpriseIdAndDomainAndIsDeletedFalse(enterprise.getId(), "SISTEMA");
+        List<Domain> systemDomains = domainRepository.findDomainsFromEnterprise(enterprise.getId());
         return systemDomains.stream().map(Domain::getName).collect(Collectors.toList());
     }
 

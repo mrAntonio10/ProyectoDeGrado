@@ -14,6 +14,11 @@ public interface DomainRepository extends JpaRepository<Domain, String> {
 
     @Query("SELECT d FROM Domain d " +
             "WHERE d.enterprise.id = :enterpriseId " +
+            "AND d.isDeleted = false ")
+    List<Domain> findDomainsFromEnterprise(@Param("enterpriseId") String enterpriseId);
+
+    @Query("SELECT d FROM Domain d " +
+            "WHERE d.enterprise.id = :enterpriseId " +
             "AND d.domain = :domain " +
             "AND d.isDeleted = false ")
     List<Domain> findByEnterpriseIdAndDomainAndIsDeletedFalse(@Param("enterpriseId") String enterpriseId,
