@@ -60,4 +60,18 @@ public class PermissionsEnum {
         VIEW,
         REPORT
     }
+
+    public enum TransferTicketPermissions {
+        CREATE,
+        UPDATE,
+        DELETE,
+        VIEW
+    }
+
+    public enum SupplierPermissions {
+        CREATE,
+        UPDATE,
+        DELETE,
+        VIEW
+    }
 }

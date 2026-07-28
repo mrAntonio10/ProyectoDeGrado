@@ -89,4 +89,6 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, String> {
     )
     List<Warehouse> getWarehousesListByIdProductList(@Param("list") List<String> idList);
 
+    @Query("SELECT w FROM Warehouse w WHERE w.branchOffice.id = :branchId AND w.product.id = :productId AND w.state <> 'DELETED'")
+    Optional<Warehouse> findByBranchOfficeIdAndProductId(@Param("branchId") String branchId, @Param("productId") String productId);
 }

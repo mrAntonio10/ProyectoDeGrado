@@ -24,7 +24,7 @@
       <module name="core" options="-parameters" />
       <module name="model" options="-parameters" />
       <module name="repository" options="-parameters" />
-      <module name="toffi" options="" />
+      <module name="toffi" options="-parameters" />
     </option>
   </component>
 </project>

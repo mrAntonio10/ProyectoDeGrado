@@ -1,13 +1,13 @@
-package com.upb.models.branchOffice;
+package com.upb.models.supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.upb.models.enterprise.Enterprise;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.io.Serializable;
@@ -17,8 +17,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "BRANCH_OFFICE")
-public class BranchOffice implements Serializable {
+@Table(name = "SUPPLIER")
+public class Supplier implements Serializable {
+
     @Id
     @Column(name = "ID")
     @UuidGenerator
@@ -27,24 +28,17 @@ public class BranchOffice implements Serializable {
     @Column(name = "NAME", length = 120, nullable = false)
     private String name;
 
-    @Column(name = "LOCATION", length = 255)
-    private String location;
+    @Column(name = "CONTACT_NAME", length = 120)
+    private String contactName;
+
+    @Column(name = "PHONE", length = 20)
+    private String phone;
+
+    @Column(name = "STATE", length = 20)
+    private String state;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_ENTERPRISE", referencedColumnName = "ID", nullable = false)
     public Enterprise enterprise;
-
-    @Column(name = "PHONE_NUMBER", length = 20)
-    private String phoneNumber;
-
-    @Column(name = "STATE")
-    private String state;
-
-    @Column(name = "INVOICE")
-    private Boolean invoice;
-
-    @Column(name = "IN_CODE", length = 255)
-    private String inCode;
-
 }

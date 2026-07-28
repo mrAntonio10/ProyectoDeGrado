@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Archivos Compilados y Empaquetados ###
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar

@@ -15,6 +15,7 @@ import java.math.BigInteger;
 @AllArgsConstructor @NoArgsConstructor
 public class WarehousePagedDto {
     private String id;
+    private String idProduct;
     private String productName;
     private String category;
     private BigInteger stock;
@@ -28,6 +29,7 @@ public class WarehousePagedDto {
 
     public WarehousePagedDto(Warehouse w) {
         this.id = w.getId();
+        this.idProduct = w.getProduct().getId();
         this.productName = this.productNameStructure(w.getProduct().getName(), w.getProduct().getBeverageFormat());
         this.category = w.getProduct().getCategory();
         this.stock = w.getStock();
