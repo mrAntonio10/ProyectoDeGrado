@@ -31,4 +31,7 @@ public interface DomainRepository extends JpaRepository<Domain, String> {
             "AND d.isDeleted = false")
     Optional<Domain> findByEnterpriseIdAndDomainAndNameIgnoreCaseAndIsDeletedFalse(
             @Param("enterpriseId") String enterpriseId, @Param("domain") String domain, @Param("name") String name);
+
+    @Query("SELECT DISTINCT d.name FROM Domain d WHERE d.domain = 'SISTEMA' AND d.isDeleted = false")
+    List<String> findSystemMasterDomains();
 }

@@ -53,9 +53,7 @@ public class DomainServiceImpl implements DomainService {
     @Override
     @Transactional(readOnly = true)
     public List<String> getMasterDomains(Authentication auth) {
-        Enterprise enterprise = getEnterpriseFromAuth(auth);
-        List<Domain> systemDomains = domainRepository.findDomainsFromEnterprise(enterprise.getId());
-        return systemDomains.stream().map(Domain::getName).collect(Collectors.toList());
+        return domainRepository.findSystemMasterDomains();
     }
 
     @Override
