@@ -17,10 +17,10 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, String
     @Query("SELECT detail FROM OrderDetail detail " +
                 "INNER JOIN FETCH detail.product p " +
                 "INNER JOIN FETCH detail.document doc " +
-                "INNER JOIN FETCH doc.salesUser user " +
+                "LEFT JOIN FETCH doc.salesUser user " +
             "WHERE p.state = true " +
                 "AND doc.id =:idDoc " +
-                "AND user.state <> 'DELETED'"
+                "AND (user IS NULL OR user.state <> 'DELETED')"
     )
     List<AllDetailInfoDto> getDetailAndDocumentInfo(@Param("idDoc") String idDocument);
 

@@ -18,5 +18,6 @@ public interface DocumentService {
     Page<SalesUserDocumentDto> getManagementSalesDocumentList(String filter, LocalDate startDate, LocalDate endDate, String idUser,Pageable pageable);
     SalesDocumentInfoDto getSalesDocumentInfoByDocumentById(String idDocument);
     String createDetailDocument(Authentication auth, String deliveryInformation, BigDecimal totalPrice, BigDecimal totalDiscount, String paymentMethod, List<DetailListRequest> detailList, Boolean isInvoiced);
+    String createOnlineSaleDocument(Authentication auth, String clientName, String clientPhone, String region, String channel, String paymentMethod, String deliveryInformation, BigDecimal totalPrice, BigDecimal totalDiscount, List<DetailListRequest> detailList, Boolean isInvoiced);
     String deleteDocumentById(String idDocument);
 }

@@ -75,10 +75,38 @@ public class Product implements Serializable {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ID_ENTERPRISE", referencedColumnName = "ID", nullable=false)
+    @JoinColumn(name="ID_ENTERPRISE", referencedColumnName = "ID", nullable=true)
     private Enterprise enterprise;
 
     @Column(name = "PHOTO", columnDefinition = "TEXT")
     private String photo;
+
+    /* Campos Rekids - Tienda Online de Prendas y Sincronización Externa (FeignClient) */
+    @Column(name = "REGION", length = 30)
+    private String region;
+
+    @Column(name = "EXTERNAL_ID", length = 80)
+    private String externalId;
+
+    @Column(name = "DISCOUNT_TYPE", length = 20)
+    private String discountType;
+
+    @Column(name = "DISCOUNT_VALUE")
+    private BigDecimal discountValue;
+
+    @Column(name = "FINAL_PRICE")
+    private BigDecimal finalPrice;
+
+    @Column(name = "DISCOUNT_APPROVED_BY", length = 120)
+    private String discountApprovedBy;
+
+    @Column(name = "DISCOUNT_APPROVED_DATE")
+    private Long discountApprovedDate;
+
+    @Column(name = "IS_NEW")
+    private Boolean isNew;
+
+    @Column(name = "LAST_SYNC_DATE")
+    private Long lastSyncDate;
 
 }

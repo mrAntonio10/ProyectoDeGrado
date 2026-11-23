@@ -1,10 +1,11 @@
 package com.upb.cores;
 
 import com.upb.models.product.Product;
+import com.upb.models.product.dto.ExternalGarmentDto;
 import com.upb.models.product.dto.ProductDto;
 import com.upb.models.product.dto.ProductListDto;
 import com.upb.models.product.dto.ProductWithImageDto;
-import com.upb.models.warehouse.dto.WarehousePagedDto;
+import com.upb.models.product.dto.SyncGarmentsResultDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -22,4 +23,9 @@ public interface ProductService {
     ProductDto updateProduct(String idProduct, String name, String category, String beverageFormat, String sku, String photo);
 
     ProductDto deleteProduct(String idProduct);
+
+    /* Métodos Rekids - Tienda Online por Región, Código y Sincronización FeignClient */
+    Page<ProductWithImageDto> getProductsByRegion(String region, String eventId, String category, String filter, Pageable pageable);
+    ProductWithImageDto getProductByCodeAndRegion(String code, String region);
+    SyncGarmentsResultDto syncGarmentsFromExternalPortal(Authentication auth, String region, List<ExternalGarmentDto> externalGarmentsPayload);
 }

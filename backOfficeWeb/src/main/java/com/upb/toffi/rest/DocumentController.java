@@ -123,21 +123,26 @@ public class DocumentController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             return ok(GenericResponse.success(HttpStatus.OK.value(),
-                    documentService.createDetailDocument(authentication, d.getDeliveryInformation(), d.getTotalPrice(),
-                            d.getTotalDiscount(), d.getPaymentMethod(), d.getDetailList(), d.getIsInvoiced())
+                    documentService.createOnlineSaleDocument(
+                            authentication,
+                            d.getClientName(),
+                            d.getClientPhone(),
+                            d.getRegion(),
+                            d.getChannel() != null ? d.getChannel() : "ONLINE",
+                            d.getPaymentMethod() != null ? d.getPaymentMethod() : "QR",
+                            d.getDeliveryInformation(),
+                            d.getTotalPrice(),
+                            d.getTotalDiscount(),
+                            d.getDetailList(),
+                            d.getIsInvoiced()
+                    )
             ));
-        } catch (NullPointerException | IllegalArgumentException e) {
+        } catch (NullPointerException | IllegalArgumentException | IllegalStateException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),
                             e.getMessage()));
-        } catch (IllegalStateException e ) {
-            log.error("Error {}, causa {}", e.getMessage(), e.getCause());
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-                    .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(),
-                            e.getMessage()));
-        }
-        catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             log.error("Error {}, causa {}", e.getMessage(), e.getCause());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(),
@@ -148,6 +153,15 @@ public class DocumentController {
                     .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             "Error en el servidor. Favor contactarse con el administrador."));
         }
+    }
+
+    /**
+     * Rekids Punto de Venta Online (Público - Sin Login):
+     * Registra una venta con Nombre, Número de teléfono, Canal ONLINE, Método de pago QR y Región (Santa Cruz / La Paz).
+     */
+    @PostMapping("/public/online-sale")
+    public ResponseEntity<GenericResponse<String>> createPublicOnlineSale(@RequestBody CreateDocumentRequest d) {
+        return createDetailDocument(d);
     }
 
     @DeleteMapping("/delete/{id-doc}")

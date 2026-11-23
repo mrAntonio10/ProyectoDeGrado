@@ -5,9 +5,11 @@ import com.upb.models.product.Product;
 import com.upb.models.product.dto.ProductDto;
 import com.upb.models.product.dto.ProductListDto;
 import com.upb.models.product.dto.ProductWithImageDto;
+import com.upb.models.product.dto.SyncGarmentsResultDto;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.toffi.config.util.GenericResponse;
 import com.upb.toffi.rest.request.product.CreateProductRequest;
+import com.upb.toffi.rest.request.product.SyncGarmentsRequest;
 import com.upb.toffi.rest.request.product.UpdateProductRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -187,6 +189,84 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             "Error en el servidor. Favor contactarse con el administrador."));
+        }
+    }
+
+    /**
+     * Rekids 1 (Público - Sin Login): Obtener prendas de las tiendas Santa Cruz / La Paz.
+     * Requiere seleccionar primero la región (SANTA_CRUZ o LA_PAZ).
+     */
+    @GetMapping("/public/region/{region}")
+    public ResponseEntity<GenericResponse<PagedModel<ProductWithImageDto>>> getProductsByRegion(
+            @PathVariable("region") String region,
+            @RequestParam(value = "eventId", defaultValue = "") String eventId,
+            @RequestParam(value = "category", defaultValue = "") String category,
+            @RequestParam(value = "filter", defaultValue = "") String filter,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer pageSize,
+            @RequestParam(value = "sortDir", defaultValue = "DESC") String sortDir,
+            @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
+    ) {
+        try {
+            PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    new PagedModel<>(this.productService.getProductsByRegion(region, eventId, category, filter, pageable))));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error al obtener prendas por región {}", region, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor al obtener las prendas de la región."));
+        }
+    }
+
+    /**
+     * Rekids 2 (Público - Punto de Venta Sin Login): Buscar prenda por CÓDIGO (SKU) en la región seleccionada
+     * para adicionarla al detalle de venta online.
+     */
+    @GetMapping("/by-code/{region}/{code}")
+    public ResponseEntity<GenericResponse<ProductWithImageDto>> getProductByCodeAndRegion(
+            @PathVariable("region") String region,
+            @PathVariable("code") String code
+    ) {
+        try {
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    this.productService.getProductByCodeAndRegion(code, region)));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error al buscar prenda por código {} en región {}", code, region, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor al buscar la prenda por código."));
+        }
+    }
+
+    /**
+     * Rekids 3 (Admin): SINCRONIZAR prendas desde el portal externo (FeignClient) hacia nuestro sistema
+     * y registrarlas automáticamente en Novedades.
+     */
+    @PostMapping("/sync")
+    public ResponseEntity<GenericResponse<SyncGarmentsResultDto>> syncGarmentsFromExternalPortal(
+            @RequestBody(required = false) SyncGarmentsRequest req
+    ) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String region = req != null ? req.getRegion() : null;
+            var garments = req != null ? req.getGarments() : null;
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    this.productService.syncGarmentsFromExternalPortal(auth, region, garments)));
+        } catch (Exception e) {
+            log.error("Error al sincronizar prendas externas", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error en el servidor al sincronizar prendas."));
         }
     }
 }

@@ -34,13 +34,76 @@ public class DataInitializer implements CommandLineRunner {
     private final PermissionRepository permissionRepository;
     private final DomainRepository domainRepository;
     private final EnterpriseRepository enterpriseRepository;
+    private final BranchOfficeRepository branchOfficeRepository;
+    private final UserBranchOfficeRepository userBranchOfficeRepository;
+    private final com.upb.cores.StoreEventService storeEventService;
+    private final com.upb.cores.ProductService productService;
 
     @Override
     public void run(String... args) throws Exception {
       this.createRolesAndUsers();
       this.createOperations();
       this.createResources();
+      this.createRekidsDefaultData();
       this.createDefaultDomains();
+    }
+
+    private void createRekidsDefaultData() {
+        try {
+            storeEventService.ensureDefaultEventsExist();
+
+            Enterprise rekidsEnterprise = enterpriseRepository.findAll().stream().findFirst().orElseGet(() -> {
+                Enterprise ent = Enterprise.builder()
+                        .name("Rekids")
+                        .description("Tienda Online de Prendas Infantiles Rekids")
+                        .email("contacto@rekids.bo")
+                        .phoneNumber("70000000")
+                        .state("ACTIVE")
+                        .build();
+                return enterpriseRepository.save(ent);
+            });
+
+            List<com.upb.models.branchOffice.BranchOffice> branches = branchOfficeRepository.findAll();
+            com.upb.models.branchOffice.BranchOffice sczBranch = branches.stream()
+                    .filter(b -> b.getName() != null && b.getName().toUpperCase().contains("SANTA CRUZ"))
+                    .findFirst()
+                    .orElseGet(() -> branchOfficeRepository.save(com.upb.models.branchOffice.BranchOffice.builder()
+                            .name("Rekids Santa Cruz")
+                            .location("SANTA_CRUZ")
+                            .phoneNumber("70011111")
+                            .enterprise(rekidsEnterprise)
+                            .state("ACTIVE")
+                            .invoice(false)
+                            .build()));
+
+            com.upb.models.branchOffice.BranchOffice lpzBranch = branches.stream()
+                    .filter(b -> b.getName() != null && b.getName().toUpperCase().contains("LA PAZ"))
+                    .findFirst()
+                    .orElseGet(() -> branchOfficeRepository.save(com.upb.models.branchOffice.BranchOffice.builder()
+                            .name("Rekids La Paz")
+                            .location("LA_PAZ")
+                            .phoneNumber("70022222")
+                            .enterprise(rekidsEnterprise)
+                            .state("ACTIVE")
+                            .invoice(false)
+                            .build()));
+
+            // Vincular usuario admin@gmail.com a la sucursal principal para consultas de empresa/sucursal
+            userRepository.findByEmailAndStateActive("admin@gmail.com").ifPresent(adminUser -> {
+                if (userBranchOfficeRepository.findUser_BranchOfficeByIdUser(adminUser.getId()).isEmpty()) {
+                    userBranchOfficeRepository.save(com.upb.models.user_branchOffice.User_BranchOffice.builder()
+                            .user(adminUser)
+                            .branchOffice(sczBranch)
+                            .build());
+                }
+            });
+
+            // Sincronizar catálogo inicial de prendas (Santa Cruz y La Paz) al levantar con create-drop
+            productService.syncGarmentsFromExternalPortal(null, null, null);
+            log.info("Datos iniciales de Rekids (eventos Novedades/Descuentos y prendas de Santa Cruz/La Paz) inicializados en BD coffe.");
+        } catch (Exception e) {
+            log.warn("No se pudo inicializar datos base de Rekids: {}", e.getMessage());
+        }
     }
 
     private void createDefaultDomains() {
@@ -199,6 +262,7 @@ public class DataInitializer implements CommandLineRunner {
         this.createUpdateResource("Usuarios", "/user", "pi pi-fw pi-users","Recurso encargado de gestionar los usuarios dentro del sistema",idManagementResource, 4, PermissionsEnum.UserPermissions.class, root, admin);
         this.createUpdateResource("Almacén", "/warehouse", "pi pi-fw pi-book","Recurso encargado de gestionar los productos de un almacén dentro del sistema",idManagementResource, 5, PermissionsEnum.WarehousePermission.class, admin);
         this.createUpdateResource("Traspasos y Tickets", "/transfer-ticket", "pi pi-fw pi-truck","Recurso encargado de gestionar los traspasos entre almacenes/proveedores",idManagementResource, 6, PermissionsEnum.TransferTicketPermissions.class, admin, root);
+        this.createUpdateResource("Eventos Rekids", "/events", "pi pi-fw pi-calendar-plus","Recurso encargado de administrar las prendas en eventos (Novedades, Descuentos, Navidad, etc.)",idManagementResource, 0, PermissionsEnum.EventsPermissions.class, admin, root);
 
 
 

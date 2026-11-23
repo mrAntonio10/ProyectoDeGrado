@@ -28,11 +28,19 @@ public class SalesUserDocumentDto {
     private BigDecimal totalDiscount;
     private BigDecimal totalPrice;
     private String state;
+    private String clientName;
+    private String clientPhone;
+    private String channel;
+    private String region;
 
     public SalesUserDocumentDto(Document d) {
         this.id = d.getId();
         this.salesDate = this.getDateTime(ZonedDateTime.ofInstant(Instant.ofEpochMilli(d.getDeliveryDate()), ZoneId.of("America/La_Paz")).toLocalDateTime());
-        this.client = this.getClientNames(d.getDeliveryInformation());
+        this.client = !StringUtil.isNullOrEmpty(d.getClientName()) ? d.getClientName() : this.getClientNames(d.getDeliveryInformation());
+        this.clientName = d.getClientName();
+        this.clientPhone = d.getClientPhone();
+        this.channel = !StringUtil.isNullOrEmpty(d.getChannel()) ? d.getChannel() : "ONLINE";
+        this.region = d.getRegion();
         this.paymentMethod = this.getPaymentMethod(d.getPaymentMethod());
         this.totalDiscount = d.getTotalDiscount();
         this.totalPrice = d.getTotalPrice();

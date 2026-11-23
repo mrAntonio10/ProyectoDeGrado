@@ -70,4 +70,21 @@ public class Document implements Serializable {
 
     @Column(name = "IS_INVOICED")
     private Boolean isInvoiced;
+
+    /* Campos Rekids - Venta Online Comprador */
+    @Basic
+    @Column(name = "CLIENT_NAME", length = 120)
+    private String clientName;
+
+    @Basic
+    @Column(name = "CLIENT_PHONE", length = 30)
+    private String clientPhone;
+
+    @Basic
+    @Column(name = "CHANNEL", length = 20)
+    private String channel;
+
+    @Basic
+    @Column(name = "REGION", length = 30)
+    private String region;
 }

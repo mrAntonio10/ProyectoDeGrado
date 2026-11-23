@@ -42,22 +42,21 @@ public class AuthController {
            Authentication auth = authenticationManager
                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
+           User userRequest = (User) auth.getPrincipal();
+           String roleName = userRequest.getRol() != null && userRequest.getRol().getName() != null
+                   ? userRequest.getRol().getName().toUpperCase() : "";
+
+           // Rekids: SOLO los administradores pueden hacer login al sistema
+           if (!"ADMIN".equals(roleName) && !"ROOT".equals(roleName)) {
+               return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                       .body(GenericResponse.error(HttpStatus.UNAUTHORIZED.value(),
+                               "Acceso restringido: Solo los administradores pueden iniciar sesión en el portal Rekids."));
+           }
+
            UserDetails userDetails = (UserDetails) auth.getPrincipal();
            var jwt = jwtService.generateToken(userDetails);
 
-           User userRequest = (User) auth.getPrincipal();
-           String resourceUrl;
-            switch (userRequest.getRol().getName().toUpperCase()) {
-                case "SALES_POINT":
-                    resourceUrl = "/dashboard/comercial-management/sales-panel";
-                    break;
-                case "ROOT":
-                    resourceUrl = "/dashboard/management/enterprise";
-                    break;
-                default:
-                    resourceUrl = "/dashboard";
-                    break;
-            }
+           String resourceUrl = "/dashboard/management/events";
 
         return ok(GenericResponse.success(HttpStatus.OK.value(),
                 UserAuthenticationResponse.builder()

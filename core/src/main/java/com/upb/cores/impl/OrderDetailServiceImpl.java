@@ -49,50 +49,63 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Transactional
     public List<DetailCreatedDto> createDetail(Document document, List<DetailListRequest> detailList) {
         List<DetailCreatedDto> resp = new ArrayList<>();
-
-        List<String> idList =detailList.stream().map(DetailListRequest::getIdProduct).toList();
-
-        List<Product> productList = productRepository.getProductsListByIdList(idList);
-
-        List<Warehouse> warehouseList = warehouseRepository.getWarehousesListByIdProductList(idList);
-        log.info("warehouse by idProducts {}", warehouseList);
-
-        if(idList.size() < productList.size()) {
-            throw new NoSuchElementException("No fue posible recuperar los valores correspondientes al producto.");
+        if (detailList == null || detailList.isEmpty()) {
+            return resp;
         }
-        Map<String, DetailListRequest> detailsByProductIdMap = detailList.stream()
-                .collect(Collectors.toMap(DetailListRequest::getIdProduct, d -> d));
 
-        Map<String, Warehouse> warehouseByProductIdMap = warehouseList.stream()
-                .collect(Collectors.toMap(w -> w.getProduct().getId(), w -> w));
-
-        productList.forEach(p -> {
-            DetailListRequest d = detailsByProductIdMap.get(p.getId());
-            Warehouse w = warehouseByProductIdMap.get(p.getId());
-
-            if (d != null) {
-                OrderDetail od = OrderDetail.builder()
-                        .discount(d.getTotalDiscount())
-                        .totalPrice(d.getTotalPrice())
-                        .product(p)
-                        .quantity(d.getQuantity())
-                        .unitaryPrice(d.getUnitaryCost())
-                        .document(document)
-                        .sku(d.getSku())
-                        .build();
-
-                orderDetailRepository.save(od);
-
-                resp.add(new DetailCreatedDto(od));
-
-                if(w.getStock().compareTo(d.getQuantity()) < 0) {
-                    throw new NoSuchElementException("El producto: " +p.getName()+ "de stock " +w.getStock()+ ", es inferior a la orden de " +d.getQuantity());
-                }
-
-                w.setStock(w.getStock().subtract(d.getQuantity()));
-                warehouseRepository.save(w);
+        for (DetailListRequest d : detailList) {
+            Product p = null;
+            if (d.getIdProduct() != null && !d.getIdProduct().isBlank()) {
+                p = productRepository.findProductByIdAndStateTrue(d.getIdProduct()).orElse(null);
             }
-        });
+            if (p == null && d.getSku() != null && !d.getSku().isBlank()) {
+                p = productRepository.findBySkuAndRegion(d.getSku(), document.getRegion()).orElse(null);
+                if (p == null) {
+                    p = productRepository.findBySkuAndRegion(d.getSku(), null).orElse(null);
+                }
+            }
+            if (p == null && d.getIdProduct() != null && !d.getIdProduct().isBlank()) {
+                // Intentar buscar por SKU si idProduct contiene el código de la prenda
+                p = productRepository.findBySkuAndRegion(d.getIdProduct(), null).orElse(null);
+            }
+
+            if (p == null) {
+                throw new NoSuchElementException("No fue posible encontrar la prenda con código/ID: "
+                        + (d.getSku() != null ? d.getSku() : d.getIdProduct()));
+            }
+
+            BigInteger qty = d.getQuantity() != null ? d.getQuantity() : BigInteger.ONE;
+            BigDecimal unitPrice = d.getUnitaryCost() != null ? d.getUnitaryCost()
+                    : (p.getFinalPrice() != null ? p.getFinalPrice() : p.getSalePrice());
+            BigDecimal discount = d.getTotalDiscount() != null ? d.getTotalDiscount() : BigDecimal.ZERO;
+            BigDecimal total = d.getTotalPrice() != null ? d.getTotalPrice()
+                    : unitPrice.multiply(new BigDecimal(qty)).subtract(discount);
+
+            OrderDetail od = OrderDetail.builder()
+                    .discount(discount)
+                    .totalPrice(total)
+                    .product(p)
+                    .quantity(qty)
+                    .unitaryPrice(unitPrice)
+                    .document(document)
+                    .sku(d.getSku() != null ? d.getSku() : p.getSku())
+                    .build();
+
+            orderDetailRepository.save(od);
+            resp.add(new DetailCreatedDto(od));
+
+            List<Warehouse> warehouseList = warehouseRepository.getWarehousesListByIdProductList(List.of(p.getId()));
+            if (!warehouseList.isEmpty()) {
+                Warehouse w = warehouseList.get(0);
+                if (w.getStock() != null) {
+                    if (w.getStock().compareTo(qty) < 0) {
+                        throw new NoSuchElementException("La prenda: " + p.getName() + " de stock " + w.getStock() + ", es inferior a la orden de " + qty);
+                    }
+                    w.setStock(w.getStock().subtract(qty));
+                    warehouseRepository.save(w);
+                }
+            }
+        }
 
         return resp;
     }

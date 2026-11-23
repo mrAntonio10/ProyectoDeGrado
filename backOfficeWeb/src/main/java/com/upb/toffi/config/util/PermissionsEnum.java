@@ -74,4 +74,11 @@ public class PermissionsEnum {
         DELETE,
         VIEW
     }
+
+    public enum EventsPermissions {
+        CREATE,
+        UPDATE,
+        DELETE,
+        VIEW
+    }
 }

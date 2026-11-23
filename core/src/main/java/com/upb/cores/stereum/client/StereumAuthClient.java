@@ -42,8 +42,9 @@ public class StereumAuthClient {
             return cachedToken;
         }
 
-        String idEnterprise = branchOfficeRepository.findEnterpriseIdByUserId(idUser);
-        PaymentIntegration pay = paymentIntegrationRepository.getPaymentIntegrationConfig(idEnterprise)
+        String idEnterprise = (idUser != null && !idUser.isBlank()) ? branchOfficeRepository.findEnterpriseIdByUserId(idUser) : null;
+        PaymentIntegration pay = (idEnterprise != null ? paymentIntegrationRepository.getPaymentIntegrationConfig(idEnterprise) : java.util.Optional.<PaymentIntegration>empty())
+                .or(() -> paymentIntegrationRepository.findAll().stream().findFirst())
                 .orElseThrow(() -> new NoSuchElementException("No fue posible recuperar la integracion de pagos"));
 
         // 1. Encriptar contraseña

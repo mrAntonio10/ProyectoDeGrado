@@ -23,7 +23,19 @@ public class SecurityConfiguration {
             http
                     .csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(req ->
-                        req.requestMatchers("/api/v1/auth/**","/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html","/api/v1/users/logout")
+                        req.requestMatchers(
+                                "/api/v1/auth/**",
+                                "/api/v1/products/public/**",
+                                "/api/v1/products/by-code/**",
+                                "/api/v1/events/public/**",
+                                "/api/v1/documents/public/**",
+                                "/api/v1/documents",
+                                "/api/v1/stereum/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api/v1/users/logout"
+                        )
                         .permitAll()
                                 .anyRequest().authenticated()
                 )

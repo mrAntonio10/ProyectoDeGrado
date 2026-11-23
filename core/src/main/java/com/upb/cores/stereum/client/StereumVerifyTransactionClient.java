@@ -40,8 +40,9 @@ public class StereumVerifyTransactionClient {
      */
     public JsonNode verifyCharge(StereumVerifyChargeRequest request, User user) {
         try {
-            String idEnterprise = branchOfficeRepository.findEnterpriseIdByUserId(user.getId());
-            PaymentIntegration pay = paymentIntegrationRepository.getPaymentIntegrationConfig(idEnterprise)
+            String idEnterprise = (user != null && user.getId() != null) ? branchOfficeRepository.findEnterpriseIdByUserId(user.getId()) : null;
+            PaymentIntegration pay = (idEnterprise != null ? paymentIntegrationRepository.getPaymentIntegrationConfig(idEnterprise) : java.util.Optional.<PaymentIntegration>empty())
+                    .or(() -> paymentIntegrationRepository.findAll().stream().findFirst())
                     .orElseThrow(() -> new NoSuchElementException("No fue posible recuperar la integracion de pagos"));
 
 

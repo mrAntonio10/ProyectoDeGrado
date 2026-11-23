@@ -36,8 +36,9 @@ public class StereumCreateChargeClient {
 
     public JsonNode createCharge(StereumCreateChargeRequest req, User user) {
         try {
-            String idEnterprise = branchOfficeRepository.findEnterpriseIdByUserId(user.getId());
-            PaymentIntegration pay = paymentIntegrationRepository.getPaymentIntegrationConfig(idEnterprise)
+            String idEnterprise = (user != null && user.getId() != null) ? branchOfficeRepository.findEnterpriseIdByUserId(user.getId()) : null;
+            PaymentIntegration pay = (idEnterprise != null ? paymentIntegrationRepository.getPaymentIntegrationConfig(idEnterprise) : java.util.Optional.<PaymentIntegration>empty())
+                    .or(() -> paymentIntegrationRepository.findAll().stream().findFirst())
                     .orElseThrow(() -> new NoSuchElementException("No fue posible recuperar la integracion de pagos"));
 
             // ===== 1. Construir body =====
@@ -63,11 +64,11 @@ public class StereumCreateChargeClient {
 
             // Customer object
             Map<String, Object> customer = new HashMap<>();
-            customer.put("name", user.getName());
-            customer.put("lastname", user.getLastname());
+            customer.put("name", user != null ? user.getName() : "Comprador");
+            customer.put("lastname", user != null ? user.getLastname() : "Rekids Online");
             if (req.getDocNumber() != null) customer.put("document_number", req.getDocNumber());
-            customer.put("email", user.getEmail());
-            customer.put("phone", StringUtil.isNullOrEmpty(user.getPhoneNumber()) ? "" : user.getPhoneNumber());
+            customer.put("email", user != null ? user.getEmail() : "online@rekids.bo");
+            customer.put("phone", (user != null && !StringUtil.isNullOrEmpty(user.getPhoneNumber())) ? user.getPhoneNumber() : "");
 
             body.put("customer", customer);
 

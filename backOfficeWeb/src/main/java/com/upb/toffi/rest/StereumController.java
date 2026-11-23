@@ -33,10 +33,9 @@ public class StereumController {
     public ResponseEntity<GenericResponse<StereumTokenAuthResponseDto>> testToken() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            log.info("Este peji tiene values de {}", auth);
+            User user = (auth != null && auth.getPrincipal() instanceof User u) ? u : null;
 
-            String token = stereumAuthClient.getJwtToken(user.getId());
+            String token = stereumAuthClient.getJwtToken(user != null ? user.getId() : null);
 
             return ResponseEntity.ok(GenericResponse.success(HttpStatus.OK.value(),
                     StereumTokenAuthResponseDto.builder()
@@ -54,7 +53,7 @@ public class StereumController {
     public ResponseEntity<GenericResponse<?>> createCharge(@RequestBody StereumCreateChargeRequest request) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
+            User user = (auth != null && auth.getPrincipal() instanceof User u) ? u : null;
 
             return ok(GenericResponse.success(HttpStatus.OK.value(),
                            stereumCreateChargeClient.createCharge(request, user)
@@ -77,7 +76,7 @@ public class StereumController {
     public ResponseEntity<GenericResponse<?>> verifyTransaction(@RequestBody StereumVerifyChargeRequest request) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
+            User user = (auth != null && auth.getPrincipal() instanceof User u) ? u : null;
 
             return ResponseEntity.ok(GenericResponse.success(HttpStatus.OK.value(),
                     verifyTransactionClient.verifyCharge(request, user))

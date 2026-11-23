@@ -35,13 +35,22 @@ public class SalesDocumentInfoDto {
 
     private List<DetailInfoDto> detailInfoList;
     private String state;
+    private String clientName;
+    private String clientPhone;
+    private String channel;
+    private String region;
+
     public SalesDocumentInfoDto(Document d) {
         this.id = d.getId();
 
-        this.userPOS = d.getSalesUser().getName() +" "+ d.getSalesUser().getLastname();
+        this.userPOS = d.getSalesUser() != null ? (d.getSalesUser().getName() +" "+ d.getSalesUser().getLastname()) : "ONLINE (Rekids)";
         this.salesDate = this.getDateTime(ZonedDateTime.ofInstant(Instant.ofEpochMilli(d.getDeliveryDate()), ZoneId.of("America/La_Paz")).toLocalDateTime());
         this.paymentMethod = this.getPaymentMethod(d.getPaymentMethod());
-        this.client = this.getClientNames(d.getDeliveryInformation());
+        this.client = !StringUtil.isNullOrEmpty(d.getClientName()) ? d.getClientName() : this.getClientNames(d.getDeliveryInformation());
+        this.clientName = d.getClientName();
+        this.clientPhone = d.getClientPhone();
+        this.channel = !StringUtil.isNullOrEmpty(d.getChannel()) ? d.getChannel() : "ONLINE";
+        this.region = d.getRegion();
 
         this.totalDiscount = d.getTotalDiscount();
         this.totalPrice = d.getTotalPrice();

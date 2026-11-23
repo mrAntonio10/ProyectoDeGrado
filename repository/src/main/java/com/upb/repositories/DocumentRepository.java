@@ -36,7 +36,7 @@ public interface DocumentRepository extends JpaRepository<Document, String> {
                                                            Pageable pageable);
 
     @Query("SELECT d FROM Document d " +
-                "INNER JOIN FETCH d.salesUser u " +
+                "LEFT JOIN FETCH d.salesUser u " +
             "WHERE d.state <> 'DELETED' " +
                 "AND (:filter IS NULL OR UPPER(d.paymentMethod) LIKE :filter) " +
                 "AND (:idUser IS NULL OR u.id =:idUser) " +

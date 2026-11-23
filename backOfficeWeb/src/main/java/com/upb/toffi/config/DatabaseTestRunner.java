@@ -19,11 +19,10 @@ public class DatabaseTestRunner implements CommandLineRunner {
     @Override
     public void run(String... args) {
         try {
-            // Ejecutamos un SELECT sencillo (en Oracle se suele usar SELECT 1 FROM DUAL)
-            Integer result = jdbcTemplate.queryForObject("SELECT 1 FROM DUAL", Integer.class);
+            Integer result = jdbcTemplate.queryForObject("SELECT 1", Integer.class);
             if (result != null && result == 1) {
                 logger.info("========================================");
-                logger.info("          CONECTADO CON EXITO           ");
+                logger.info("   CONECTADO CON EXITO A POSTGRES-AXIA  ");
                 logger.info("========================================");
             }
         } catch (Exception e) {
