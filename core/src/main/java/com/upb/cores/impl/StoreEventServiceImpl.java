@@ -80,7 +80,7 @@ public class StoreEventServiceImpl implements StoreEventService {
     @Transactional
     public List<StoreEventDto> getAllEvents(String region) {
         ensureDefaultEventsExist();
-        String normRegion = (!StringUtil.isNullOrEmpty(region) && !region.equalsIgnoreCase("TODOS")) ? region.toUpperCase() : null;
+        String normRegion = (!StringUtil.isNullOrEmpty(region) && !region.equalsIgnoreCase("TODOS")) ? region.trim().toUpperCase() : "";
 
         List<StoreEvent> events = storeEventRepository.findAllActiveEvents();
         return events.stream()
@@ -92,7 +92,7 @@ public class StoreEventServiceImpl implements StoreEventService {
     @Transactional
     public StoreEventDto getEventByIdOrCode(String idOrCode, String region) {
         ensureDefaultEventsExist();
-        String normRegion = (!StringUtil.isNullOrEmpty(region) && !region.equalsIgnoreCase("TODOS")) ? region.toUpperCase() : null;
+        String normRegion = (!StringUtil.isNullOrEmpty(region) && !region.equalsIgnoreCase("TODOS")) ? region.trim().toUpperCase() : "";
 
         StoreEvent event = storeEventRepository.findActiveById(idOrCode)
                 .or(() -> storeEventRepository.findActiveByCode(idOrCode))
@@ -102,14 +102,15 @@ public class StoreEventServiceImpl implements StoreEventService {
     }
 
     private StoreEventDto buildStoreEventDto(StoreEvent event, String region) {
-        List<EventProduct> eventProducts = eventProductRepository.findActiveByEventIdAndRegion(event.getId(), region);
+        String safeRegion = (region != null && !region.equalsIgnoreCase("TODOS")) ? region.trim().toUpperCase() : "";
+        List<EventProduct> eventProducts = eventProductRepository.findActiveByEventIdAndRegion(event.getId(), safeRegion);
 
         // Si es el evento NOVEDADES, aseguramos que todas las prendas marcadas como nuevas estén incluidas
         if ("NOVEDADES".equalsIgnoreCase(event.getCode())) {
             Set<String> includedIds = eventProducts.stream()
                     .map(ep -> ep.getProduct().getId())
                     .collect(Collectors.toSet());
-            List<Product> allRegionProducts = productRepository.findAllActiveByRegion(region);
+            List<Product> allRegionProducts = productRepository.findAllActiveByRegion(safeRegion);
             for (Product p : allRegionProducts) {
                 if (Boolean.TRUE.equals(p.getIsNew()) && !includedIds.contains(p.getId())) {
                     EventProduct ep = EventProduct.builder()
@@ -219,7 +220,7 @@ public class StoreEventServiceImpl implements StoreEventService {
 
         if (productIds != null) {
             // Desactivar los que no estén en la nueva lista
-            List<EventProduct> current = eventProductRepository.findActiveByEventIdAndRegion(event.getId(), null);
+            List<EventProduct> current = eventProductRepository.findActiveByEventIdAndRegion(event.getId(), "");
             Set<String> targetIds = new HashSet<>(productIds);
             for (EventProduct ep : current) {
                 if (!targetIds.contains(ep.getProduct().getId())) {
@@ -248,7 +249,7 @@ public class StoreEventServiceImpl implements StoreEventService {
         event.setState("DELETED");
         storeEventRepository.save(event);
 
-        List<EventProduct> current = eventProductRepository.findActiveByEventIdAndRegion(event.getId(), null);
+        List<EventProduct> current = eventProductRepository.findActiveByEventIdAndRegion(event.getId(), "");
         for (EventProduct ep : current) {
             ep.setState(false);
             eventProductRepository.save(ep);

@@ -60,20 +60,25 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductWithImageDto> getProductsWithImagesList(Authentication auth, String productName, String category, Pageable pageable) {
-        productName = (!StringUtil.isNullOrEmpty(productName) ? "%" + productName.toUpperCase() + "%" : null);
-        category = (!StringUtil.isNullOrEmpty(category) ? "%" + category.toUpperCase() + "%" : null);
+        String nameParam = (!StringUtil.isNullOrEmpty(productName) ? "%" + productName.toUpperCase() + "%" : null);
+        String catParam = (!StringUtil.isNullOrEmpty(category) ? "%" + category.toUpperCase() + "%" : null);
 
         List<User_BranchOffice> ub = resolveUserBranches(auth);
         if (!ub.isEmpty()) {
             return productRepository.getProductWithImagePageable(
                     ub.get(0).getBranchOffice().getEnterprise().getId(),
                     ub.get(0).getBranchOffice().getId(),
-                    productName,
-                    category,
+                    nameParam,
+                    catParam,
                     pageable
             );
         }
-        return productRepository.getRekidsProductsByRegion(null, category, productName, pageable);
+        return productRepository.getRekidsProductsByRegion(
+                "",
+                catParam != null ? catParam : "",
+                nameParam != null ? nameParam : "",
+                pageable
+        );
     }
 
     @Override
@@ -185,22 +190,23 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Debe seleccionar primero la región (SANTA_CRUZ, LA_PAZ o TODOS).");
         }
         String normRegion = (region.equalsIgnoreCase("TODOS") || region.equalsIgnoreCase("ALL"))
-                ? null
+                ? ""
                 : normalizeRegion(region);
+        if (normRegion == null) normRegion = "";
         String branchParam = (!StringUtil.isNullOrEmpty(branchId) && !branchId.equalsIgnoreCase("TODOS") && !branchId.equalsIgnoreCase("Todas"))
-                ? branchId.trim().toUpperCase() : null;
+                ? branchId.trim().toUpperCase() : "";
         String catParam = (!StringUtil.isNullOrEmpty(category) && !category.equalsIgnoreCase("Todas") && !category.equalsIgnoreCase("TODOS"))
-                ? "%" + category.trim().toUpperCase() + "%" : null;
+                ? "%" + category.trim().toUpperCase() + "%" : "";
         String sizeParam = (!StringUtil.isNullOrEmpty(clothingSize) && !clothingSize.equalsIgnoreCase("Todas") && !clothingSize.equalsIgnoreCase("TODOS"))
-                ? "%" + clothingSize.trim().toUpperCase() + "%" : null;
+                ? "%" + clothingSize.trim().toUpperCase() + "%" : "";
         String brandParam = (!StringUtil.isNullOrEmpty(brand) && !brand.equalsIgnoreCase("Todas") && !brand.equalsIgnoreCase("TODOS"))
-                ? "%" + brand.trim().toUpperCase() + "%" : null;
+                ? "%" + brand.trim().toUpperCase() + "%" : "";
         String conditionParam = (!StringUtil.isNullOrEmpty(condition) && !condition.equalsIgnoreCase("Todas") && !condition.equalsIgnoreCase("TODOS"))
-                ? "%" + condition.trim().toUpperCase() + "%" : null;
+                ? "%" + condition.trim().toUpperCase() + "%" : "";
         String availabilityParam = (!StringUtil.isNullOrEmpty(availability) && !availability.equalsIgnoreCase("Todas") && !availability.equalsIgnoreCase("TODOS"))
-                ? availability.trim().toUpperCase() : null;
+                ? availability.trim().toUpperCase() : "";
         String filterParam = (!StringUtil.isNullOrEmpty(filter))
-                ? "%" + filter.trim().toUpperCase() + "%" : null;
+                ? "%" + filter.trim().toUpperCase() + "%" : "";
 
         Page<ProductWithImageDto> page;
         if (!StringUtil.isNullOrEmpty(eventId) && !eventId.equalsIgnoreCase("TODOS") && !eventId.equalsIgnoreCase("Todas")) {

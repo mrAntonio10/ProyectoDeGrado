@@ -17,7 +17,7 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Stri
             "INNER JOIN FETCH ep.product p " +
             "WHERE ep.state = true AND e.state <> 'DELETED' AND p.state <> false " +
             "AND e.id = :eventId " +
-            "AND (:region IS NULL OR UPPER(p.region) = UPPER(:region))")
+            "AND (:region = '' OR UPPER(COALESCE(p.region, '')) = :region)")
     List<EventProduct> findActiveByEventIdAndRegion(@Param("eventId") String eventId,
                                                     @Param("region") String region);
 
