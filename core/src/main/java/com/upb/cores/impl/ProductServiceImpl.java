@@ -237,7 +237,7 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        page.forEach(this::enrichWithEventsAndStock);
+        enrichBatch(page.getContent());
         return page;
     }
 
@@ -430,6 +430,42 @@ public class ProductServiceImpl implements ProductService {
             }
         } catch (Exception e) {
             log.warn("No se pudo actualizar registro de almacén para prenda {}: {}", product.getSku(), e.getMessage());
+        }
+    }
+
+    /** Enriquece una lista completa con 2 consultas en total (en vez de 2 por prenda). */
+    private void enrichBatch(List<ProductWithImageDto> dtos) {
+        if (dtos == null || dtos.isEmpty()) return;
+        List<String> ids = dtos.stream().map(ProductWithImageDto::getId)
+                .filter(java.util.Objects::nonNull).distinct().collect(Collectors.toList());
+        if (ids.isEmpty()) return;
+        try {
+            java.util.Map<String, List<String>> eventsByProduct = new java.util.HashMap<>();
+            for (EventProduct ep : eventProductRepository.findActiveByProductIds(ids)) {
+                eventsByProduct.computeIfAbsent(ep.getProduct().getId(), k -> new ArrayList<>())
+                        .add(ep.getEvent().getName());
+            }
+            java.util.Map<String, Warehouse> stockByProduct = new java.util.HashMap<>();
+            for (Warehouse w : warehouseRepository.getWarehousesListByIdProductListReadOnly(ids)) {
+                stockByProduct.putIfAbsent(w.getProduct().getId(), w);
+            }
+            for (ProductWithImageDto dto : dtos) {
+                if (dto.getId() == null) continue;
+                List<String> names = eventsByProduct.getOrDefault(dto.getId(), new ArrayList<>())
+                        .stream().distinct().collect(Collectors.toList());
+                if (Boolean.TRUE.equals(dto.getIsNew()) && names.stream().noneMatch(n -> n.equalsIgnoreCase("Novedades"))) {
+                    names.add(0, "Novedades");
+                }
+                dto.setEventNames(names);
+                Warehouse w = stockByProduct.get(dto.getId());
+                if (w != null) {
+                    BigInteger wStock = w.getStock();
+                    dto.setStock(wStock);
+                    dto.setAvailability((wStock != null && wStock.compareTo(BigInteger.ZERO) > 0) ? "available" : "unavailable");
+                }
+            }
+        } catch (Exception e) {
+            log.warn("No se pudo enriquecer eventos/stock en lote: {}", e.getMessage());
         }
     }
 

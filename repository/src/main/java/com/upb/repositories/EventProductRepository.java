@@ -29,6 +29,13 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Stri
     List<EventProduct> findActiveByProductId(@Param("productId") String productId);
 
     @Query("SELECT ep FROM EventProduct ep " +
+            "INNER JOIN FETCH ep.event e " +
+            "INNER JOIN FETCH ep.product p " +
+            "WHERE ep.state = true AND e.state <> 'DELETED' AND p.state <> false " +
+            "AND p.id IN :productIds")
+    List<EventProduct> findActiveByProductIds(@Param("productIds") java.util.Collection<String> productIds);
+
+    @Query("SELECT ep FROM EventProduct ep " +
             "WHERE ep.event.id = :eventId AND ep.product.id = :productId")
     Optional<EventProduct> findByEventIdAndProductId(@Param("eventId") String eventId,
                                                      @Param("productId") String productId);
