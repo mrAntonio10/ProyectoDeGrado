@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,6 +33,7 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
     public static final String BRANCH_SANTA_CRUZ_ID = "10000000-0000-4000-8000-000000000002";
 
     private final JdbcTemplate jdbcTemplate;
+    private final PlatformTransactionManager transactionManager;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -478,7 +482,12 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
     ) throws Exception {
         String requestId = UUID.randomUUID().toString();
         String sql = "SELECT public.integration_catalog_read(?, 'test', ?, ?::uuid, ?::uuid, ?::uuid, ?, ?::uuid)::text";
-        String json = jdbcTemplate.queryForObject(
+        // integration_catalog_read escribe (rate limit): ejecutar en transaccion NUEVA de escritura,
+        // para no heredar la readOnly del servicio ni dejarla rollback-only si falla.
+        TransactionTemplate tx = new TransactionTemplate(transactionManager);
+        tx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        tx.setReadOnly(false);
+        String json = tx.execute(status -> jdbcTemplate.queryForObject(
                 sql,
                 String.class,
                 token,
@@ -488,7 +497,7 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
                 afterId,
                 limit,
                 requestId
-        );
+        ));
         return json != null ? objectMapper.readTree(json) : null;
     }
 
