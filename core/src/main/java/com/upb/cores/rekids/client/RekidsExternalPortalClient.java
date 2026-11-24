@@ -33,7 +33,7 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${rekids.external.portal.url:http://localhost:8090}")
+    @Value("${rekids.external.portal.url:https://testendpoints.onrender.com}")
     private String externalPortalUrl;
 
     @Value("${rekids.sandbox.api.token:}")
@@ -529,7 +529,7 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
     }
 
     private String normalizeBaseUrl(String rawUrl) {
-        if (rawUrl == null || rawUrl.isBlank()) return "http://localhost:8090";
+        if (rawUrl == null || rawUrl.isBlank()) return "https://testendpoints.onrender.com";
         String trimmed = rawUrl.trim().replaceAll("/+$", "");
         if (trimmed.endsWith("/api/v1/external")) {
             trimmed = trimmed.substring(0, trimmed.length() - "/api/v1/external".length());
