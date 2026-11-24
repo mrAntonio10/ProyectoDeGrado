@@ -259,6 +259,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public SyncGarmentsResultDto syncGarmentsFromExternalPortal(Authentication auth, String region, List<ExternalGarmentDto> externalGarmentsPayload) {
+        // Desactivar cualquier prenda mockeada anterior (RK-SCZ-*, RK-LPZ-*, EXT-*) para que solo queden datos reales del API del tercero
+        productRepository.deactivateMockedGarments();
+
         String normRegion = (!StringUtil.isNullOrEmpty(region) && !region.equalsIgnoreCase("TODOS"))
                 ? normalizeRegion(region) : null;
 

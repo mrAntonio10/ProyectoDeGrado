@@ -87,20 +87,8 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
             }
         }
 
-        // 3. Fallback sintético de las 2 sucursales DEMO autorizadas
         return RekidsSandboxBranchListResponseDto.builder()
-                .items(List.of(
-                        RekidsSandboxBranchDto.builder()
-                                .id(BRANCH_LA_PAZ_ID)
-                                .name("DEMO La Paz — datos ficticios")
-                                .region("LA_PAZ")
-                                .build(),
-                        RekidsSandboxBranchDto.builder()
-                                .id(BRANCH_SANTA_CRUZ_ID)
-                                .name("DEMO Santa Cruz — datos ficticios")
-                                .region("SANTA_CRUZ")
-                                .build()
-                ))
+                .items(List.of())
                 .build();
     }
 
@@ -163,32 +151,11 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
             }
         }
 
-        // 3. Fallback sintético paginado por cursor para la sucursal
-        String afterUuid = decodeAfterFromCursor(cursor, branchId);
-        List<RekidsSandboxProductDto> branchItems = buildFallbackSandboxProducts().stream()
-                .filter(p -> branchId == null || branchId.equalsIgnoreCase(p.getBranchId()))
-                .sorted(Comparator.comparing(RekidsSandboxProductDto::getId))
-                .collect(Collectors.toList());
-
-        List<RekidsSandboxProductDto> afterFiltered = branchItems.stream()
-                .filter(p -> afterUuid == null || p.getId().compareToIgnoreCase(afterUuid) > 0)
-                .collect(Collectors.toList());
-
-        List<RekidsSandboxProductDto> pageSlice = afterFiltered.stream()
-                .limit(safeLimit)
-                .collect(Collectors.toList());
-
-        String nextCursor = null;
-        if (afterFiltered.size() > safeLimit && !pageSlice.isEmpty()) {
-            String lastId = pageSlice.get(pageSlice.size() - 1).getId();
-            nextCursor = encodeCursor(branchId, lastId);
-        }
-
-        RekidsSandboxProductPageResponseDto fallbackPage = RekidsSandboxProductPageResponseDto.builder()
-                .items(pageSlice)
-                .nextCursor(nextCursor)
+        RekidsSandboxProductPageResponseDto emptyPage = RekidsSandboxProductPageResponseDto.builder()
+                .items(List.of())
+                .nextCursor(null)
                 .build();
-        return enrichPageResponseMetadata(fallbackPage, branchId, safeLimit, 0);
+        return enrichPageResponseMetadata(emptyPage, branchId, safeLimit, 0);
     }
 
     @Override
@@ -407,10 +374,7 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
             }
         }
 
-        return buildFallbackSandboxProducts().stream()
-                .filter(p -> productId != null && productId.equalsIgnoreCase(p.getId()))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Producto no encontrado o no publicado en ReKids Sandbox: " + productId));
+        throw new NoSuchElementException("Producto no encontrado o no publicado en el catálogo externo.");
     }
 
     /**
@@ -489,19 +453,6 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
             List<RekidsSandboxProductDto> branchProducts = fetchAllProductsForBranch(branch.getId());
             for (RekidsSandboxProductDto sp : branchProducts) {
                 all.add(toExternalGarmentDto(sp, branch.getName(), branchRegion));
-            }
-        }
-
-        // Incluir también el catálogo extendido de demostración si se requiere para los eventos de tienda
-        List<ExternalGarmentDto> defaultStorefront = buildDefaultExternalGarments();
-        Set<String> existingCodes = all.stream()
-                .map(g -> (g.getSku() != null ? g.getSku().toUpperCase() : ""))
-                .collect(Collectors.toSet());
-        for (ExternalGarmentDto ext : defaultStorefront) {
-            boolean matchesRegion = (region == null || region.isBlank() || region.equalsIgnoreCase("TODOS")
-                    || region.equalsIgnoreCase(ext.getRegion()));
-            if (matchesRegion && !existingCodes.contains(ext.getSku().toUpperCase())) {
-                all.add(ext);
             }
         }
         return all;
@@ -724,272 +675,5 @@ public class RekidsExternalPortalClient implements RekidsExternalPortalFeignClie
             return "https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=600&q=80";
         }
         return "https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=600&q=80";
-    }
-
-    private List<RekidsSandboxProductDto> buildFallbackSandboxProducts() {
-        String nowIso = java.time.Instant.now().toString();
-        return List.of(
-                RekidsSandboxProductDto.builder()
-                        .id("20000000-0000-4000-8000-000000000001")
-                        .code("DEMO-LP-001")
-                        .legacyCode("DEMO-ANT-01")
-                        .branchId(BRANCH_LA_PAZ_ID)
-                        .name("DEMO Vestido azul")
-                        .category("Vestidos")
-                        .size("6")
-                        .brand("Marca ficticia")
-                        .condition("Excelente")
-                        .price("55.00")
-                        .currency("BOB")
-                        .availability("available")
-                        .photos(List.of())
-                        .updatedAt(nowIso)
-                        .version(1L)
-                        .build(),
-                RekidsSandboxProductDto.builder()
-                        .id("20000000-0000-4000-8000-000000000002")
-                        .code("DEMO-LP-002")
-                        .legacyCode("DEMO-ANT-01")
-                        .branchId(BRANCH_LA_PAZ_ID)
-                        .name("DEMO Polera vendida")
-                        .category("Poleras")
-                        .size("4")
-                        .brand("Marca ficticia")
-                        .condition("Bueno")
-                        .price("35.00")
-                        .currency("BOB")
-                        .availability("unavailable")
-                        .photos(List.of())
-                        .updatedAt(nowIso)
-                        .version(1L)
-                        .build(),
-                RekidsSandboxProductDto.builder()
-                        .id("20000000-0000-4000-8000-000000000003")
-                        .code("DEMO-SC-001")
-                        .legacyCode(null)
-                        .branchId(BRANCH_SANTA_CRUZ_ID)
-                        .name("DEMO Zapatos")
-                        .category("Zapatos")
-                        .size("28")
-                        .brand(null)
-                        .condition("Excelente")
-                        .price("40.00")
-                        .currency("BOB")
-                        .availability("available")
-                        .photos(List.of())
-                        .updatedAt(nowIso)
-                        .version(1L)
-                        .build(),
-                RekidsSandboxProductDto.builder()
-                        .id("20000000-0000-4000-8000-000000000004")
-                        .code("DEMO-SC-002")
-                        .legacyCode(null)
-                        .branchId(BRANCH_SANTA_CRUZ_ID)
-                        .name("DEMO Abrigo reservado")
-                        .category("Abrigos")
-                        .size("8")
-                        .brand(null)
-                        .condition("Bueno")
-                        .price("65.00")
-                        .currency("BOB")
-                        .availability("unavailable")
-                        .photos(List.of())
-                        .updatedAt(nowIso)
-                        .version(1L)
-                        .build()
-        );
-    }
-
-    private List<ExternalGarmentDto> buildDefaultExternalGarments() {
-        long now = System.currentTimeMillis();
-        List<ExternalGarmentDto> list = new ArrayList<>();
-
-        // Prendas Tienda Santa Cruz (SANTA_CRUZ)
-        list.add(ExternalGarmentDto.builder()
-                .externalId("EXT-SCZ-001")
-                .sku("RK-SCZ-001")
-                .branchId(BRANCH_SANTA_CRUZ_ID)
-                .branchName("DEMO Santa Cruz — datos ficticios")
-                .name("Conjunto Algodón Osito")
-                .category("Conjuntos")
-                .size("2T")
-                .color("Celeste")
-                .gender("Niño")
-                .brand("Carter's")
-                .condition("Excelente")
-                .purchasePrice(new BigDecimal("45.00"))
-                .salePrice(new BigDecimal("85.00"))
-                .currency("BOB")
-                .availability("available")
-                .region("SANTA_CRUZ")
-                .stock(BigInteger.valueOf(3))
-                .photo("https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=600&q=80")
-                .receptionDate(now)
-                .version(1L)
-                .build());
-
-        list.add(ExternalGarmentDto.builder()
-                .externalId("EXT-SCZ-002")
-                .sku("RK-SCZ-002")
-                .branchId(BRANCH_SANTA_CRUZ_ID)
-                .branchName("DEMO Santa Cruz — datos ficticios")
-                .name("Vestido Floral Verano")
-                .category("Vestidos")
-                .size("4T")
-                .color("Rosa")
-                .gender("Niña")
-                .brand("Zara Kids")
-                .condition("Excelente")
-                .purchasePrice(new BigDecimal("60.00"))
-                .salePrice(new BigDecimal("120.00"))
-                .currency("BOB")
-                .availability("available")
-                .region("SANTA_CRUZ")
-                .stock(BigInteger.valueOf(2))
-                .photo("https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=600&q=80")
-                .receptionDate(now)
-                .version(1L)
-                .build());
-
-        list.add(ExternalGarmentDto.builder()
-                .externalId("EXT-SCZ-003")
-                .sku("RK-SCZ-003")
-                .branchId(BRANCH_SANTA_CRUZ_ID)
-                .branchName("DEMO Santa Cruz — datos ficticios")
-                .name("Polera Dinosaurio DinoRex")
-                .category("Poleras")
-                .size("6")
-                .color("Verde")
-                .gender("Niño")
-                .brand("GAP Kids")
-                .condition("Bueno")
-                .purchasePrice(new BigDecimal("30.00"))
-                .salePrice(new BigDecimal("65.00"))
-                .currency("BOB")
-                .availability("available")
-                .region("SANTA_CRUZ")
-                .stock(BigInteger.valueOf(5))
-                .photo("https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&w=600&q=80")
-                .receptionDate(now)
-                .version(1L)
-                .build());
-
-        list.add(ExternalGarmentDto.builder()
-                .externalId("EXT-SCZ-004")
-                .sku("RK-SCZ-004")
-                .branchId(BRANCH_SANTA_CRUZ_ID)
-                .branchName("DEMO Santa Cruz — datos ficticios")
-                .name("Short Denim Infantil")
-                .category("Pantalones y Shorts")
-                .size("5T")
-                .color("Azul Denim")
-                .gender("Unisex")
-                .brand("OshKosh")
-                .condition("Excelente")
-                .purchasePrice(new BigDecimal("40.00"))
-                .salePrice(new BigDecimal("78.00"))
-                .currency("BOB")
-                .availability("available")
-                .region("SANTA_CRUZ")
-                .stock(BigInteger.valueOf(4))
-                .photo("https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=600&q=80")
-                .receptionDate(now)
-                .version(1L)
-                .build());
-
-        // Prendas Tienda La Paz (LA_PAZ)
-        list.add(ExternalGarmentDto.builder()
-                .externalId("EXT-LPZ-001")
-                .sku("RK-LPZ-001")
-                .branchId(BRANCH_LA_PAZ_ID)
-                .branchName("DEMO La Paz — datos ficticios")
-                .name("Chamarra Térmica Acolchada")
-                .category("Abrigos y Chamarras")
-                .size("6")
-                .color("Azul Marino")
-                .gender("Niño")
-                .brand("The North Face Kids")
-                .condition("Excelente")
-                .purchasePrice(new BigDecimal("110.00"))
-                .salePrice(new BigDecimal("210.00"))
-                .currency("BOB")
-                .availability("available")
-                .region("LA_PAZ")
-                .stock(BigInteger.valueOf(2))
-                .photo("https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=600&q=80")
-                .receptionDate(now)
-                .version(1L)
-                .build());
-
-        list.add(ExternalGarmentDto.builder()
-                .externalId("EXT-LPZ-002")
-                .sku("RK-LPZ-002")
-                .branchId(BRANCH_LA_PAZ_ID)
-                .branchName("DEMO La Paz — datos ficticios")
-                .name("Chompa Tejida Copos de Nieve")
-                .category("Chompas y Polerones")
-                .size("4T")
-                .color("Rojo Navidad")
-                .gender("Niña")
-                .brand("H&M Kids")
-                .condition("Excelente")
-                .purchasePrice(new BigDecimal("55.00"))
-                .salePrice(new BigDecimal("115.00"))
-                .currency("BOB")
-                .availability("available")
-                .region("LA_PAZ")
-                .stock(BigInteger.valueOf(3))
-                .photo("https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=600&q=80")
-                .receptionDate(now)
-                .version(1L)
-                .build());
-
-        list.add(ExternalGarmentDto.builder()
-                .externalId("EXT-LPZ-003")
-                .sku("RK-LPZ-003")
-                .branchId(BRANCH_LA_PAZ_ID)
-                .branchName("DEMO La Paz — datos ficticios")
-                .name("Buzo Polar Completo")
-                .category("Conjuntos")
-                .size("3T")
-                .color("Gris Melange")
-                .gender("Unisex")
-                .brand("Carter's")
-                .condition("Bueno")
-                .purchasePrice(new BigDecimal("50.00"))
-                .salePrice(new BigDecimal("95.00"))
-                .currency("BOB")
-                .availability("available")
-                .region("LA_PAZ")
-                .stock(BigInteger.valueOf(4))
-                .photo("https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80")
-                .receptionDate(now)
-                .version(1L)
-                .build());
-
-        list.add(ExternalGarmentDto.builder()
-                .externalId("EXT-LPZ-004")
-                .sku("RK-LPZ-004")
-                .branchId(BRANCH_LA_PAZ_ID)
-                .branchName("DEMO La Paz — datos ficticios")
-                .name("Botines Impermeables Kids")
-                .category("Calzado")
-                .size("28")
-                .color("Café")
-                .gender("Unisex")
-                .brand("Colloky")
-                .condition("Excelente")
-                .purchasePrice(new BigDecimal("75.00"))
-                .salePrice(new BigDecimal("145.00"))
-                .currency("BOB")
-                .availability("available")
-                .region("LA_PAZ")
-                .stock(BigInteger.valueOf(2))
-                .photo("https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=600&q=80")
-                .receptionDate(now)
-                .version(1L)
-                .build());
-
-        return list;
     }
 }
