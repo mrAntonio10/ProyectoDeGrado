@@ -446,7 +446,7 @@ public class ProductServiceImpl implements ProductService {
             }
             dto.setEventNames(names);
 
-            List<Warehouse> warehouses = warehouseRepository.getWarehousesListByIdProductList(List.of(dto.getId()));
+            List<Warehouse> warehouses = warehouseRepository.getWarehousesListByIdProductListReadOnly(List.of(dto.getId()));
             if (!warehouses.isEmpty()) {
                 BigInteger wStock = warehouses.get(0).getStock();
                 dto.setStock(wStock);

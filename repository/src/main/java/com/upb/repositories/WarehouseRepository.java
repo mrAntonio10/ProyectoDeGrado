@@ -89,6 +89,16 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, String> {
     )
     List<Warehouse> getWarehousesListByIdProductList(@Param("list") List<String> idList);
 
+    /** Igual que la anterior pero SIN lock: segura para transacciones readOnly (solo consultas). */
+    @Query("SELECT w FROM Warehouse w " +
+                "INNER JOIN FETCH w.product p " +
+                "INNER JOIN FETCH w.branchOffice b " +
+            "WHERE w.state <> 'DELETED' " +
+                "AND b.state <> 'DELETED' " +
+                "AND p.id IN :list"
+    )
+    List<Warehouse> getWarehousesListByIdProductListReadOnly(@Param("list") List<String> idList);
+
     @Query("SELECT w FROM Warehouse w WHERE w.branchOffice.id = :branchId AND w.product.id = :productId AND w.state <> 'DELETED'")
     Optional<Warehouse> findByBranchOfficeIdAndProductId(@Param("branchId") String branchId, @Param("productId") String productId);
 }
