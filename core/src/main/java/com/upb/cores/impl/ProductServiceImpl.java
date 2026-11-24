@@ -164,20 +164,71 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductWithImageDto> getProductsByRegion(String region, String eventId, String category, String filter, Pageable pageable) {
+        return getProductsByRegionFiltered(region, null, eventId, category, null, null, null, null, filter, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductWithImageDto> getProductsByRegionFiltered(
+            String region,
+            String branchId,
+            String eventId,
+            String category,
+            String clothingSize,
+            String brand,
+            String condition,
+            String availability,
+            String filter,
+            Pageable pageable
+    ) {
         if (StringUtil.isNullOrEmpty(region)) {
-            throw new IllegalArgumentException("Debe seleccionar primero la región (SANTA_CRUZ o LA_PAZ).");
+            throw new IllegalArgumentException("Debe seleccionar primero la región (SANTA_CRUZ, LA_PAZ o TODOS).");
         }
-        String normRegion = normalizeRegion(region);
-        String catParam = (!StringUtil.isNullOrEmpty(category) && !category.equalsIgnoreCase("Todas"))
-                ? "%" + category.toUpperCase() + "%" : null;
+        String normRegion = (region.equalsIgnoreCase("TODOS") || region.equalsIgnoreCase("ALL"))
+                ? null
+                : normalizeRegion(region);
+        String branchParam = (!StringUtil.isNullOrEmpty(branchId) && !branchId.equalsIgnoreCase("TODOS") && !branchId.equalsIgnoreCase("Todas"))
+                ? branchId.trim().toUpperCase() : null;
+        String catParam = (!StringUtil.isNullOrEmpty(category) && !category.equalsIgnoreCase("Todas") && !category.equalsIgnoreCase("TODOS"))
+                ? "%" + category.trim().toUpperCase() + "%" : null;
+        String sizeParam = (!StringUtil.isNullOrEmpty(clothingSize) && !clothingSize.equalsIgnoreCase("Todas") && !clothingSize.equalsIgnoreCase("TODOS"))
+                ? "%" + clothingSize.trim().toUpperCase() + "%" : null;
+        String brandParam = (!StringUtil.isNullOrEmpty(brand) && !brand.equalsIgnoreCase("Todas") && !brand.equalsIgnoreCase("TODOS"))
+                ? "%" + brand.trim().toUpperCase() + "%" : null;
+        String conditionParam = (!StringUtil.isNullOrEmpty(condition) && !condition.equalsIgnoreCase("Todas") && !condition.equalsIgnoreCase("TODOS"))
+                ? "%" + condition.trim().toUpperCase() + "%" : null;
+        String availabilityParam = (!StringUtil.isNullOrEmpty(availability) && !availability.equalsIgnoreCase("Todas") && !availability.equalsIgnoreCase("TODOS"))
+                ? availability.trim().toUpperCase() : null;
         String filterParam = (!StringUtil.isNullOrEmpty(filter))
-                ? "%" + filter.toUpperCase() + "%" : null;
+                ? "%" + filter.trim().toUpperCase() + "%" : null;
 
         Page<ProductWithImageDto> page;
-        if (!StringUtil.isNullOrEmpty(eventId) && !eventId.equalsIgnoreCase("TODOS")) {
-            page = productRepository.getRekidsProductsByRegionAndEvent(normRegion, eventId, catParam, filterParam, pageable);
+        if (!StringUtil.isNullOrEmpty(eventId) && !eventId.equalsIgnoreCase("TODOS") && !eventId.equalsIgnoreCase("Todas")) {
+            page = productRepository.getRekidsProductsFilteredByEventPageable(
+                    normRegion,
+                    branchParam,
+                    eventId.trim(),
+                    eventId.trim().toUpperCase(),
+                    catParam,
+                    sizeParam,
+                    brandParam,
+                    conditionParam,
+                    availabilityParam,
+                    filterParam,
+                    pageable
+            );
         } else {
-            page = productRepository.getRekidsProductsByRegion(normRegion, catParam, filterParam, pageable);
+            page = productRepository.getRekidsProductsFilteredPageable(
+                    normRegion,
+                    branchParam,
+                    catParam,
+                    sizeParam,
+                    brandParam,
+                    conditionParam,
+                    availabilityParam,
+                    filterParam,
+                    pageable
+            );
         }
 
         page.forEach(this::enrichWithEventsAndStock);
@@ -235,18 +286,28 @@ public class ProductServiceImpl implements ProductService {
                 existingOpt = productRepository.findBySkuAndRegion(ext.getSku(), garmentRegion);
             }
 
+            String resolvedAvailability = ext.getAvailability() != null
+                    ? ext.getAvailability().toLowerCase()
+                    : ((ext.getStock() != null && ext.getStock().compareTo(BigInteger.ZERO) > 0) ? "available" : "unavailable");
+
             Product product;
             boolean isNewRecord = existingOpt.isEmpty();
             if (isNewRecord) {
                 product = Product.builder()
                         .externalId(ext.getExternalId())
                         .sku(ext.getSku() != null ? ext.getSku().toUpperCase() : "RK-" + System.currentTimeMillis())
+                        .legacyCode(ext.getLegacyCode())
+                        .branchId(ext.getBranchId())
                         .name(ext.getName())
                         .category(ext.getCategory() != null ? ext.getCategory() : "Prendas")
                         .size(ext.getSize())
                         .color(ext.getColor())
                         .gender(ext.getGender())
                         .brand(ext.getBrand())
+                        .condition(ext.getCondition() != null ? ext.getCondition() : "Excelente")
+                        .availability(resolvedAvailability)
+                        .updatedAt(ext.getUpdatedAt())
+                        .version(ext.getVersion() != null ? ext.getVersion() : 1L)
                         .purchasePrice(ext.getPurchasePrice())
                         .salePrice(ext.getSalePrice())
                         .finalPrice(ext.getSalePrice())
@@ -269,6 +330,12 @@ public class ProductServiceImpl implements ProductService {
                 product.setColor(ext.getColor() != null ? ext.getColor() : product.getColor());
                 product.setGender(ext.getGender() != null ? ext.getGender() : product.getGender());
                 product.setBrand(ext.getBrand() != null ? ext.getBrand() : product.getBrand());
+                if (ext.getLegacyCode() != null) product.setLegacyCode(ext.getLegacyCode());
+                if (ext.getBranchId() != null) product.setBranchId(ext.getBranchId());
+                if (ext.getCondition() != null) product.setCondition(ext.getCondition());
+                product.setAvailability(resolvedAvailability);
+                if (ext.getUpdatedAt() != null) product.setUpdatedAt(ext.getUpdatedAt());
+                if (ext.getVersion() != null) product.setVersion(ext.getVersion());
                 if (ext.getPurchasePrice() != null) product.setPurchasePrice(ext.getPurchasePrice());
                 if (ext.getSalePrice() != null) {
                     product.setSalePrice(ext.getSalePrice());
@@ -372,11 +439,89 @@ public class ProductServiceImpl implements ProductService {
 
             List<Warehouse> warehouses = warehouseRepository.getWarehousesListByIdProductList(List.of(dto.getId()));
             if (!warehouses.isEmpty()) {
-                dto.setStock(warehouses.get(0).getStock());
+                BigInteger wStock = warehouses.get(0).getStock();
+                dto.setStock(wStock);
+                dto.setAvailability((wStock != null && wStock.compareTo(BigInteger.ZERO) > 0) ? "available" : "unavailable");
             }
         } catch (Exception e) {
             log.debug("No se pudo enriquecer eventos/stock para {}: {}", dto.getId(), e.getMessage());
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RekidsSandboxBranchDto> getRekidsBranches() {
+        RekidsSandboxBranchListResponseDto response = externalPortalFeignClient.listBranches();
+        return response != null && response.getItems() != null ? response.getItems() : List.of();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RekidsSandboxProductPageResponseDto getRekidsProductsByBranch(String branchId, String cursor, Integer limit) {
+        if (StringUtil.isNullOrEmpty(branchId)) {
+            throw new IllegalArgumentException("El parámetro branch_id es obligatorio.");
+        }
+        return externalPortalFeignClient.listProductsByBranch(branchId.trim(), cursor, limit);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RekidsSandboxProductPageResponseDto getRekidsProductsByBranchFiltered(
+            String branchId,
+            String cursor,
+            Integer limit,
+            Integer page,
+            String filter,
+            String category,
+            String clothingSize,
+            String brand,
+            String condition,
+            String availability
+    ) {
+        if (StringUtil.isNullOrEmpty(branchId)) {
+            throw new IllegalArgumentException("El parámetro branch_id es obligatorio.");
+        }
+        return externalPortalFeignClient.listProductsByBranchFiltered(
+                branchId.trim(),
+                cursor,
+                limit,
+                page,
+                filter,
+                category,
+                clothingSize,
+                brand,
+                condition,
+                availability
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RekidsSandboxProductDto getRekidsSandboxProductById(String productId) {
+        if (StringUtil.isNullOrEmpty(productId)) {
+            throw new IllegalArgumentException("El parámetro product_id es obligatorio.");
+        }
+        return externalPortalFeignClient.getProductById(productId.trim());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RekidsBranchCatalogDto> getRekidsCatalogSeparatedByBranches(String region) {
+        String normRegion = (!StringUtil.isNullOrEmpty(region) && !region.equalsIgnoreCase("TODOS"))
+                ? normalizeRegion(region) : null;
+        List<RekidsBranchCatalogDto> catalogs = externalPortalFeignClient.fetchCatalogSeparatedByBranches(normRegion);
+        List<BranchOffice> localBranches = branchOfficeRepository.findAll();
+
+        for (RekidsBranchCatalogDto cat : catalogs) {
+            String regKey = cat.getRegion() != null ? cat.getRegion().replace("_", " ") : "";
+            localBranches.stream()
+                    .filter(b -> !"DELETED".equalsIgnoreCase(b.getState()))
+                    .filter(b -> (b.getLocation() != null && b.getLocation().toUpperCase().replace("_", " ").contains(regKey))
+                            || (b.getName() != null && b.getName().toUpperCase().contains(regKey)))
+                    .findFirst()
+                    .ifPresent(b -> cat.setLocalBranchOfficeId(b.getId()));
+        }
+        return catalogs;
     }
 
     private String normalizeRegion(String region) {

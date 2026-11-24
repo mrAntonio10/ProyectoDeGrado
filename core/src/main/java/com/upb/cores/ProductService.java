@@ -1,11 +1,7 @@
 package com.upb.cores;
 
 import com.upb.models.product.Product;
-import com.upb.models.product.dto.ExternalGarmentDto;
-import com.upb.models.product.dto.ProductDto;
-import com.upb.models.product.dto.ProductListDto;
-import com.upb.models.product.dto.ProductWithImageDto;
-import com.upb.models.product.dto.SyncGarmentsResultDto;
+import com.upb.models.product.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -26,6 +22,36 @@ public interface ProductService {
 
     /* Métodos Rekids - Tienda Online por Región, Código y Sincronización FeignClient */
     Page<ProductWithImageDto> getProductsByRegion(String region, String eventId, String category, String filter, Pageable pageable);
+    Page<ProductWithImageDto> getProductsByRegionFiltered(
+            String region,
+            String branchId,
+            String eventId,
+            String category,
+            String clothingSize,
+            String brand,
+            String condition,
+            String availability,
+            String filter,
+            Pageable pageable
+    );
     ProductWithImageDto getProductByCodeAndRegion(String code, String region);
     SyncGarmentsResultDto syncGarmentsFromExternalPortal(Authentication auth, String region, List<ExternalGarmentDto> externalGarmentsPayload);
+
+    /* Métodos ReKids Sandbox API v1 (FeignClient separados por sucursal) */
+    List<RekidsSandboxBranchDto> getRekidsBranches();
+    RekidsSandboxProductPageResponseDto getRekidsProductsByBranch(String branchId, String cursor, Integer limit);
+    RekidsSandboxProductPageResponseDto getRekidsProductsByBranchFiltered(
+            String branchId,
+            String cursor,
+            Integer limit,
+            Integer page,
+            String filter,
+            String category,
+            String clothingSize,
+            String brand,
+            String condition,
+            String availability
+    );
+    RekidsSandboxProductDto getRekidsSandboxProductById(String productId);
+    List<RekidsBranchCatalogDto> getRekidsCatalogSeparatedByBranches(String region);
 }

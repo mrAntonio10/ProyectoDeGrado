@@ -13,7 +13,8 @@ import java.util.List;
 
 @Data
 @Builder
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductWithImageDto {
     private String id;
     private String name;
@@ -26,12 +27,18 @@ public class ProductWithImageDto {
     private BigInteger stock;
     private BigDecimal unitaryCost;
 
-    // Rekids Garment Fields
+    // Rekids Garment & Sandbox API v1 Fields
     private String sku;
+    private String legacyCode;
+    private String branchId;
+    private String branchName;
     private String size;
     private String color;
     private String gender;
     private String brand;
+    private String condition;
+    private String currency;
+    private String availability;
     private BigDecimal purchasePrice;
     private BigDecimal salePrice;
     private String region;
@@ -43,6 +50,9 @@ public class ProductWithImageDto {
     private Long discountApprovedDate;
     private Boolean isNew;
     private Long lastSyncDate;
+    private String updatedAt;
+    private Long version;
+    private List<RekidsSandboxPhotoDto> photos;
     private List<String> eventNames;
 
     public ProductWithImageDto(Product p) {
@@ -72,10 +82,12 @@ public class ProductWithImageDto {
 
     private void populateRekidsFields(Product p, BigInteger stockVal, BigDecimal priceVal) {
         this.sku = p.getSku();
+        this.legacyCode = p.getLegacyCode();
         this.size = p.getSize();
         this.color = p.getColor();
         this.gender = p.getGender();
         this.brand = p.getBrand();
+        this.condition = p.getCondition() != null ? p.getCondition() : (p.getColor() != null && p.getColor().startsWith("Estado: ") ? p.getColor().substring(8) : "Excelente");
         this.purchasePrice = p.getPurchasePrice();
         this.salePrice = p.getSalePrice() != null ? p.getSalePrice() : priceVal;
         this.region = p.getRegion();
@@ -87,15 +99,37 @@ public class ProductWithImageDto {
         this.discountApprovedDate = p.getDiscountApprovedDate();
         this.isNew = p.getIsNew();
         this.lastSyncDate = p.getLastSyncDate();
+        this.updatedAt = p.getUpdatedAt();
+        this.version = p.getVersion() != null ? p.getVersion() : 1L;
+        this.currency = "BOB";
+        if ("LA_PAZ".equalsIgnoreCase(this.region)) {
+            this.branchId = p.getBranchId() != null ? p.getBranchId() : "10000000-0000-4000-8000-000000000001";
+            this.branchName = "DEMO La Paz — datos ficticios";
+        } else if ("SANTA_CRUZ".equalsIgnoreCase(this.region)) {
+            this.branchId = p.getBranchId() != null ? p.getBranchId() : "10000000-0000-4000-8000-000000000002";
+            this.branchName = "DEMO Santa Cruz — datos ficticios";
+        } else {
+            this.branchId = p.getBranchId();
+        }
         if (this.unitaryCost == null) {
             this.unitaryCost = this.finalPrice;
         }
         if (this.stock == null) {
-            this.stock = stockVal != null ? stockVal : BigInteger.ONE;
+            if ("unavailable".equalsIgnoreCase(p.getAvailability())) {
+                this.stock = BigInteger.ZERO;
+            } else {
+                this.stock = stockVal != null ? stockVal : BigInteger.ONE;
+            }
+        }
+        if (p.getAvailability() != null && !p.getAvailability().isBlank()) {
+            this.availability = p.getAvailability();
+        } else {
+            this.availability = (this.stock != null && this.stock.compareTo(BigInteger.ZERO) > 0)
+                    ? "available" : "unavailable";
         }
     }
 
-    private String productNameStructure(String name, String beverageFormat){
+    private String productNameStructure(String name, String beverageFormat) {
         return (!StringUtil.isNullOrEmpty(beverageFormat) ? name + " - " + beverageFormat : name);
     }
 }

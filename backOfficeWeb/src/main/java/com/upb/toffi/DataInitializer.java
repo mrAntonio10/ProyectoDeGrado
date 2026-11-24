@@ -71,10 +71,15 @@ public class DataInitializer implements CommandLineRunner {
                             .name("Rekids Santa Cruz")
                             .location("SANTA_CRUZ")
                             .phoneNumber("70011111")
+                            .inCode("10000000-0000-4000-8000-000000000002")
                             .enterprise(rekidsEnterprise)
                             .state("ACTIVE")
                             .invoice(false)
                             .build()));
+            if (sczBranch.getInCode() == null || sczBranch.getInCode().isBlank()) {
+                sczBranch.setInCode("10000000-0000-4000-8000-000000000002");
+                branchOfficeRepository.save(sczBranch);
+            }
 
             com.upb.models.branchOffice.BranchOffice lpzBranch = branches.stream()
                     .filter(b -> b.getName() != null && b.getName().toUpperCase().contains("LA PAZ"))
@@ -83,10 +88,15 @@ public class DataInitializer implements CommandLineRunner {
                             .name("Rekids La Paz")
                             .location("LA_PAZ")
                             .phoneNumber("70022222")
+                            .inCode("10000000-0000-4000-8000-000000000001")
                             .enterprise(rekidsEnterprise)
                             .state("ACTIVE")
                             .invoice(false)
                             .build()));
+            if (lpzBranch.getInCode() == null || lpzBranch.getInCode().isBlank()) {
+                lpzBranch.setInCode("10000000-0000-4000-8000-000000000001");
+                branchOfficeRepository.save(lpzBranch);
+            }
 
             // Vincular usuario admin@gmail.com a la sucursal principal para consultas de empresa/sucursal
             userRepository.findByEmailAndStateActive("admin@gmail.com").ifPresent(adminUser -> {

@@ -2,10 +2,7 @@ package com.upb.toffi.rest;
 
 import com.upb.cores.ProductService;
 import com.upb.models.product.Product;
-import com.upb.models.product.dto.ProductDto;
-import com.upb.models.product.dto.ProductListDto;
-import com.upb.models.product.dto.ProductWithImageDto;
-import com.upb.models.product.dto.SyncGarmentsResultDto;
+import com.upb.models.product.dto.*;
 import com.upb.models.warehouse.dto.WarehousePagedDto;
 import com.upb.toffi.config.util.GenericResponse;
 import com.upb.toffi.rest.request.product.CreateProductRequest;
@@ -193,24 +190,41 @@ public class ProductController {
     }
 
     /**
-     * Rekids 1 (Público - Sin Login): Obtener prendas de las tiendas Santa Cruz / La Paz.
-     * Requiere seleccionar primero la región (SANTA_CRUZ o LA_PAZ).
+     * Rekids 1 (Público - Sin Login): Obtener prendas paginadas y filtradas de las tiendas Santa Cruz / La Paz (o TODOS).
      */
     @GetMapping("/public/region/{region}")
     public ResponseEntity<GenericResponse<PagedModel<ProductWithImageDto>>> getProductsByRegion(
             @PathVariable("region") String region,
+            @RequestParam(value = "branchId", defaultValue = "") String branchId,
             @RequestParam(value = "eventId", defaultValue = "") String eventId,
             @RequestParam(value = "category", defaultValue = "") String category,
+            @RequestParam(value = "clothingSize", defaultValue = "") String clothingSize,
+            @RequestParam(value = "brand", defaultValue = "") String brand,
+            @RequestParam(value = "condition", defaultValue = "") String condition,
+            @RequestParam(value = "availability", defaultValue = "") String availability,
             @RequestParam(value = "filter", defaultValue = "") String filter,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "20") Integer pageSize,
+            @RequestParam(value = "size", defaultValue = "6") Integer pageSize,
             @RequestParam(value = "sortDir", defaultValue = "DESC") String sortDir,
             @RequestParam(value = "sortBy", defaultValue = "id") String sortBy
     ) {
         try {
-            PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.fromString(sortDir), sortBy);
+            int safePage = (page != null && page >= 0) ? page : 0;
+            int safeSize = (pageSize != null && pageSize >= 1 && pageSize <= 100) ? pageSize : 6;
+            PageRequest pageable = PageRequest.of(safePage, safeSize, Sort.Direction.fromString(sortDir), sortBy);
             return ok(GenericResponse.success(HttpStatus.OK.value(),
-                    new PagedModel<>(this.productService.getProductsByRegion(region, eventId, category, filter, pageable))));
+                    new PagedModel<>(this.productService.getProductsByRegionFiltered(
+                            region,
+                            branchId,
+                            eventId,
+                            category,
+                            clothingSize,
+                            brand,
+                            condition,
+                            availability,
+                            filter,
+                            pageable
+                    ))));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                     .body(GenericResponse.error(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage()));
@@ -267,6 +281,103 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                             "Error en el servidor al sincronizar prendas."));
+        }
+    }
+
+    /**
+     * ReKids Sandbox 4: Listar las sucursales autorizadas desde el FeignClient (/integrations/v1/branches).
+     */
+    @GetMapping({"/public/rekids/branches", "/rekids/branches"})
+    public ResponseEntity<GenericResponse<List<RekidsSandboxBranchDto>>> getRekidsBranches() {
+        try {
+            return ok(GenericResponse.success(HttpStatus.OK.value(), this.productService.getRekidsBranches()));
+        } catch (Exception e) {
+            log.error("Error al obtener sucursales ReKids Sandbox", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error al consultar sucursales de ReKids Sandbox."));
+        }
+    }
+
+    /**
+     * ReKids Sandbox 5: Consultar productos de una sucursal específica con soporte de cursor, paginación y filtros
+     * (/integrations/v1/products?branch_id=UUID&cursor=...&limit=...).
+     */
+    @GetMapping({"/public/rekids/branches/{branchId}/products", "/rekids/branches/{branchId}/products"})
+    public ResponseEntity<GenericResponse<RekidsSandboxProductPageResponseDto>> getRekidsProductsByBranch(
+            @PathVariable("branchId") String branchId,
+            @RequestParam(value = "cursor", required = false) String cursor,
+            @RequestParam(value = "limit", defaultValue = "50") Integer limit,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "clothingSize", required = false) String clothingSize,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "condition", required = false) String condition,
+            @RequestParam(value = "availability", required = false) String availability
+    ) {
+        try {
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    this.productService.getRekidsProductsByBranchFiltered(
+                            branchId,
+                            cursor,
+                            limit,
+                            page,
+                            filter,
+                            category,
+                            clothingSize,
+                            brand,
+                            condition,
+                            availability
+                    )));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(GenericResponse.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error al obtener productos de la sucursal {}", branchId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error al consultar productos de la sucursal en ReKids Sandbox."));
+        }
+    }
+
+    /**
+     * ReKids Sandbox 6: Consultar todos los productos agrupados y separados por sucursal
+     * (DEMO La Paz y DEMO Santa Cruz).
+     */
+    @GetMapping({"/public/rekids/by-branches", "/rekids/by-branches"})
+    public ResponseEntity<GenericResponse<List<RekidsBranchCatalogDto>>> getRekidsCatalogSeparatedByBranches(
+            @RequestParam(value = "region", required = false) String region
+    ) {
+        try {
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    this.productService.getRekidsCatalogSeparatedByBranches(region)));
+        } catch (Exception e) {
+            log.error("Error al obtener catálogo ReKids separado por sucursales", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error al consultar el catálogo ReKids separado por sucursales."));
+        }
+    }
+
+    /**
+     * ReKids Sandbox 7: Consultar ficha individual de producto (/integrations/v1/products/{productId}).
+     */
+    @GetMapping({"/public/rekids/products/{productId}", "/rekids/products/{productId}"})
+    public ResponseEntity<GenericResponse<RekidsSandboxProductDto>> getRekidsSandboxProductById(
+            @PathVariable("productId") String productId
+    ) {
+        try {
+            return ok(GenericResponse.success(HttpStatus.OK.value(),
+                    this.productService.getRekidsSandboxProductById(productId)));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GenericResponse.error(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error al obtener ficha del producto {}", productId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(GenericResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Error al consultar la ficha del producto en ReKids Sandbox."));
         }
     }
 }

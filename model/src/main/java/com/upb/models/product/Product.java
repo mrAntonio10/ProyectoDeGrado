@@ -88,6 +88,24 @@ public class Product implements Serializable {
     @Column(name = "EXTERNAL_ID", length = 80)
     private String externalId;
 
+    @Column(name = "LEGACY_CODE", length = 50)
+    private String legacyCode;
+
+    @Column(name = "BRANCH_ID", length = 60)
+    private String branchId;
+
+    @Column(name = "GARMENT_CONDITION", length = 60)
+    private String condition;
+
+    @Column(name = "AVAILABILITY", length = 20)
+    private String availability;
+
+    @Column(name = "UPDATED_AT_ISO", length = 50)
+    private String updatedAt;
+
+    @Column(name = "CATALOG_VERSION")
+    private Long version;
+
     @Column(name = "DISCOUNT_TYPE", length = 20)
     private String discountType;
 
