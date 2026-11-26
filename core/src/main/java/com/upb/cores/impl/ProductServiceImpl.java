@@ -494,14 +494,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<RekidsSandboxBranchDto> getRekidsBranches() {
         RekidsSandboxBranchListResponseDto response = externalPortalFeignClient.listBranches();
-        return response != null && response.getItems() != null ? response.getItems() : List.of();
+        return response.getItems();
     }
 
     @Override
-    @Transactional(readOnly = true)
     public RekidsSandboxProductPageResponseDto getRekidsProductsByBranch(String branchId, String cursor, Integer limit) {
         if (StringUtil.isNullOrEmpty(branchId)) {
             throw new IllegalArgumentException("El parámetro branch_id es obligatorio.");
@@ -510,7 +508,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public RekidsSandboxProductPageResponseDto getRekidsProductsByBranchFiltered(
             String branchId,
             String cursor,
@@ -541,7 +538,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public RekidsSandboxProductDto getRekidsSandboxProductById(String productId) {
         if (StringUtil.isNullOrEmpty(productId)) {
             throw new IllegalArgumentException("El parámetro product_id es obligatorio.");
@@ -550,23 +546,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<RekidsBranchCatalogDto> getRekidsCatalogSeparatedByBranches(String region) {
         String normRegion = (!StringUtil.isNullOrEmpty(region) && !region.equalsIgnoreCase("TODOS"))
                 ? normalizeRegion(region) : null;
-        List<RekidsBranchCatalogDto> catalogs = externalPortalFeignClient.fetchCatalogSeparatedByBranches(normRegion);
-        List<BranchOffice> localBranches = branchOfficeRepository.findAll();
-
-        for (RekidsBranchCatalogDto cat : catalogs) {
-            String regKey = cat.getRegion() != null ? cat.getRegion().replace("_", " ") : "";
-            localBranches.stream()
-                    .filter(b -> !"DELETED".equalsIgnoreCase(b.getState()))
-                    .filter(b -> (b.getLocation() != null && b.getLocation().toUpperCase().replace("_", " ").contains(regKey))
-                            || (b.getName() != null && b.getName().toUpperCase().contains(regKey)))
-                    .findFirst()
-                    .ifPresent(b -> cat.setLocalBranchOfficeId(b.getId()));
-        }
-        return catalogs;
+        return externalPortalFeignClient.fetchCatalogSeparatedByBranches(normRegion);
     }
 
     private String normalizeRegion(String region) {

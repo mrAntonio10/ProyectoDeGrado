@@ -108,9 +108,7 @@ public class DataInitializer implements CommandLineRunner {
                 }
             });
 
-            // Sincronizar catálogo inicial de prendas (Santa Cruz y La Paz) al levantar con create-drop
-            productService.syncGarmentsFromExternalPortal(null, null, null);
-            log.info("Datos iniciales de Rekids (eventos Novedades/Descuentos y prendas de Santa Cruz/La Paz) inicializados en BD coffe.");
+            log.info("Datos iniciales de Rekids (eventos Novedades/Descuentos) inicializados. Catálogo se carga bajo demanda via gateway.");
         } catch (Exception e) {
             log.warn("No se pudo inicializar datos base de Rekids: {}", e.getMessage());
         }
